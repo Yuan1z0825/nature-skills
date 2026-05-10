@@ -1,0 +1,4 @@
+Variable,Independent method,Independent p-value
+Outcome_A,Kruskal-Wallis,0.0007924426740677391
+Outcome_B,One-way ANOVA,0.5011382212130173
+Score_1_5,Kruskal-Wallis,0.24079730921111214

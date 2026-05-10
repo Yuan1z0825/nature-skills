@@ -1,0 +1,4 @@
+Scenario,analysis_results.xlsx exists,analysis_results.xlsx size_kb,three_line_tables.docx exists,three_line_tables.docx size_kb,methods_results.docx exists,methods_results.docx size_kb,figures_count,logs_count
+R1_three_groups_patched,True,17.5,True,36.6,True,36.5,6,3
+R2_repeated,True,16.5,True,36.5,True,36.5,0,3
+R3_factorial_glm,True,17.5,True,36.5,True,36.5,4,3

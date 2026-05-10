@@ -1,0 +1,12 @@
+{
+  "reporting_policy": {
+    "p_values_only": true,
+    "q_values_default": false,
+    "compact_letters_for_multigroup": true,
+    "show_detailed_posthoc_by_default": false,
+    "continuous_summary": "mean ± SEM",
+    "ordinal_summary": "median (IQR)"
+  },
+  "p_value_threshold": 0.05,
+  "p_value_display": "≤0.001 if p < 0.001; otherwise 3 decimals"
+}
