@@ -1,6 +1,6 @@
 {
   "name": "nature-skills",
-  "description": "A growing collection of Claude skills for producing academic work at Nature-journal standard. Covers scientific figures (nature-figure), manuscript prose polishing (nature-polishing), citation retrieval and export (nature-citation), data availability statements and FAIR metadata (nature-data), and paper-to-PPTX presentation conversion (nature-paper2ppt). Future releases planned: statistical reporting, peer-review responses, methods writing, cover letters, and review articles. All rules derived from primary sources — published Nature papers, journal author guidelines, and structured writing curricula.",
+  "description": "A growing collection of Claude skills for producing academic work at Nature-journal standard. Covers scientific figures (nature-figure), manuscript prose polishing (nature-polishing), citation retrieval and export (nature-citation), data availability statements and FAIR metadata (nature-data), paper-to-PPTX presentation conversion (nature-paper2ppt), cross-database academic literature search (nature-academic-search), PDF paper reading and annotation (nature-reader), peer-review response drafting (nature-response), and methods/introduction section writing (nature-writing). Future releases planned: statistical reporting, cover letters, and review articles. All rules derived from primary sources — published Nature papers, journal author guidelines, and structured writing curricula.",
   "version": "1.0.0",
   "author": {
     "name": "Yuan1z0825",
