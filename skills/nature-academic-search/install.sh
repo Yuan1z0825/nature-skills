@@ -18,11 +18,11 @@ echo
 
 # 1. Install Python dependencies
 echo "[1/5] Installing Python dependencies..."
-pip install --quiet mcp requests toml lxml 2>/dev/null || {
+pip install --quiet -r "${SCRIPT_DIR}/mcp-server/requirements.txt" 2>/dev/null || {
     echo "  pip failed, trying pip3..."
-    pip3 install --quiet mcp requests toml lxml 2>/dev/null || {
+    pip3 install --quiet -r "${SCRIPT_DIR}/mcp-server/requirements.txt" 2>/dev/null || {
         echo "  WARNING: Could not install Python deps. Install manually:"
-        echo "    pip install mcp requests toml lxml"
+        echo "    pip install -r mcp-server/requirements.txt"
     }
 }
 
