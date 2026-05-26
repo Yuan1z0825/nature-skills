@@ -667,6 +667,12 @@ class TestArxivSearch:
 
         assert ArxivSource._build_date_filter(None, None) == ""
 
+    def test_build_date_filter_only_to(self):
+        from sources.arxiv import ArxivSource
+
+        result = ArxivSource._build_date_filter(None, "2024-12-31")
+        assert result == "submittedDate:[000000000000+TO+202412312359]"
+
 
 # ===================================================================
 # 4. ID auto-detection tests
@@ -714,6 +720,18 @@ class TestDetectIdType:
         with pytest.raises(ValueError, match="Cannot detect"):
             _detect_id_type("123456")
 
+    def test_detect_long_number_raises(self):
+        """9-digit number is too long for PMID (needs 7-8)."""
+        from academic_search_server import _detect_id_type
+
+        with pytest.raises(ValueError, match="Cannot detect"):
+            _detect_id_type("123456789")
+
+    def test_detect_arxiv_with_whitespace(self):
+        from academic_search_server import _detect_id_type
+
+        assert _detect_id_type("  2401.12345  ") == "arxiv"
+
 
 class TestResolveIdType:
     """Test _resolve_id_type explicit and auto modes."""
@@ -740,3 +758,16 @@ class TestResolveIdType:
 
         with pytest.raises(ValueError, match="Unsupported"):
             _resolve_id_type("anything", "invalid_type")
+
+    def test_explicit_case_insensitive(self):
+        from academic_search_server import _resolve_id_type
+
+        assert _resolve_id_type("10.1038/test", "DOI") == "doi"
+        assert _resolve_id_type("12345678", "PMID") == "pmid"
+        assert _resolve_id_type("2401.12345", "ARXIV") == "arxiv"
+
+    def test_explicit_whitespace_stripped(self):
+        from academic_search_server import _resolve_id_type
+
+        assert _resolve_id_type("10.1038/test", "  doi  ") == "doi"
+        assert _resolve_id_type("12345678", " pmid ") == "pmid"
