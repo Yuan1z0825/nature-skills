@@ -1,0 +1,37 @@
+name: Academic search tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify packaged dependency files stay in sync
+        run: |
+          diff -u \
+            skills/nature-academic-search/install.sh \
+            plugins/nature-skills/skills/nature-academic-search/install.sh
+          diff -u \
+            skills/nature-academic-search/mcp-server/requirements.txt \
+            plugins/nature-skills/skills/nature-academic-search/mcp-server/requirements.txt
+
+      - name: Install academic-search test dependencies
+        run: python -m pip install -r requirements.txt pytest
+        working-directory: skills/nature-academic-search/mcp-server
+
+      - name: Run academic-search tests
+        run: python -m pytest -q
+        working-directory: skills/nature-academic-search/mcp-server
