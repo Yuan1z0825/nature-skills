@@ -1,0 +1,33 @@
+name: nature-citation
+version: 2.0.0
+description: >
+  Declarative manifest for the static/dynamic split. SKILL.md uses this to
+  decide which fragments to load for a citation request.
+
+# Design note: nature-citation is a linear, parameterised workflow (segment ->
+# parse -> search -> evaluate -> export -> report). Its variation — journal
+# scope, user language, input length — is handled at runtime by inline rules and
+# by the nature_citation.py flags (--scope, --batch-size, ...), not by loading
+# different large content fragments. There is therefore no content axis; the
+# split is core (always loaded) plus on-demand references. Heavy, only-sometimes-
+# needed material (the script flag reference and long-article batching strategy)
+# lives in references so a normal short run stays cheap. nature-citation does not
+# use the prose-oriented _shared layer.
+
+always_load:
+  - static/core/principles.md
+  - static/core/chinese-mode.md
+  - static/core/workflow.md
+
+references:
+  on_demand:
+    - condition: running nature_citation.py — full flag list, long-article batch strategy, quick-guide tables
+      path: references/script-usage.md
+    - condition: translating a manuscript claim into search queries and support grades
+      path: references/search-strategy.md
+    - condition: the default Nature/CNS journal-family boundary and official source notes
+      path: references/journal-scope.md
+    - condition: RIS, EndNote, or Zotero RDF export guidance
+      path: references/ris-endnote.md
+    - condition: segment text, search Crossref, export ENW/RIS/RDF, and generate the HTML browser
+      path: scripts/nature_citation.py

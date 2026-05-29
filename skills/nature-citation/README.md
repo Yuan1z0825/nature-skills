@@ -26,11 +26,20 @@ This skill is bilingual-aware. It accepts Chinese manuscript text and citation r
 
 ## File structure
 
+The skill uses a router/static-dynamic split (like the other nature-* skills): a short `SKILL.md` router plus a `manifest.yaml`. nature-citation is a linear workflow with no content axis, so the split is core (always loaded) plus on-demand references.
+
 ```text
 nature-citation/
-├── SKILL.md
+├── SKILL.md                     # short router
+├── manifest.yaml                # always_load core + on-demand references (no axis)
 ├── README.md
-├── references/
+├── static/
+│   └── core/                    # always loaded
+│       ├── principles.md        # what it produces, journal scope, source hierarchy, search rules
+│       ├── chinese-mode.md      # Chinese-user operating mode
+│       └── workflow.md          # the 7-step workflow + report format
+├── references/                  # opened on demand
+│   ├── script-usage.md          # nature_citation.py flags + long-article batch strategy
 │   ├── journal-scope.md
 │   ├── ris-endnote.md
 │   └── search-strategy.md
