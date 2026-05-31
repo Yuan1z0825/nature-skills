@@ -6,6 +6,10 @@ description: >-
   (BibTeX, related articles, ID conversion) via MCP tools (PubMed, CrossRef, arXiv).
   Use when the user needs coordinated multi-step literature workflows beyond a
   single MCP call.
+  Also trigger on general literature-search needs during academic writing even without the word
+  "Nature", such as searching for papers/literature, doing a literature review, verifying a
+  citation, converting citation files, and Chinese phrasings like 文献检索、查文献、找文献、
+  文献综述检索、查论文、引文核对、参考文献管理、文献去重.
 version: 2.0.0
 author: Community contribution, refactored into static/dynamic layers
 ---

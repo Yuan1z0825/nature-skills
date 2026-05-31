@@ -7,6 +7,10 @@ description: >-
   reviewer-style manuscript evaluation, 审稿人视角评估, 预审稿意见, or Nature reviewer
   report. Return 3 reviewer reports plus a cross-review synthesis, grounded only in the
   local Nature reviewer source basis.
+  Also trigger on general pre-submission review requests during academic writing even without the
+  word "Nature", such as getting a mock peer review for any journal, critiquing a draft as a
+  reviewer would, assessing novelty/rigor before submission, and Chinese phrasings like
+  审稿人视角、模拟审稿、预审、帮我审一下论文、投稿前自审、审稿意见模拟、找论文问题.
 version: 0.1.0
 status: Draft
 ---

@@ -7,6 +7,10 @@ description: >-
   restricted or sensitive data, source data, supplementary datasets, DataCite-style dataset
   references, FAIR metadata for academic publication, or Chinese-to-English data availability
   wording for Chinese-speaking authors preparing Nature-family submissions.
+  Also trigger on general academic-writing data needs even without the word "Nature", such as
+  writing a data availability statement for any journal, code/data sharing sections, repository
+  selection while writing a paper, and Chinese phrasings like 数据可用性声明、数据可用性、
+  数据共享、代码可用性、学术写作数据声明、写数据声明、数据存放、数据仓库选择.
 version: 2.0.0
 author: Yuan1z skill, refactored into static/dynamic layers
 ---
