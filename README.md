@@ -1,14 +1,20 @@
 # nature-skills
-大家好，我是上海交通大学博士生袁一哲，目前主要从事医疗 AI 相关的研究与创业实践，计划落地浦东张江！有病理专病或者泛癌万人以上队列的朋友，正在创业的伙伴亦或者欣赏我的投资人等等可以添加我的个人微信，务必备注来意。感谢大家持续关注 nature-skill。如果你有任何需求，欢迎提交 issue；如果我们认为该需求有意义且可行，也会尽量推进实现。我们同样欢迎 PR，但请务必按照 README 后面说明的格式提交，以便我们更高效地审核与合并。
+当算法构筑世界，当智能引领未来，顶尖的灵魂终将相遇。
+TOP AI CREW 顶尖AI人才联盟正式招募！
+这里汇聚经过严格筛选的行业强者，多元思维碰撞，前沿技术共生。
+拒绝单打独斗，告别低效内耗，和一群同频的顶尖伙伴并肩前行，深耕AI领域，突破技术边界，一同站上行业前沿。
+敢想、敢闯、敢创造，下一个AI传奇，由我们共同书写！
+
+感谢大家持续关注 nature-skill。如果你有任何需求，欢迎提交 issue；如果我们认为该需求有意义且可行，也会尽量推进实现。我们同样欢迎 PR，但请务必按照 README 后面说明的格式提交，以便我们更高效地审核与合并。
 <table>
   <tr>
     <td align="center">
-      <b>个人微信</b><br>
-      <img width="400" alt="个人微信" src="https://github.com/user-attachments/assets/9e2931fb-748b-418e-97ab-0515d191633d" />
+      <b>TOP AI CREW 顶尖AI人才联盟</b><br>
+      <img width="1672" height="2453" alt="232c0c2e87d7e52eb9cebff6dea41382" src="https://github.com/user-attachments/assets/078bd8df-9715-413a-b243-3d1519c5936d" />
     </td>
     <td align="center">
-      <b>个人介绍</b><br>
-      <img width="400" alt="个人介绍" src="https://github.com/user-attachments/assets/ef355bb8-7189-49a1-bfe0-b1c7dcc7e04e" />
+      <b>个人微信</b><br>
+      <img width="400" alt="个人微信" src="https://github.com/user-attachments/assets/9e2931fb-748b-418e-97ab-0515d191633d" />
     </td>
   </tr>
 </table>
