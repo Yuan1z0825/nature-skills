@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/yuan1z0825-nature-skills-badge.png)](https://mseep.ai/app/yuan1z0825-nature-skills)
+
 # nature-skills
 大家好，我是nature skills的创立者袁一哲，从github以及其他途径联系我的顶尖AI人才数不胜数，所以我成立了TOP AI CREW！今天起人才联盟正式招募！
 这里汇聚经过严格筛选的行业强者，多元思维碰撞，前沿技术共生。
