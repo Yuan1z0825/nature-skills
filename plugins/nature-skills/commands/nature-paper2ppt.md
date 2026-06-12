@@ -1,0 +1,5 @@
+---
+description: Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user asks to make slides/PPT/PPTX for journal club, group meeting, paper sharing, thesis seminar, lab meeting, department report, or academic presentation from a research paper, not only medical papers. It identifies the paper type and argument, selects only the figures needed for the story, writes Chinese slide content and speaker notes, creates the actual .pptx deck, and runs an explicit self-review/corrective revision loop focused on figure quality, text overflow prevention, and non-template visual design before delivery.
+---
+
+Read the skill definition file at `/Users/mira/.claude/plugins/marketplaces/Yuan1z0825-nature-skills/plugins/nature-skills/skills/nature-paper2ppt/SKILL.md` and follow all instructions in it exactly. All relative file paths mentioned in that file resolve relative to `/Users/mira/.claude/plugins/marketplaces/Yuan1z0825-nature-skills/plugins/nature-skills/skills/nature-paper2ppt/`.

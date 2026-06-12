@@ -1,0 +1,5 @@
+---
+description: Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English. Also covers LaTeX layout/typesetting (排版) fixes — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, "Float too large", multi-panel figure arrangement, and Supplementary Information that looks empty — via references/latex-layout.md.
+---
+
+Read the skill definition file at `/Users/mira/.claude/plugins/marketplaces/Yuan1z0825-nature-skills/plugins/nature-skills/skills/nature-polishing/SKILL.md` and follow all instructions in it exactly. All relative file paths mentioned in that file resolve relative to `/Users/mira/.claude/plugins/marketplaces/Yuan1z0825-nature-skills/plugins/nature-skills/skills/nature-polishing/`.
