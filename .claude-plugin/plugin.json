@@ -1,7 +1,7 @@
 {
   "name": "nature-skills",
   "description": "A growing collection of Claude-compatible academic workflow bundles. Covers scientific figures, manuscript writing and polishing, reviewer assessment, citation retrieval, data availability, paper reading, literature search, response letters, paper-to-PPTX conversion, and evidence-grounded Chinese invention patent drafting. Rules are organized as reusable skill folders with explicit workflows and quality checks.",
-  "version": "1.0.0",
+  "version": "cd0d68915b89",
   "author": {
     "name": "Yuan1z0825",
     "email": ""
@@ -9,5 +9,13 @@
   "license": "MIT",
   "homepage": "https://github.com/Yuan1z0825/nature-skills",
   "repository": "https://github.com/Yuan1z0825/nature-skills",
-  "keywords": ["nature", "academic", "science", "figure", "writing", "citation", "publication"]
+  "keywords": [
+    "nature",
+    "academic",
+    "science",
+    "figure",
+    "writing",
+    "citation",
+    "publication"
+  ]
 }
