@@ -1,6 +1,6 @@
 {
   "name": "nature-skills",
-  "version": "cd0d68915b89",
+  "version": "176b5540ed3f",
   "description": "Academic workflow bundles for scientific writing, figures, citations, paper reading, literature search, response letters, presentations, and Chinese invention patent drafting",
   "owner": {
     "name": "Yuan1z0825"
@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "nature-skills",
-      "version": "cd0d68915b89",
+      "version": "176b5540ed3f",
       "source": "./",
       "description": "A growing collection of Claude-compatible academic workflow bundles, including figures, manuscript writing and polishing, reviewer assessment, citation retrieval, data availability, paper reading, literature search, response letters, paper-to-presentation workflows, and evidence-grounded Chinese invention patent drafting.",
       "author": {
