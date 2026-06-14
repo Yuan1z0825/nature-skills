@@ -391,7 +391,12 @@ git push
 
 The second commit records the short hash of the content commit that it packages.
 This avoids relying on a manually maintained version number while still giving
-the plugin managers a changed version key.
+the plugin managers a changed version key. After the second commit, verify that
+relationship with:
+
+```bash
+~/miniconda3/python.exe scripts/sync_plugin_version.py --check --ref HEAD~1
+```
 
 ---
 

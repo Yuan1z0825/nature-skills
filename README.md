@@ -184,7 +184,8 @@ refresh those fields from the current Git commit:
 For an exact release pointer, first commit the skill changes, then run the
 script and commit the manifest refresh. A commit cannot contain its own final
 hash, so the manifest refresh commit normally records the content commit that it
-packages.
+packages. After that second commit, verify with
+`~/miniconda3/python.exe scripts/sync_plugin_version.py --check --ref HEAD~1`.
 
 **Alternative: wrapper/subagent installation**
 

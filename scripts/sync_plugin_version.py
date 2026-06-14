@@ -36,8 +36,8 @@ def git_output(*args: str) -> str:
     return result.stdout.strip()
 
 
-def current_commit_version() -> str:
-    return git_output("rev-parse", "--short=12", "HEAD")
+def commit_version(ref: str) -> str:
+    return git_output("rev-parse", "--short=12", ref)
 
 
 def read_json(path: Path) -> OrderedDict[str, Any]:
@@ -74,13 +74,18 @@ def main() -> int:
         help="Use an explicit version instead of the current short Git commit.",
     )
     parser.add_argument(
+        "--ref",
+        default="HEAD",
+        help="Use the short Git commit for this ref when --version is not set.",
+    )
+    parser.add_argument(
         "--check",
         action="store_true",
         help="Only verify that all plugin manifest versions already match.",
     )
     args = parser.parse_args()
 
-    version = (args.version or current_commit_version()).strip()
+    version = (args.version or commit_version(args.ref)).strip()
     if not version:
         print("error: version cannot be empty", file=sys.stderr)
         return 2
