@@ -85,6 +85,13 @@ After installation, start a new Codex session if the new skills do not appear
 immediately. The plugin package contains all `nature-*` skills and the shared
 support files they reference.
 
+To update a Codex marketplace installation later:
+
+```bash
+codex plugin marketplace upgrade
+codex plugin add nature-skills@nature-skills
+```
+
 ### 3.2 Manual local-skill installation
 
 Clone the repository:
@@ -147,6 +154,9 @@ cp -R skills/nature-polishing ~/.codex/skills/
 If you installed all skills, re-copy `skills/_shared` and all `skills/nature-*`
 folders after pulling.
 
+For Codex marketplace installs, use the marketplace update commands from
+section 3.1 rather than copying local skill folders.
+
 ### 3.7 Common Codex mistake
 
 Do **not** do this:
@@ -196,6 +206,13 @@ After installation:
 - restart Claude Code or open a fresh session if the plugin does not appear
 - the complete `nature-skills` bundle should be available without manually
   creating wrappers
+
+To update a Claude Code plugin installation later:
+
+```bash
+claude plugin marketplace update nature-skills
+claude plugin update nature-skills@nature-skills
+```
 
 ### 4.2 Wrapper / subagent installation
 
@@ -339,6 +356,43 @@ git pull
 
 If your wrapper points to this stable clone path, no further reinstall step is needed.
 
+For Claude Code marketplace installs, use the marketplace update commands from
+section 4.1.
+
+---
+
+## 4.8 Maintainer release versioning
+
+Plugin managers cache installed bundles by version. If the repository changes
+but the plugin version remains unchanged, Codex or Claude Code may keep using an
+older cached bundle.
+
+Before publishing a marketplace update, refresh all plugin manifest versions
+from the current Git commit:
+
+```bash
+~/miniconda3/python.exe scripts/sync_plugin_version.py
+```
+
+The script updates `.claude-plugin/plugin.json`,
+`.claude-plugin/marketplace.json`, and
+`plugins/nature-skills/.codex-plugin/plugin.json`.
+
+A practical release sequence is:
+
+```bash
+git add skills README.md install.md plugins .claude-plugin scripts
+git commit -m "Update nature skills"
+~/miniconda3/python.exe scripts/sync_plugin_version.py
+git add .claude-plugin plugins/nature-skills/.codex-plugin
+git commit -m "Refresh plugin version"
+git push
+```
+
+The second commit records the short hash of the content commit that it packages.
+This avoids relying on a manually maintained version number while still giving
+the plugin managers a changed version key.
+
 ---
 
 ## 5. Install for other agents
@@ -417,6 +471,9 @@ Then:
 - for Codex local skills, copy `skills/_shared` and the updated folder(s) again
 - for Codex plugin installation, run `codex plugin marketplace upgrade` and reinstall or refresh the plugin as needed
 - for Claude Code wrappers, no reinstall is needed if the wrapper still points to the same clone path
+
+For Claude Code plugin installation, run `claude plugin marketplace update
+nature-skills` and `claude plugin update nature-skills@nature-skills`.
 
 ---
 

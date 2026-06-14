@@ -85,6 +85,13 @@ complete bundle, together with the shared support directory used by the newer
 router-style skills. If the skills do not appear immediately, refresh the plugin
 page or start a new Codex session.
 
+To receive later marketplace updates:
+
+```bash
+codex plugin marketplace upgrade
+codex plugin add nature-skills@nature-skills
+```
+
 **Manual local-skill installation**
 
 Codex can also use these folders directly as local skills.
@@ -155,6 +162,29 @@ claude plugin install nature-skills@nature-skills
 
 If the plugin does not appear immediately, refresh the plugin page or start a
 new Claude Code session.
+
+To receive later marketplace updates:
+
+```bash
+claude plugin marketplace update nature-skills
+claude plugin update nature-skills@nature-skills
+```
+
+**Marketplace version refresh for maintainers**
+
+Marketplace installs use the version stored in `.claude-plugin/plugin.json`,
+`.claude-plugin/marketplace.json`, and
+`plugins/nature-skills/.codex-plugin/plugin.json`. Before publishing an update,
+refresh those fields from the current Git commit:
+
+```bash
+~/miniconda3/python.exe scripts/sync_plugin_version.py
+```
+
+For an exact release pointer, first commit the skill changes, then run the
+script and commit the manifest refresh. A commit cannot contain its own final
+hash, so the manifest refresh commit normally records the content commit that it
+packages.
 
 **Alternative: wrapper/subagent installation**
 
