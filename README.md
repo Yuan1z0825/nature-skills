@@ -50,8 +50,8 @@
       <img width="500" alt="视频教程请关注抖音" src="https://github.com/user-attachments/assets/1eefda21-86a4-4081-96e4-d40dea9e1e7b" />
     </td>
     <td align="center">
-      <b>青春中国（袁一哲）</b><br>
-      <img width="500" alt="青春中国（袁一哲）" src="assets/youth-china-yuan-yizhe.png" />
+      <b>Agent 交流群</b><br>
+      <img width="500" alt="Agent 交流群" src="assets/agent-exchange-group.png" />
     </td>
   </tr>
 </table>
