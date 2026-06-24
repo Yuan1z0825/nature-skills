@@ -1,0 +1,21 @@
+{
+  "name": "nature-skills",
+  "version": "1.0.0",
+  "description": "Nature-style academic research toolkit: literature search & citation, publication figures, manuscript writing & polishing, peer-review simulation, response letters, full-text readers, and paper-to-PPT/patent conversion. Skills auto-load from skills/nature-*/SKILL.md.",
+  "author": {
+    "name": "Yuan1z0825",
+    "url": "https://github.com/Yuan1z0825"
+  },
+  "homepage": "https://github.com/Yuan1z0825/nature-skills",
+  "repository": "https://github.com/Yuan1z0825/nature-skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "academic-writing",
+    "nature",
+    "literature-search",
+    "citations",
+    "scientific-figures",
+    "peer-review",
+    "research"
+  ]
+}

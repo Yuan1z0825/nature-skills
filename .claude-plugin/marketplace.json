@@ -1,0 +1,32 @@
+{
+  "name": "nature-skills",
+  "owner": {
+    "name": "Yuan1z0825",
+    "url": "https://github.com/Yuan1z0825"
+  },
+  "description": "Marketplace hosting the nature-skills plugin — a Nature-style academic research toolkit (literature search, citation, figures, writing, polishing, peer-review, response letters, paper-to-PPT/patent).",
+  "plugins": [
+    {
+      "name": "nature-skills",
+      "source": "./",
+      "description": "Nature-style academic research toolkit. Bundles every skill under skills/nature-*/SKILL.md plus skills/_shared. Use for literature search, citations, publication figures, manuscript drafting/polishing, peer-review simulation, response letters, full-text readers, and paper-to-PPT/patent conversion.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Yuan1z0825",
+        "url": "https://github.com/Yuan1z0825"
+      },
+      "homepage": "https://github.com/Yuan1z0825/nature-skills",
+      "license": "Apache-2.0",
+      "category": "productivity",
+      "keywords": [
+        "academic-writing",
+        "nature",
+        "literature-search",
+        "citations",
+        "scientific-figures",
+        "peer-review",
+        "research"
+      ]
+    }
+  ]
+}

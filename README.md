@@ -37,6 +37,8 @@
 
 `nature-skills` 是一组围绕 `SKILL.md` 组织的可复用技能包。每个 `skills/nature-*` 目录都是一个可安装单元，部分技能还依赖 `skills/_shared/` 中的共享内容。
 
+本仓库同时支持 **Codex**（复制到 skills 目录）与 **Claude Code**（插件 marketplace 或技能目录）两种安装方式，也兼容其他遵循 `SKILL.md` 约定的 agent。
+
 ### Codex 推荐安装方式
 
 最简单的方式是把仓库链接交给 Codex，并让它安装完整技能目录：
@@ -66,7 +68,7 @@ https://github.com/Yuan1z0825/nature-skills.git
 
 关键规则：保留完整目录结构。请复制或引用整个技能文件夹，而不是只复制 `SKILL.md`，因为许多技能依赖 `references/`、`static/`、`manifest.yaml`、脚本、资产或共享文件。
 
-### 手动安装
+### Codex 手动安装
 
 ```bash
 git clone https://github.com/Yuan1z0825/nature-skills.git
@@ -76,6 +78,12 @@ cp -R skills/_shared ~/.codex/skills/
 for d in skills/nature-*; do
   cp -R "$d" ~/.codex/skills/
 done
+```
+
+也可以直接运行随仓库提供的脚本（只同步本仓库的技能文件夹，不动你 `~/.codex/skills/` 里的其他技能）：
+
+```bash
+scripts/update-codex-skills.sh
 ```
 
 安装后，请开启一个新的 Codex 会话，然后自然描述任务，例如：
@@ -89,26 +97,66 @@ done
 ```
 
 
+### Claude Code 安装
+
+本仓库本身就是一个 Claude Code 插件（`.claude-plugin/plugin.json`）兼插件市场（`.claude-plugin/marketplace.json`）。`skills/nature-*/SKILL.md` 会被 Claude Code 自动发现并加载，无需在清单里逐个声明。
+
+#### 方式一：插件市场（推荐）
+
+在 Claude Code 会话里执行：
+
+```text
+/plugin marketplace add Yuan1z0825/nature-skills
+/plugin install nature-skills@nature-skills
+```
+
+安装后，所有 nature 技能会按各自 `description` 中的触发词自动激活。需要更新时：
+
+```text
+/plugin update nature-skills
+```
+
+> 如果你是从自己的 fork 安装，请把上面的 `Yuan1z0825` 换成你的 GitHub 用户名。marketplace 的 `source: "./"` 是相对路径，仅在通过 Git 仓库（`owner/repo` 形式）添加 marketplace 时才能正确解析。
+
+#### 方式二：手动复制到技能目录
+
+适合不使用插件系统、只想直接放技能文件的场景。Claude Code 从 `~/.claude/skills/` 加载个人技能：
+
+```bash
+git clone https://github.com/Yuan1z0825/nature-skills.git
+cd nature-skills
+scripts/update-claude-skills.sh
+```
+
+该脚本只同步本仓库的技能文件夹（含 `_shared`），不会动你 `~/.claude/skills/` 里的其他技能。`PULL=1` 可先 `git pull --ff-only` 再复制，`CLAUDE_SKILLS_DIR=/path` 可覆盖目标目录。
+
 ### 目录结构
 
 ```text
-skills/
-├── _shared/              # 当技能引用 ../_shared 时需要保留
-└── nature-<topic>/
-    ├── README.md
-    ├── SKILL.md
-    ├── manifest.yaml     # router-style 技能会包含
-    ├── static/           # router-style 技能会包含
-    └── references/...
+.
+├── .claude-plugin/
+│   ├── plugin.json       # Claude Code 插件清单
+│   └── marketplace.json  # Claude Code 插件市场清单（source: "./"）
+├── scripts/
+│   ├── update-codex-skills.sh    # 复制技能到 ~/.codex/skills/
+│   └── update-claude-skills.sh   # 复制技能到 ~/.claude/skills/
+└── skills/
+    ├── _shared/              # 当技能引用 ../_shared 时需要保留
+    └── nature-<topic>/
+        ├── README.md
+        ├── SKILL.md
+        ├── manifest.yaml     # router-style 技能会包含
+        ├── static/           # router-style 技能会包含
+        └── references/...
 ```
 
-### 非 Codex 场景
+### 其他 agent
 
-用于 Claude Code 或其他 agent 时，建议保留一个稳定的仓库 clone，再创建轻量 subagent、slash command 或 custom prompt wrapper，指向真实的 `skills/nature-*/SKILL.md`，并保留 `skills/_shared/`。
+技能遵循通用的 `SKILL.md` 约定，可用于任何兼容的 agent。建议保留一个稳定的仓库 clone，再创建轻量 subagent、slash command 或 prompt wrapper，指向真实的 `skills/nature-*/SKILL.md`，并保留 `skills/_shared/`。
 
-手动或非 Codex 使用时：
+通用规则：
 
-1. 将完整技能目录复制到你的 prompt library 或项目中。
+1. 将完整技能目录复制到你的 prompt library 或项目中，保留完整目录结构（不要只复制 `SKILL.md`）。
 2. 保留 `SKILL.md`、`manifest.yaml`、`static/`、`references/`、脚本、资产和需要的 `skills/_shared/` 文件。
 3. 如目标 agent 有自己的格式要求，可调整 frontmatter 和正文结构。
 
