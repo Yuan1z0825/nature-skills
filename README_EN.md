@@ -1,27 +1,25 @@
-<h1 align="center">Nature Skills</h1>
+<div align="center">
+  <h1>Nature Skills</h1>
+  <p><strong>Reusable research skills for AI scholars worldwide</strong></p>
+  <p>
+    Literature Search · Paper Reading · Nature Writing · Reviewer Simulation · Figures · Citation Audit · Revision Response
+  </p>
+  <p>
+    <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-2ea44f"></a>
+    <a href="#installation"><img alt="Install" src="https://img.shields.io/badge/install-Codex-111827"></a>
+    <a href="#skill-index"><img alt="Skills" src="https://img.shields.io/badge/skills-16-0ea5e9"></a>
+    <a href="README.md"><img alt="Language" src="https://img.shields.io/badge/language-English%20%7C%20中文-1f6feb"></a>
+  </p>
+  <p>
+    <a href="#installation"><strong>Install</strong></a>
+    · <a href="#skill-index">Skill Index</a>
+    · <a href="#shared-design-principles">Design Principles</a>
+    · <a href="#adding-a-skill">Contributing</a>
+    · <a href="README.md">中文</a>
+  </p>
+</div>
 
-<p align="center">
-  Reusable Codex skills for AI scholars worldwide
-</p>
-
-<p align="center">
-  <strong>English</strong> · <a href="README.md">中文</a>
-</p>
-
-<p align="center">
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-2ea44f"></a>
-  <img alt="Language" src="https://img.shields.io/badge/language-English%20%7C%20中文-1f6feb">
-  <img alt="Skills" src="https://img.shields.io/badge/skills-16%20research%20skills-0ea5e9">
-  <img alt="Codex" src="https://img.shields.io/badge/Codex-ready-111827">
-</p>
-
-<p align="center">
-  <a href="#installation">Install</a> ·
-  <a href="#skill-index">Skill Index</a> ·
-  <a href="#shared-design-principles">Design Principles</a> ·
-  <a href="#adding-a-skill">Contributing</a> ·
-  <a href="README.md">中文</a>
-</p>
+---
 
 - Hello everyone, I am Yizhe Yuan, the founder of `nature-skills`. Thank you for
   following this project. We have published many video tutorials on Douyin; you
