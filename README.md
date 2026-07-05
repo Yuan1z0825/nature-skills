@@ -1,6 +1,27 @@
-# nature-skills (面向全球AI学者收录SKILL)
+<h1 align="center">Nature Skills</h1>
 
-[English](README_EN.md) | 中文
+<p align="center">
+  面向全球 AI 学者的可复用科研技能库
+</p>
+
+<p align="center">
+  <a href="README_EN.md">English</a> · <strong>中文</strong>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-2ea44f"></a>
+  <img alt="Language" src="https://img.shields.io/badge/language-中文%20%7C%20English-1f6feb">
+  <img alt="Skills" src="https://img.shields.io/badge/skills-16%20research%20skills-0ea5e9">
+  <img alt="Codex" src="https://img.shields.io/badge/Codex-ready-111827">
+</p>
+
+<p align="center">
+  <a href="#安装">立即安装</a> ·
+  <a href="#技能索引">技能索引</a> ·
+  <a href="#共享设计原则">设计原则</a> ·
+  <a href="#新增技能">贡献方式</a> ·
+  <a href="README_EN.md">English</a>
+</p>
 
 * 大家好，我是 nature skills 的创立者袁一哲。感谢大家持续关注 `nature-skills`。我们在抖音更新了很多视频教程，大家可以根据名称检索查看，希望真心能够帮助到大家。
 * 如果你有任何需求，欢迎提交 issue；如果我们认为该需求有意义且可行，会尽量推进实现。我们也欢迎 PR，但请按照本文后面的贡献格式提交，方便更高效地审核与合并。
