@@ -1,8 +1,6 @@
 <div align="center">
-  <h1>Nature Skills</h1>
-  <h3>Reusable research skills for AI scholars worldwide</h3>
   <p>
-    Literature Search · Paper Reading · Nature Writing · Reviewer Simulation · Figures · Citation Audit · Revision Response
+    <img src="assets/readme-banner-en.png" alt="Nature Skills: Reusable Research Skills for AI Scholars" width="100%">
   </p>
   <p>
     <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-2ea44f"></a>
@@ -12,6 +10,7 @@
   </p>
   <p>
     <a href="#installation">Install</a>
+    · <a href="#quick-start">Quick Start</a>
     · <a href="#skill-index">Skill Index</a>
     · <a href="docs/open-source-agent-frameworks_EN.md">Other Install</a>
     · <a href="#shared-design-principles">Design Principles</a>
@@ -33,6 +32,26 @@
   worldwide. It is an early form of a "skill journal": the goal is not empty
   storytelling, but solving real domain problems.
 - Knowledge Planet: `Nature Skills` and the philosophy behind it.
+
+## Quick Start
+
+After installation, you can give the agent a paper, paragraph, reviewer letter,
+or task description directly. These prompts are ready to copy:
+
+| Goal | Prompt |
+| --- | --- |
+| Read a paper / bilingual reader | `Turn this PDF into a figure-aware Chinese-English Markdown reader.` |
+| Generate a paper presentation | `Create a Chinese journal-club PPT from this paper, keeping key figures and source labels.` |
+| Polish or translate a manuscript paragraph | `Rewrite this Chinese paragraph into Nature-style academic English without changing the meaning.` |
+| Draft an abstract, introduction, or discussion | `Using these results and figures, draft a Nature-style abstract and introduction.` |
+| Simulate pre-submission review | `Evaluate this manuscript from a Nature reviewer perspective and produce three reviewer reports.` |
+| Respond to reviewer comments | `Use this revision email to draft point-by-point replies, a cover letter, and redline locations for the revised manuscript.` |
+| Search literature, strict citations, and citer profiles | `Create a table with this paper's citation count, strict external citation count, DOI, and whether major scholars or Fellows cited it.` |
+| Create scientific figures or schematics | `Use this method and result description to draft a publication-ready scientific figure or manuscript schematic.` |
+
+If you are unsure which skill to use, describe the task naturally. If you already
+know the skill name, explicitly say "use `nature-reader`" or "use
+`nature-response`" in the prompt.
 
 ## Main Contributors
 
@@ -266,12 +285,14 @@ skills/
 ├── _shared/              # keep this when skills reference ../_shared
 ├── nature-<topic>/
 │   ├── README.md
+│   ├── README_EN.md
 │   ├── SKILL.md
 │   ├── manifest.yaml     # present in router-style skills
 │   ├── static/           # present in router-style skills
 │   └── references/...
 └── nature-proposal-writer/
     ├── README.md
+    ├── README_EN.md
     ├── SKILL.md
     ├── scripts/...
     ├── templates/...
@@ -301,26 +322,27 @@ For manual or other-agent use:
 ## Skill Index
 
 The current `skills/` directory contains the following triggerable skills.
-`skills/_shared/` is shared content and is not counted in the skill index.
+`skills/_shared/` is shared content and is not counted in the skill index. Click a skill name or the "Details" link to open its dedicated documentation page.
 
-| Skill | Status | Purpose | Example Triggers |
-|---|---|---|---|
-| [`nature-figure`](skills/nature-figure/README.md) | Stable | Submission-grade Python or R scientific figure workflow for Nature / high-impact journals, with a figures4papers-style demo and OpenRouter GPT Image 2 schematic-draft generation | "Nature figure", "submission-grade figure", "publication plot", "scientific figure", "figures4papers", "paper schematic", "GPT Image 2" |
-| [`nature-polishing`](skills/nature-polishing/README.md) | Stable | Polish, restructure, or translate academic prose into Nature-style English | "Nature style", "polishing", "academic writing", "English manuscript" |
-| [`nature-writing`](skills/nature-writing/README.md) | Draft | Draft Nature-style manuscript sections and rebuild a paper argument | "Nature writing", "write an abstract", "write introduction", "manuscript draft", "paper writing" |
-| [`nature-reviewer`](skills/nature-reviewer/README.md) | Draft | Simulate Nature-style reviewer assessment from the reviewer perspective, returning three reviewer reports and a synthesis | "Nature reviewer", "pre-submission review", "reviewer report", "reviewer-perspective assessment" |
-| [`nature-citation`](skills/nature-citation/README.md) | Beta | Search support literature strictly within Nature / CNS families and export ENW, RIS, or Zotero RDF | "Nature citation", "CNS citation", "segmented citation", "supporting references", "Zotero RDF" |
-| [`nature-data`](skills/nature-data/README.md) | Draft | Prepare Data Availability statements, data repository plans, and FAIR checks | "Data Availability", "data availability", "repository", "FAIR metadata" |
-| [`nature-statistics`](skills/nature-statistics/README.md) | Draft | Audit, revise, or draft statistical reporting for Nature / high-impact journal manuscripts, covering sample size, independent units, replicates, p values, multiple comparisons, effect sizes, confidence intervals, figure statistics, and reviewer comments | "Nature statistics", "statistical analysis", "p value", "sample size", "replicates", "multiple comparisons", "figure statistics", "statistics review" |
-| [`nature-reader`](skills/nature-reader/README.md) | Beta | Generate full-paper Markdown readers with source anchors, figure-text alignment, and Chinese-English side-by-side translation | "nature reader", "full Markdown", "source-aligned text", "figure-text alignment", "full translation" |
-| [`nature-response`](skills/nature-response/README.md) | Beta | Parse revision emails; draft, audit, and revise revision cover letters, point-by-point response letters, red-marked manuscripts, and LaTeX templates | "response to reviewers", "rebuttal letter", "cover letter", "major revision", "revision email", "reviewer-comment response", "LaTeX template" |
-| [`nature-paper2ppt`](skills/nature-paper2ppt/README.md) | Beta | Generate Chinese PPTX journal-club or paper-presentation decks from research papers | "paper PPT", "journal club", "paper to slides", "paper presentation" |
-| [`nature-paper-to-patent`](skills/nature-paper-to-patent/README.md) | Beta | Generate evidence-constrained Chinese invention patent drafts from papers, technical reports, or project materials | "paper to patent", "Chinese patent", "paper-to-patent", "claims drafting" |
-| [`nature-academic-search`](skills/nature-academic-search/README.md) | Beta | Multi-source literature search, citation verification, strict other-citation audits, article-level citation metric tables, influential citer profiling, and reference management | "search papers", "find articles", "literature search", "literature lookup", "verify DOI", "strict other citation", "article citation table", "influential citer" |
-| [`nature-downloader`](skills/nature-downloader/README.md) | Beta | Legally obtain academic full text/PDFs through library access, Chrome login state, and open-access routes | "download papers", "library paper download", "CARSI", "Web of Science", "PDF download" |
-| [`nature-literature-pipeline`](skills/nature-literature-pipeline/README.md) | Stable | Automated literature discovery pipeline: multi-source retrieval, six-axis scoring, deep-reading delivery, and local archiving | "literature pipeline", "daily literature", "literature push", "daily literature push", "cron" |
-| [`nature-experiment-log`](skills/nature-experiment-log/README.md) | Draft | Standardize experiment images, voice, and text into Obsidian experiment logs with YAML frontmatter and archived source materials | "experiment log", "record experiment", "Obsidian vault", "Feishu research group" |
-| [`nature-proposal-writer`](skills/nature-proposal-writer/README.md) | Beta | Proposal-first research writing state machine: establish evidence, argument, and section contracts before drafting or reviewing text | "researchwrite", "proposal", "opening report", "research plan", "research writing QA" |
+| Skill | Status | Purpose | Example Triggers | Details |
+|---|---|---|---|---|
+| [`nature-figure`](skills/nature-figure/README_EN.md) | Stable | Submission-grade Python or R scientific figure workflow for Nature / high-impact journals, with a figures4papers-style demo and OpenRouter GPT Image 2 schematic-draft generation | "Nature figure", "submission-grade figure", "publication plot", "scientific figure", "figures4papers", "paper schematic", "GPT Image 2" | [Details](skills/nature-figure/README_EN.md) |
+| [`nature-polishing`](skills/nature-polishing/README_EN.md) | Stable | Polish, restructure, or translate academic prose into Nature-style English | "Nature style", "polishing", "academic writing", "English manuscript" | [Details](skills/nature-polishing/README_EN.md) |
+| [`nature-writing`](skills/nature-writing/README_EN.md) | Draft | Draft Nature-style manuscript sections and rebuild a paper argument | "Nature writing", "write an abstract", "write introduction", "manuscript draft", "paper writing" | [Details](skills/nature-writing/README_EN.md) |
+| [`nature-reviewer`](skills/nature-reviewer/README_EN.md) | Draft | Simulate Nature-style reviewer assessment from the reviewer perspective, returning three reviewer reports and a synthesis | "Nature reviewer", "pre-submission review", "reviewer report", "reviewer-perspective assessment" | [Details](skills/nature-reviewer/README_EN.md) |
+| [`nature-citation`](skills/nature-citation/README_EN.md) | Beta | Search support literature strictly within Nature / CNS families and export ENW, RIS, or Zotero RDF | "Nature citation", "CNS citation", "segmented citation", "supporting references", "Zotero RDF" | [Details](skills/nature-citation/README_EN.md) |
+| [`nature-data`](skills/nature-data/README_EN.md) | Draft | Prepare Data Availability statements, data repository plans, and FAIR checks | "Data Availability", "data availability", "repository", "FAIR metadata" | [Details](skills/nature-data/README_EN.md) |
+| [`nature-statistics`](skills/nature-statistics/README_EN.md) | Draft | Audit, revise, or draft statistical reporting for Nature / high-impact journal manuscripts, covering sample size, independent units, replicates, p values, multiple comparisons, effect sizes, confidence intervals, figure statistics, and reviewer comments | "Nature statistics", "statistical analysis", "p value", "sample size", "replicates", "multiple comparisons", "figure statistics", "statistics review" | [Details](skills/nature-statistics/README_EN.md) |
+| [`nature-reader`](skills/nature-reader/README_EN.md) | Beta | Generate full-paper Markdown readers with source anchors, figure-text alignment, and Chinese-English side-by-side translation | "nature reader", "full Markdown", "source-aligned text", "figure-text alignment", "full translation" | [Details](skills/nature-reader/README_EN.md) |
+| [`nature-response`](skills/nature-response/README_EN.md) | Beta | Parse revision emails; draft, audit, and revise revision cover letters, point-by-point response letters, red-marked manuscripts, and LaTeX templates | "response to reviewers", "rebuttal letter", "cover letter", "major revision", "revision email", "reviewer-comment response", "LaTeX template" | [Details](skills/nature-response/README_EN.md) |
+| [`nature-paper2ppt`](skills/nature-paper2ppt/README_EN.md) | Beta | Generate Chinese PPTX journal-club or paper-presentation decks from research papers | "paper PPT", "journal club", "paper to slides", "paper presentation" | [Details](skills/nature-paper2ppt/README_EN.md) |
+| [`nature-paper-to-patent`](skills/nature-paper-to-patent/README_EN.md) | Beta | Generate evidence-constrained Chinese invention patent drafts from papers, technical reports, or project materials | "paper to patent", "Chinese patent", "paper-to-patent", "claims drafting" | [Details](skills/nature-paper-to-patent/README_EN.md) |
+| [`nature-ref-verifier`](skills/nature-ref-verifier/README_EN.md) | Beta | Cross-check references across multiple sources and flag author, title, year, volume, issue, and page inconsistencies | "verify refs", "check references", "reference verification", "ref check" | [Details](skills/nature-ref-verifier/README_EN.md) |
+| [`nature-academic-search`](skills/nature-academic-search/README_EN.md) | Beta | Multi-source literature search, citation verification, strict other-citation audits, article-level citation metric tables, influential citer profiling, and reference management | "search papers", "find articles", "literature search", "literature lookup", "verify DOI", "strict other citation", "article citation table", "influential citer" | [Details](skills/nature-academic-search/README_EN.md) |
+| [`nature-downloader`](skills/nature-downloader/README_EN.md) | Beta | Legally obtain academic full text/PDFs through library access, Chrome login state, and open-access routes | "download papers", "library paper download", "CARSI", "Web of Science", "PDF download" | [Details](skills/nature-downloader/README_EN.md) |
+| [`nature-literature-pipeline`](skills/nature-literature-pipeline/README_EN.md) | Stable | Automated literature discovery pipeline: multi-source retrieval, six-axis scoring, deep-reading delivery, and local archiving | "literature pipeline", "daily literature", "literature push", "daily literature push", "cron" | [Details](skills/nature-literature-pipeline/README_EN.md) |
+| [`nature-experiment-log`](skills/nature-experiment-log/README_EN.md) | Draft | Standardize experiment images, voice, and text into Obsidian experiment logs with YAML frontmatter and archived source materials | "experiment log", "record experiment", "Obsidian vault", "Feishu research group" | [Details](skills/nature-experiment-log/README_EN.md) |
+| [`nature-proposal-writer`](skills/nature-proposal-writer/README_EN.md) | Beta | Proposal-first research writing state machine: establish evidence, argument, and section contracts before drafting or reviewing text | "researchwrite", "proposal", "opening report", "research plan", "research writing QA" | [Details](skills/nature-proposal-writer/README_EN.md) |
 
 ---
 
@@ -356,7 +378,23 @@ skills/nature-<topic>/
 |---|---:|---|
 | `SKILL.md` | Yes | Frontmatter (`name`, `description`) plus rules and workflow loaded by the agent |
 | `README.md` | Yes | Human-facing Chinese documentation |
+| `README_EN.md` | Yes | English documentation paired with the Chinese details page |
 | `references/*.md` | Recommended for complex skills | Modular rule files, API references, design theory, tutorials, chart types, and similar material |
+
+Each `README.md` / `README_EN.md` should use a consistent information structure so users can open a details page and quickly decide whether the skill fits:
+
+```markdown
+# nature-<topic>
+
+## What It Does
+## When to Use It
+## Copy-Paste Prompts
+## Required Inputs
+## Expected Outputs
+## Dependencies / API Keys / Local Environment
+## FAQ
+## Related Skills
+```
 
 ### 3. `SKILL.md` Frontmatter Template
 
@@ -374,7 +412,7 @@ description: >-
 After adding a skill, update the [Skill Index](#skill-index) table:
 
 ```markdown
-| [`nature-<topic>`](skills/nature-<topic>/README.md) | Draft / Stable | One-sentence purpose | Trigger terms |
+| [`nature-<topic>`](skills/nature-<topic>/README_EN.md) | Draft / Stable | One-sentence purpose | Trigger terms | [Details](skills/nature-<topic>/README_EN.md) |
 ```
 
 ### 5. Status Labels
