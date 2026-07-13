@@ -96,6 +96,18 @@ describe("classifyWall", () => {
     const r = classifyWall("", "", "");
     assert.equal(r, null);
   });
+
+  test("slider captcha -> publisher_verification_waiting_user", () => {
+    const r = classifyWall("https://verify.cnki.net/slider", "安全验证", "请按住滑块拖动到最右边");
+    assert.equal(r.status, STATUS.PUBLISHER_VERIFICATION_WAITING_USER);
+    assert.match(r.reason, /slider captcha/);
+  });
+
+  test("drag slider CNKI -> publisher_verification_waiting_user", () => {
+    const r = classifyWall("https://kns.cnki.net/kcms2/article/detail", "滑动验证", "请拖动滑块完成拼图");
+    assert.equal(r.status, STATUS.PUBLISHER_VERIFICATION_WAITING_USER);
+    assert.match(r.reason, /slider captcha/);
+  });
 });
 
 describe("mapLegacyStatus", () => {
@@ -153,6 +165,14 @@ describe("isUserHandoff", () => {
 
   test("failed_after_retry is NOT handoff", () => {
     assert.equal(isUserHandoff(STATUS.FAILED_AFTER_RETRY), false);
+  });
+
+  test("verification_auto_failed is handoff", () => {
+    assert.equal(isUserHandoff(STATUS.VERIFICATION_AUTO_FAILED), true);
+  });
+
+  test("verification_auto_passed is NOT handoff", () => {
+    assert.equal(isUserHandoff(STATUS.VERIFICATION_AUTO_PASSED), false);
   });
 });
 

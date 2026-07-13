@@ -38,8 +38,9 @@
 
 ## Boundaries
 
-- The skill does not bypass paywalls, use mirror sites, break CAPTCHA, or read/export cookies, passwords, localStorage, or session files.
-- Unified identity login, CARSI, CAPTCHA, Cloudflare, SMS, or OTP challenges must be completed by the user in the browser.
+- The skill does not bypass paywalls, use mirror sites, or read/export cookies, passwords, localStorage, or session files.
+- For a visible slider, checkbox, robot check, or simple verification button, it first makes at most two bounded attempts in the same authenticated browser tab and continues when the page confirms success.
+- User action is required only after those attempts fail or for image selection, QR approval, SMS/OTP, passkeys, hardware keys, or two-factor authentication.
 - Without legal access, the skill only reports status and possible alternatives.
 
 ## Related Skills

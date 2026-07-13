@@ -24,6 +24,10 @@ export const STATUS = Object.freeze({
   SCIENCEDIRECT_ROBOT_CHECK: "sciencedirect_robot_check",
   RETRY_AFTER_USER_VERIFICATION: "retry_after_user_verification",
 
+  // auto-verification (new — attempted automatic CAPTCHA/slider/robot check solving)
+  VERIFICATION_AUTO_PASSED: "verification_auto_passed",
+  VERIFICATION_AUTO_FAILED: "verification_auto_failed",
+
   // do-not-retry
   DO_NOT_AUTO_RETRY: "do_not_auto_retry",
   URL_NEEDS_REPAIR: "url_needs_repair",
@@ -50,6 +54,14 @@ const INSTITUTIONAL_HOST_RE =
 // Publisher anti-bot / verification signals (checked against title + body).
 const ROBOT_CHECK_RE =
   /captcha|are you a robot|cloudflare|verify you are human|unusual traffic|bot verification|challenge/i;
+
+// Slider/drag CAPTCHA signals — auto-attemptable, return regular verification status.
+const SLIDER_CAPTCHA_RE =
+  /滑块验证|滑动验证|拖动滑块|拼图验证|请按住滑块|请拖动|请滑动|drag the slider|slide to verify|slide to unlock|slider verification/i;
+
+// CNKI / Chinese institutional login signals.
+const CNKI_LOGIN_RE =
+  /登录|统一身份认证|机构登录|校外访问|账号登录|扫码登录|验证码/i;
 
 // Publisher access-denied signals.
 const ACCESS_DENIED_RE =
@@ -83,12 +95,17 @@ export function classifyWall(url, title, bodyHint = "") {
     return { status: STATUS.SCIENCEDIRECT_ROBOT_CHECK, reason: "ScienceDirect robot check" };
   }
 
-  // 3. Generic publisher verification (CAPTCHA / Cloudflare / bot check).
+  // 3. Slider / drag CAPTCHA — auto-attemptable, classify as publisher verification.
+  if (SLIDER_CAPTCHA_RE.test(s)) {
+    return { status: STATUS.PUBLISHER_VERIFICATION_WAITING_USER, reason: "slider captcha — auto-attemptable" };
+  }
+
+  // 4. Generic publisher verification (CAPTCHA / Cloudflare / bot check).
   if (ROBOT_CHECK_RE.test(s)) {
     return { status: STATUS.PUBLISHER_VERIFICATION_WAITING_USER, reason: "publisher verification challenge" };
   }
 
-  // 4. Publisher access denied / forbidden / paywall block.
+  // 5. Publisher access denied / forbidden / paywall block.
   if (ACCESS_DENIED_RE.test(s)) {
     return { status: STATUS.PUBLISHER_BLOCKED_WAITING_USER, reason: "publisher access denied" };
   }
@@ -125,7 +142,8 @@ export function isUserHandoff(status) {
     status === STATUS.CARSI_RESOLVED_RETRY_NEEDED ||
     status === STATUS.PUBLISHER_VERIFICATION_WAITING_USER ||
     status === STATUS.SCIENCEDIRECT_ROBOT_CHECK ||
-    status === STATUS.RETRY_AFTER_USER_VERIFICATION
+    status === STATUS.RETRY_AFTER_USER_VERIFICATION ||
+    status === STATUS.VERIFICATION_AUTO_FAILED
   );
 }
 

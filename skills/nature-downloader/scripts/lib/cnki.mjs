@@ -10,6 +10,7 @@ import {
   waitForComplete,
 } from "./cdp-utils.mjs";
 import { fetchAnyToFile, fetchToFile } from "./pdf-utils.mjs";
+import { handleVerification } from "./anti-bot.mjs";
 
 export const DEFAULT_CNKI_URL = "https://kns.cnki.net/kns8s/defaultresult/index";
 
@@ -47,7 +48,12 @@ function classifyCnkiWall(url = "", title = "", body = "") {
   const wall = classifyWall(url, title, body);
   if (wall) return wall;
   const text = `${title} ${body}`;
-  if (/登录|统一身份认证|机构登录|校外访问|账号登录|扫码登录|验证码|安全验证|人机验证/.test(text)) {
+  // Slider/drag/puzzle CAPTCHA — auto-attemptable
+  if (/滑块|滑动验证|拖动滑块|拼图验证|请按住滑块|请拖动|slide to verify|drag the slider|slide verification|slider captcha/i.test(text)) {
+    return { status: STATUS.PUBLISHER_VERIFICATION_WAITING_USER, reason: "CNKI slider captcha — auto-attemptable" };
+  }
+  // Login/auth wall
+  if (/登录|统一身份认证|机构登录|校外访问|账号登录|扫码登录|验证码|安全验证|人机验证/i.test(text)) {
     return { status: STATUS.CARSI_WAITING_USER, reason: "CNKI or institutional login required" };
   }
   if (/没有权限|无权访问|未订购|未购买|余额不足|下载权限|未开通|403|forbidden/i.test(text)) {
@@ -162,7 +168,27 @@ export async function downloadCnkiTitle(proxy, title, outDir, { cnkiUrl = DEFAUL
 
     let snap = await pageSnapshot(proxy, tab);
     let wall = classifyCnkiWall(snap.url, snap.title, snap.body);
-    if (wall) return { title, status: wall.status, url: snap.url, reason: wall.reason };
+    if (wall) {
+      if (debug) process.stderr.write(`[debug][cnki] wall after search: ${wall.status} "${wall.reason}" — attempting auto-verification...\n`);
+      const vr = await handleVerification(proxy, tab, wall, { debug, maxAttempts: 2 });
+      if (vr.passed) {
+        if (debug) process.stderr.write(`[debug][cnki] auto-verification passed (${vr.method}), re-reading page...\n`);
+        await sleep(1500);
+        await waitForComplete(proxy, tab);
+        snap = await pageSnapshot(proxy, tab);
+        wall = classifyCnkiWall(snap.url, snap.title, snap.body);
+        if (wall) {
+          return { title, status: STATUS.VERIFICATION_AUTO_FAILED, url: snap.url, reason: `auto-verify failed (${vr.method}), still: ${wall.reason}` };
+        }
+      } else {
+        return {
+          title,
+          status: vr.attempted ? STATUS.VERIFICATION_AUTO_FAILED : wall.status,
+          url: snap.url,
+          reason: vr.attempted ? `automatic verification did not resolve: ${wall.reason}` : wall.reason,
+        };
+      }
+    }
 
     const hit = await findResultUrl(proxy, tab, title);
     if (!hit || !hit.href) {
@@ -175,7 +201,27 @@ export async function downloadCnkiTitle(proxy, title, outDir, { cnkiUrl = DEFAUL
     await sleep(1500);
     snap = await pageSnapshot(proxy, tab);
     wall = classifyCnkiWall(snap.url, snap.title, snap.body);
-    if (wall) return { title, status: wall.status, url: snap.url, reason: wall.reason };
+    if (wall) {
+      if (debug) process.stderr.write(`[debug][cnki] wall after detail nav: ${wall.status} "${wall.reason}" — attempting auto-verification...\n`);
+      const vr = await handleVerification(proxy, tab, wall, { debug, maxAttempts: 2 });
+      if (vr.passed) {
+        if (debug) process.stderr.write(`[debug][cnki] auto-verification passed (${vr.method}), re-reading page...\n`);
+        await sleep(1500);
+        await waitForComplete(proxy, tab);
+        snap = await pageSnapshot(proxy, tab);
+        wall = classifyCnkiWall(snap.url, snap.title, snap.body);
+        if (wall) {
+          return { title, status: STATUS.VERIFICATION_AUTO_FAILED, url: snap.url, reason: `auto-verify failed (${vr.method}), still: ${wall.reason}` };
+        }
+      } else {
+        return {
+          title,
+          status: vr.attempted ? STATUS.VERIFICATION_AUTO_FAILED : wall.status,
+          url: snap.url,
+          reason: vr.attempted ? `automatic verification did not resolve: ${wall.reason}` : wall.reason,
+        };
+      }
+    }
 
     const candidates = filterCnkiDownloadCandidates(await findDownloadCandidates(proxy, tab), format);
     if (!candidates.length) {

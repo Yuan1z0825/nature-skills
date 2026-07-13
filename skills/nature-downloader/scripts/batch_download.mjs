@@ -14,8 +14,9 @@
 //   options: [--proxy http://127.0.0.1:3456] [--debug] [--legacy-status]
 //
 // Boundaries: uses only the user's already-authenticated browser session.
-// Stops at jAccount / CARSI / CAPTCHA pages (reported as *_waiting_user), never
-// handles credentials. Main PDF only by default; --si also fetches supplements.
+// Stops at jAccount / CARSI pages and never handles credentials. For visible
+// verification widgets it makes a bounded attempt before reporting a handoff.
+// Main PDF only by default; --si also fetches supplements.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -34,6 +35,7 @@ import {
 } from "./lib/cdp-utils.mjs";
 import { classifyWall, STATUS, isSuccess, mapLegacyStatus } from "./lib/status-codes.mjs";
 import { fetchToFile, fetchAnyToFile } from "./lib/pdf-utils.mjs";
+import { handleVerification } from "./lib/anti-bot.mjs";
 import {
   DEFAULT_DISCOVERY_URL,
   discoveryUrlFromConfig,
@@ -172,7 +174,34 @@ async function downloadDoi(proxy, doi, outDir, wantSi, debug) {
   try {
     const info = await waitForComplete(proxy, tab);
     const wall = classifyWall(info.url || "", info.title || "");
-    if (wall) return { doi, status: wall.status, url: info.url, reason: wall.reason };
+    if (wall) {
+      // Attempt automatic verification before giving up.
+      if (debug) process.stderr.write(`[debug][doi] wall detected: ${wall.status} "${wall.reason}" — attempting auto-verification...\n`);
+      const verifyResult = await handleVerification(proxy, tab, wall, { debug, maxAttempts: 1 });
+      if (verifyResult.passed) {
+        if (debug) process.stderr.write(`[debug][doi] auto-verification passed (${verifyResult.method}), retrying...\n`);
+        // Verification passed — re-read the page state and continue the download loop.
+        const newInfo = await waitForComplete(proxy, tab);
+        const reWall = classifyWall(newInfo.url || "", newInfo.title || "");
+        if (!reWall) {
+          // Wall is gone, fall through to PDF candidate extraction below.
+          // We need to re-read meta candidates, so jump back to the metadata polling loop.
+          info.url = newInfo.url;
+          info.title = newInfo.title;
+          // Clear the title so waitForComplete re-reads it; fall through
+        } else {
+          // Still blocked after auto-verification — hand off to user.
+          return { doi, status: STATUS.VERIFICATION_AUTO_FAILED, url: info.url, reason: `auto-verify failed (${verifyResult.method || 'unknown'}), still: ${reWall.reason}` };
+        }
+      } else {
+        return {
+          doi,
+          status: verifyResult.attempted ? STATUS.VERIFICATION_AUTO_FAILED : wall.status,
+          url: info.url,
+          reason: verifyResult.attempted ? `automatic verification did not resolve: ${wall.reason}` : wall.reason,
+        };
+      }
+    }
     // poll: publisher landings often JS-redirect (e.g. linkinghub -> sciencedirect)
     // and inject citation_pdf_url late; re-read a few times before giving up.
     let meta = {};
@@ -191,7 +220,23 @@ async function downloadDoi(proxy, doi, outDir, wantSi, debug) {
         )) || "{}"
       );
       const w = classifyWall(meta.url || "", meta.title || "", meta.body || "");
-      if (w) return { doi, status: w.status, url: meta.url, reason: w.reason };
+      if (w) {
+        // Attempt auto-verification before giving up.
+        if (debug) process.stderr.write(`[debug][doi] meta-stage wall: ${w.status} "${w.reason}" — attempting auto-verification...\n`);
+        const vr = await handleVerification(proxy, tab, w, { debug, maxAttempts: 1 });
+        if (vr.passed) {
+          if (debug) process.stderr.write(`[debug][doi] auto-verification passed (${vr.method}), continuing...\n`);
+          // Wall is gone after verification, re-poll meta
+          await new Promise((r) => setTimeout(r, 1500));
+          continue;
+        }
+        return {
+          doi,
+          status: vr.attempted ? STATUS.VERIFICATION_AUTO_FAILED : w.status,
+          url: meta.url,
+          reason: vr.attempted ? `automatic verification did not resolve: ${w.reason}` : w.reason,
+        };
+      }
       if (meta.cand && meta.cand.length) break;
     }
     // Publisher quirk: Wiley's citation_pdf_url/epdf opens a viewer, not raw bytes.
