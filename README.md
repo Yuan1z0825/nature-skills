@@ -78,7 +78,7 @@
   * Email: [travisma2233@gmail.com](mailto:travisma2233@gmail.com)
   * Google Scholar: [Xin-Rui Ma](https://scholar.google.com/citations?user=CDydADoAAAAJ&hl=en)
   * ResearchGate: [Xin-Rui Ma](https://www.researchgate.net/profile/Xin-Rui-Ma?ev=hdr_xprf)
-* **胡彬**：本项目第三贡献者，现为上海交通大学农业与生物学院硕士研究生。
+* **胡彬**：项目第三贡献者，现为上海交通大学农业与生物学院硕士研究生，目前专注于Agentic agent和AI for science.
   * GitHub: [Flyme886](https://github.com/Flyme886)
   * Email: [mhoang12205@gmail.com](mailto:mhoang12205@gmail.com)
 
