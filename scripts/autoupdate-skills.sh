@@ -56,6 +56,13 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
+case "$THROTTLE" in
+  ''|*[!0-9]*)
+    echo "autoupdate-skills.sh: --throttle must be a non-negative integer" >&2
+    exit 2
+    ;;
+esac
+
 mkdir -p "$STATE_DIR" 2>/dev/null || true
 log() { printf '%s %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$*" >>"$LOG" 2>/dev/null; }
 
