@@ -75,3 +75,10 @@
 - `nature-statistics`：检查统计标注、n 定义和 p 值表述。
 - `nature-writing`：把图件结论放回手稿叙事。
 - `nature-paper2ppt`：把论文图件整理成汇报幻灯片。
+
+## 与其他技能的关系
+
+- 如果任务核心是统计解释、样本量定义或显著性表述，优先让 `nature-statistics` 先把文字审清，再回到 `nature-figure` 画图。
+- 如果图件已经定稿，但需要把结论组织成摘要、引言或结果段落，交给 `nature-writing` 继续承接。
+- 如果图件要直接转成组会材料或答辩汇报，再交给 `nature-paper2ppt` 组织成页面。
+- `nature-figure` 负责图件本身；它不替代统计审查，也不替代手稿叙事。

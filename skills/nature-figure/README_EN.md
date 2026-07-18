@@ -75,3 +75,10 @@ Start with a figure contract rather than a template:
 - `nature-statistics`: check statistical annotations, n definitions, and p-value wording.
 - `nature-writing`: align figure conclusions with manuscript narrative.
 - `nature-paper2ppt`: turn manuscript figures into presentation slides.
+
+## Relationship With Other Skills
+
+- If the core task is statistical interpretation, sample-size definition, or significance wording, let `nature-statistics` audit the text before returning to `nature-figure`.
+- If the figure is finished but the user needs the claim written into an abstract, introduction, or results section, hand off to `nature-writing`.
+- If the figure should become a lab meeting deck or presentation slide, hand off to `nature-paper2ppt`.
+- `nature-figure` is responsible for the figure itself; it does not replace statistical review or manuscript narration.
