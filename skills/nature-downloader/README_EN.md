@@ -4,6 +4,13 @@
 
 `nature-downloader` obtains paper full text, PDFs, HTML/XML full text, or auditable download status through publisher APIs, lawful open-access routes, CNKI, or the user's own institution-authorized access.
 
+## Workflow
+
+1. First identify the paper language, publisher, and whether supplementary information is needed.
+2. Prefer lawful publisher APIs when they are available; fall back to OA, repository, or institution-authorized access only when needed.
+3. Record the access path, failure reason, and reusable configuration so batch jobs remain auditable.
+4. Never bypass paywalls, DRM, CAPTCHAs, or two-factor verification, and never read or export browser cookies, passwords, localStorage, or session files.
+
 ## What To Use It For
 
 - Configure a school library, CARSI, EZproxy, WebVPN, or resource-portal entry point for first use.
