@@ -12,6 +12,7 @@ SKILLS_DIR = ROOT / "skills"
 TOP_READMES = (ROOT / "README.md", ROOT / "README_EN.md")
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 BADGES_RE = re.compile(r"<img[^>]+src=\"https://img\.shields\.io/badge/[^\"]+\"", re.I)
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 
 
 def fail(message: str) -> None:
@@ -28,6 +29,30 @@ def read(path: Path) -> str:
 
 def rel(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
+
+
+def github_anchor(heading: str) -> str:
+    """Return GitHub's generated Markdown heading anchor for README links."""
+    text = re.sub(r"<[^>]+>", "", heading).strip().lower()
+    text = re.sub(r"[`*_\\[\\]]", "", text)
+    text = re.sub(r"[^\w\s\-\u4e00-\u9fff]", "", text, flags=re.UNICODE)
+    return re.sub(r"\s", "-", text).strip("-")
+
+
+def collect_heading_anchors(text: str) -> set[str]:
+    anchors: set[str] = set()
+    counts: dict[str, int] = {}
+    for line in text.splitlines():
+        match = HEADING_RE.match(line)
+        if not match:
+            continue
+        anchor = github_anchor(match.group(2))
+        duplicate_index = counts.get(anchor, 0)
+        counts[anchor] = duplicate_index + 1
+        if duplicate_index:
+            anchor = f"{anchor}-{duplicate_index}"
+        anchors.add(anchor)
+    return anchors
 
 
 def skill_dirs() -> list[Path]:
@@ -50,14 +75,20 @@ def count_skill_index_rows(text: str) -> int:
 
 def validate_local_links(path: Path, text: str) -> None:
     """Ensure relative README links point at files committed in this checkout."""
+    anchors = collect_heading_anchors(text)
     for match in LINK_RE.finditer(text):
         target = match.group(1).strip()
         if (
             not target
-            or target.startswith(("http://", "https://", "mailto:", "#"))
+            or target.startswith(("http://", "https://", "mailto:"))
             or "<" in target
             or ">" in target
         ):
+            continue
+        if target.startswith("#"):
+            anchor = target[1:]
+            if anchor not in anchors:
+                fail(f"{rel(path)} has broken internal anchor: {match.group(1)}")
             continue
         target = target.split("#", 1)[0].split("?", 1)[0]
         if not target:
