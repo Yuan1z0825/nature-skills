@@ -1,0 +1,11 @@
+{
+  "last_pr_time": "2026-07-19T04:29:39Z",
+  "last_pr_unix": 1784435379,
+  "last_pr_url": "https://github.com/Yuan1z0825/nature-skills/pull/172",
+  "last_branch": "ci/manual-repository-validation-dispatch",
+  "next_interval_minutes": 7.25,
+  "next_interval_seconds": 435,
+  "next_eligible_unix": 1784435814,
+  "strong_pr_count_target": 10,
+  "repo": "Yuan1z0825/nature-skills"
+}
