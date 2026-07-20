@@ -3,7 +3,7 @@
 
 Usage: python3 scripts/build_proposal_docx.py <input.md> [output.docx]
 
-Formatting standard (JL's academic proposals):
+Formatting standard for academic proposals:
 - Title: centered, Times New Roman + 宋体, 18pt bold
 - Headings: Times New Roman + 宋体, 16/14/12pt bold, black
 - Body: Times New Roman + 宋体, 12pt, 1.5 line spacing, NO first-line indent

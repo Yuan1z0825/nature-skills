@@ -1,10 +1,9 @@
 name: researchwrite
-version: 1.0.0
+version: 1.1.0
 description: >
   Declarative manifest for the proposal-first scientific writing pipeline. The
-  public skill uses a compact state-machine description and loads foundation
-  templates, rubrics, and validation references only for the selected compose,
-  revise, hybrid, or QA workflow.
+  skill uses a compact state-machine description and loads its complete set of
+  workflow, review, export, and validation references only when they are needed.
 
 # Design note: the installed skill name is researchwrite although the directory
 # is nature-proposal-writer. Keep this manifest aligned with the SKILL.md
@@ -34,14 +33,46 @@ templates:
 
 references:
   on_demand:
+    - condition: composing a proposal from a topic, direction, or rough idea
+      path: references/compose-mode.md
+    - condition: revising an existing paragraph, section, chapter, or complete proposal
+      path: references/revise-mode.md
+    - condition: preserving an existing draft while composing missing or expanded modules
+      path: references/hybrid-mode.md
     - condition: scoring a draft or proposal with the 8-dimension rubric
       path: references/evaluation-rubric.md
+    - condition: removing generic, inflated, or template-like language from a Chinese proposal
+      path: references/research-anti-slop.md
+    - condition: drafting or revising a Chinese review article with scientific section titles and evidence-led synthesis
+      path: references/chinese-review-writing-style.md
     - condition: deciding whether to continue, stop, split scope, or request more evidence
       path: references/stopping-rules.md
+    - condition: dispatching one or more dynamic specialists for scientific content review
+      path: references/professor-dispatch.md
     - condition: creating or repairing the five foundation files before drafting
       path: references/foundation-files.md
+    - condition: initializing the project directory or reading and updating state.json
+      path: references/project-structure.md
+    - condition: exporting and archiving Markdown and DOCX deliverables
+      path: references/export-archive.md
+    - condition: drafting only an approved stage or subsection while preventing scope creep
+      path: references/partial-proposal-scope.md
+    - condition: inserting or deleting citations that require reference-number cascade updates
+      path: references/ref-renumbering-cascade.md
+    - condition: designing the question chain, evidence structure, and section architecture of a review paper
+      path: references/review-paper-framework.md
+    - condition: building critical comparison and evidence-weighted synthesis into a review paper
+      path: references/review-critique-methodology.md
     - condition: validating claims, citations, numbering, method reproducibility, or project completeness
       path: references/validation-checklist.md
+    - condition: handing a targeted revision task to another agent with constraints and acceptance criteria
+      path: references/gpt-handoff-revision-brief.md
+    - condition: extending text within an already approved proposal without changing its scientific commitments
+      path: references/within-approved-proposal.md
+    - condition: consulting a completed materials-science example for the expected depth of foundation files
+      path: references/worked-example-quaternary-proposal.md
+    - condition: evidence is insufficient for a high-commitment proposal and claims must be deliberately narrowed
+      path: references/降承诺提案模式.md
 
 scripts:
   on_demand:

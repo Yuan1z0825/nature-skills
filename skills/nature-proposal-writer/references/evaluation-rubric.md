@@ -2,6 +2,13 @@
 
 Score each dimension 0-10. Anchors below are for Chinese doctoral proposals in materials/chemistry/engineering domains.
 
+## Contents
+
+- [Dimensions 1-4: Problem, tension, evidence, and logic](#1-研究问题清晰度--does-the-text-clearly-state-the-problem)
+- [Dimensions 5-8: Feasibility, novelty, risk, and language](#5-方法可行性--concrete-enough-to-reproduce-or-challenge)
+- [Scoring procedure](#scoring-procedure)
+- [Thresholds](#thresholds)
+
 ## 1. 研究问题清晰度 — Does the text clearly state the problem?
 
 | Score | Anchor |
@@ -20,7 +27,7 @@ Score each dimension 0-10. Anchors below are for Chinese doctoral proposals in m
 | 3 | Literature listed without synthesis; no gap articulated. |
 | 5 | Gap stated but not motivated — "few studies have..." without explaining why that matters. |
 | 7 | Gap clearly stated with partial motivation; the consequence of filling the gap is implied but not explicit. |
-| 9 | Gap is a genuine contradiction or engineering constraint (e.g., "lowering melting point with ZnCl2 breaks the existing Mg purification path"). Reader feels the tension. |
+| 9 | Gap is a genuine contradiction or engineering constraint (e.g., improving one target property invalidates the established control route). Reader can see why the tension matters. |
 
 ## 3. 证据匹配 — Claims backed, hypotheses flagged
 
@@ -59,7 +66,7 @@ Score each dimension 0-10. Anchors below are for Chinese doctoral proposals in m
 |---|---|
 | 3 | "First study of..." with no explanation of why being first matters. Innovation as label, not argument. |
 | 5 | Contribution direction stated but vague — "systematic study" without specifying what new knowledge is expected. |
-| 7 | Contribution is specific and motivated (e.g., "establishing whether Zn/ZnO can replace Mg as purifier in a quaternary chloride system"). Innovation is implicit in the argument chain rather than listed as bullet points. |
+| 7 | Contribution is specific and motivated (e.g., "establishing whether treatment A can replace treatment B under the target operating conditions"). Innovation is implicit in the argument chain rather than listed as bullet points. |
 | 9 | Contribution is explicit, specific, and novel enough that a reviewer can immediately place it relative to the literature. |
 
 ## 7. 风险边界 — Uncertainty, alternatives, and limitations acknowledged
