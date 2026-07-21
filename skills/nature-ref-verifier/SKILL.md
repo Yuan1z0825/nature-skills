@@ -38,6 +38,8 @@ description: >-
 
 ### Step 2: 多源并行查询
 
+**Step 2.0（最便宜、最先做）：DOI 可解析性检查。** 对每条有 DOI 的文献先请求 `https://api.crossref.org/works/<DOI>`：404 → DOI 本身错误（高度疑似错号）；200 → 比对返回记录的标题/作者/卷期页与条目，不一致即"DOI 张冠李戴"。单次请求即可发现实践中最常见的一类错误（一次 35 条核查中 7/9 的错误属于此类）。
+
 对每条文献，并行查询以下来源（可用哪些取决于环境配置）：
 
 | 来源 | 适用文献 | 典型覆盖率 |
@@ -50,6 +52,8 @@ description: >-
 
 **查询策略：** 优先用 DOI 查 Crossref，失败后降级用标题+作者搜 Web。
 
+**批量策略：** 超过 20 条时按 10–15 条一组拆给并行子代理，每组独立查询后汇总——35 条规模实测 3 个并行子代理即可在一次往返内完成，串行会慢一个数量级。
+
 ### Step 3: 字段级对比
 
 对每条文献执行以下对比矩阵，按严重程度分为三级：
@@ -59,15 +63,19 @@ description: >-
 | 检查项 | 说明 | 典型案例 |
 |--------|------|---------|
 | 作者**姓名/顺序**不一致 | 第一作者不同、顺序颠倒、完全编造 | Smogavec→Leckebusch、Vainikainen→Mikhnev |
+| 作者**漏人** | 条目作者数少于出版方记录（常见于 5+ 作者文献只录前 3-4 人） | TGRS 2019 PCA 文漏第 5 作者 Ge；TAES 2021 UAV 文漏第 5 作者 Kim |
 | **页码**差异 ≥5 | 页码完全不匹配 | Noon: 1309-1319→1444-1449 |
+| **文章号字母误判** | 文章号含字母被写成形近数字（T/7、l/1、O/0） | SPIE 101880T 误作 1018807 |
 | **标题核心词**不一致 | 非大小写/标点差异 | Iwasaki T→Wu K H、Zhang W→Zhu M H |
 | DOI 指向不同论文 | DOI 存在但标题/作者不对应 | Abidi 1995: 10.1109/4.482157→10.1109/4.482187 |
+| DOI 张冠李戴 | DOI 可解析但解析到**另一篇**论文（比对标题作者即可发现） | JAG 2017 SVD 文 DOI 指向同卷 ERT 论文；AST 2022 旋翼文 DOI 指向涡轮噪声论文 |
 
 #### 🟡 Warning（建议核对）
 
 | 检查项 | 说明 | 典型案例 |
 |--------|------|---------|
 | **卷年** ≠ DOI 年 | 卷归属年份与 DOI 编号年不一致 | Dadrass 卷2025/上线2024、Ni 卷2022/DOI含2020 |
+| **Early Access 元数据漂移** | IEEE 等期刊 Early Access 转正式出版后卷/期/页/年会变化，**以 CrossRef 现值为准** | TGRS autoencoder 文 59(12):10437-10449,2021 → 60:1-13,2022 |
 | 作者**中间名缺失/多余** | "Rabiner L" vs "Rabiner L R" | 一般不影响检索 |
 | **期号**缺失 | 脚本有卷无期 | Smogavec 2025: 17→17(10) |
 | 页码偏差 ≤4 | 细微差异 | Leckebusch 15-24→15-25 |
@@ -119,7 +127,13 @@ description: >-
 
 **BibTeX Patch：** 直接生成修正后的 `.bib` 文件内容。
 
-**Zotero 更新指令：** 生成可执行的 `zotero-cli edit` 命令列表，用于批量修正 Zotero 库。
+**Zotero 更新指令：** 生成修正指令列表，用于批量修正 Zotero 库。注意写入路径的限制（2026 年实测）：
+
+- **Zotero 7 本地 HTTP API（localhost:23119）只读**——写操作返回 501，zotero-mcp 类集成不稳定多源于此层包装或 Zotero 繁忙，直连 curl 加 `--max-time` 探测即可判断；
+- **批量写入首选 pyzotero Web 模式**（需 userID + API key，全功能 CRUD，自带 429 退避）；
+- 无 key 时可用本地 `/connector/saveItems` 端点**新增**条目（不能改已有条目）；
+- 直接改 `zotero.sqlite` 仅在 Zotero 关闭后可行，且需手工维护多表关联与版本号，**仅作最后手段**；
+- 修正前先确认条目在库：按标题检索为空则说明 bib 另有来源（如文献管理 CSV），Zotero 侧无需修正。
 
 ## 多来源交叉验证策略
 
@@ -171,7 +185,8 @@ description: >-
 
 以下工具为可选，有则启用、无则降级：
 
-- `zotero-cli` / `zotero-mcp`：Zotero 库读写
+- `pyzotero[cli]`：推荐的 Zotero 读写通道（本地只读 + Web 读写双模式，CLI 可直接被 agent 以 Bash 调用，无常驻进程）
+- `zotero-cli` / `zotero-mcp`：Zotero 库读写（本地包装层，实测稳定性较差）
 - `kimi-datasource`（scholar）：学术搜索
 - `kimi-webbridge`：带登录态的 CNKI 查询
 - 基础 WebSearch / FetchURL：通用兜底
