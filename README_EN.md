@@ -420,16 +420,36 @@ If the skill needs shared files, install skills/nature-shared as well.
 Key rule: keep the full directory structure. Many skills depend on
 `references/`, `static/`, `manifest.yaml`, scripts, assets, or shared files.
 
-The installer does not install Python dependencies automatically. Install them
-only when you need the corresponding scripts or MCP services:
+By default, the installer only syncs skill files; it does not use the network or
+modify an existing Python environment. When you need the corresponding scripts
+or MCP services, explicitly install all declared Python dependencies into an
+isolated virtual environment:
 
 ```bash
-python -m pip install -r skills/nature-paper-to-patent/requirements.txt
-python -m pip install -r skills/nature-paper-to-patent/scripts/disclosure/requirements-cnipa.txt  # optional CNIPA published-patent search
-python -m pip install -r skills/nature-academic-search/mcp-server/requirements.txt
+scripts/update-codex-skills.sh --with-python-deps
+scripts/update-codex-skills.sh --check --check-deps
 ```
 
-If you enable `nature-paper-to-patent` CNIPA published-patent search, also run `python -m playwright install chromium`.
+The default virtual environment is
+`${XDG_DATA_HOME:-$HOME/.local/share}/nature-skills/venv`. Override it with
+`--venv /path` or `NATURE_SKILLS_VENV=/path`, and select the Python used to
+create it with `--python /path/to/python`. After a successful install, the venv
+gets a startup hook that points Matplotlib at a sandbox-writable temporary cache
+only when the user has not set `MPLCONFIGDIR`. This avoids repeated font-cache
+warnings without overriding an explicit user choice. The venv and Python paths
+are then recorded in `.nature-skills-python-runtime` under the Codex skills
+directory.
+
+CNIPA published-patent search additionally downloads Playwright Chromium. This
+larger dependency remains a separate opt-in:
+
+```bash
+scripts/update-codex-skills.sh --with-cnipa-browser
+```
+
+A dependency failure makes the installer exit non-zero instead of reporting an
+incomplete runtime as successful. Default installation and auto-update never
+install these dependencies silently.
 
 `nature-academic-search` also requires `PUBMED_EMAIL`. Optional Scopus,
 ScienceDirect, and other provider credentials should be configured locally and
