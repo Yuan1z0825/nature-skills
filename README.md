@@ -361,15 +361,22 @@ https://github.com/Yuan1z0825/nature-skills.git
 
 关键规则：保留完整目录结构。请复制或引用整个技能文件夹，而不是只复制 `SKILL.md`，因为许多技能依赖 `references/`、`static/`、`manifest.yaml`、脚本、资产或共享文件。
 
-安装脚本不会自动安装 Python 依赖。需要使用相关脚本或 MCP 服务时，再按需安装：
+默认安装只同步技能文件，不联网或改动现有 Python 环境。需要相关脚本或 MCP 服务时，可显式要求安装器把仓库中声明的 Python 依赖安装到独立虚拟环境：
 
 ```bash
-python -m pip install -r skills/nature-paper-to-patent/requirements.txt
-python -m pip install -r skills/nature-paper-to-patent/scripts/disclosure/requirements-cnipa.txt  # 可选：国知局公布公告检索
-python -m pip install -r skills/nature-academic-search/mcp-server/requirements.txt
+scripts/update-codex-skills.sh --with-python-deps
+scripts/update-codex-skills.sh --check --check-deps
 ```
 
-如果启用 `nature-paper-to-patent` 的国知局公布公告检索，还需要执行 `python -m playwright install chromium`。
+默认虚拟环境位于 `${XDG_DATA_HOME:-$HOME/.local/share}/nature-skills/venv`；可用 `--venv /path` 或 `NATURE_SKILLS_VENV=/path` 覆盖，并可用 `--python /path/to/python` 选择创建环境的解释器。安装器还会为该专用环境配置启动钩子：仅在用户没有设置 `MPLCONFIGDIR` 时，把 Matplotlib 缓存指向沙箱可写的临时目录，避免重复字体缓存警告。安装成功后，虚拟环境及其 Python 路径会记录在 Codex skills 目录下的 `.nature-skills-python-runtime`。
+
+国知局公布公告检索需要额外下载 Playwright Chromium，体积较大，因此保持单独启用：
+
+```bash
+scripts/update-codex-skills.sh --with-cnipa-browser
+```
+
+依赖安装失败会使脚本返回非零状态，不会把不完整的运行环境报告为成功。默认安装和自动更新不会静默安装这些依赖。
 
 `nature-academic-search` 的 MCP 服务还需要单独配置 `PUBMED_EMAIL`，Scopus / ScienceDirect 等可选 provider 需要使用本机凭据配置，不要把 API key 写入仓库文件。
 
