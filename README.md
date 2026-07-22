@@ -70,11 +70,8 @@
       <a href="https://apiciyuan.top/">https://apiciyuan.top/</a>
     </td>
     <td align="center" width="32%">
-      <img src="assets/nature-ai-wechat.jpg" alt="Nature AI 客服 WeChat 二维码" width="280">
-      <br>
-      <strong>微信客服</strong>
-      <br>
-      <sub>扫码添加</sub>
+     <img width="1264" height="2640" alt="微信图片_20260722195146_331_1" src="https://github.com/user-attachments/assets/0832d583-363a-486d-9030-42d7432a74b8" />
+      微信客服扫码添加
     </td>
   </tr>
 </table>
