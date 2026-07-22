@@ -254,7 +254,9 @@ def generate_svg(
 
     grid = []
     for tick in nice_y_ticks(max_y):
-        y = y_for(min(tick, max_y))
+        if tick > max_y:
+            continue
+        y = y_for(tick)
         grid.append(f'<line x1="{left}" y1="{y:.1f}" x2="{width - right}" y2="{y:.1f}" stroke="#e5e7eb" stroke-width="1"/>')
         grid.append(f'<text x="{left - 12}" y="{y + 4:.1f}" text-anchor="end" font-size="12" fill="#6b7280">{tick:,}</text>')
 
