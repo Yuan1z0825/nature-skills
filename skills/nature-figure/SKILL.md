@@ -19,7 +19,7 @@ Follow these steps every time the skill is invoked.
 
 ### 0. Check for the OpenRouter AI-schematic route
 
-If the user explicitly asks to generate a manuscript schematic, graphical abstract, mechanism diagram, concept illustration, or paper schematic with OpenRouter, GPT Image 2, an image-generation API, or similar wording, do **not** ask "Python or R?". This is a non-plotting AI-schematic route.
+If the user explicitly asks to generate a manuscript schematic, graphical abstract, mechanism diagram, concept illustration, or paper schematic with OpenRouter, GPT Image 2, the MiniMax image_generation API (image-01 / image-01-live), an image-generation API, or similar wording, do **not** ask "Python or R?". This is a non-plotting AI-schematic route.
 
 For this route:
 
@@ -28,7 +28,9 @@ For this route:
 3. Use [scripts/generate_openrouter_schematic.py](scripts/generate_openrouter_schematic.py) when the user wants a real API call or a reproducible payload.
 4. Treat output as a draft schematic / graphical abstract, not as a quantitative data panel. Do not invent experimental values, author logos, institutional marks, or unsupported mechanisms.
 
-Only continue to the Python/R backend gate for plotting, charting, data visualization, or manuscript figure assembly tasks that are not explicit OpenRouter AI image-generation requests.
+If the user instead asks for the MiniMax image_generation API (image-01 / image-01-live, global `api.minimax.io` or China `api.minimaxi.com` endpoint), follow the same non-plotting route but read [references/minimax-image-generation.md](references/minimax-image-generation.md) and use [scripts/generate_minimax_schematic.py](scripts/generate_minimax_schematic.py).
+
+Only continue to the Python/R backend gate for plotting, charting, data visualization, or manuscript figure assembly tasks that are not explicit AI image-generation requests.
 
 ### 1. Load the manifest and the core layer
 

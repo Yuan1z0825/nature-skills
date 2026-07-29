@@ -23,6 +23,17 @@ routes:
       image draft through an external image API rather than plotting data.
     reference: references/openrouter-image-generation.md
     script: scripts/generate_openrouter_schematic.py
+  minimax_image_generation:
+    detect: |
+      Use this route only when the user explicitly asks for the MiniMax
+      image_generation API, image-01 / image-01-live, AI-generated paper
+      schematics, graphical abstracts, concept illustrations, or mechanism
+      diagrams through that route. It skips the Python/R backend gate because it
+      generates a raster image draft through an external image API rather than
+      plotting data. Choose the global (api.minimax.io) or China
+      (api.minimaxi.com) endpoint to match the account.
+    reference: references/minimax-image-generation.md
+    script: scripts/generate_minimax_schematic.py
 
 preference:
   backend_script: scripts/nature_figure_backend.py
@@ -75,6 +86,8 @@ references:
       path: references/nature-2026-observations.md
     - condition: "OpenRouter/GPT Image 2 route: AI-generated graphical abstracts, mechanism diagrams, paper schematics, or concept illustrations"
       path: references/openrouter-image-generation.md
+    - condition: "MiniMax image_generation route (image-01 / image-01-live, global or China endpoint): AI-generated graphical abstracts, mechanism diagrams, paper schematics, or concept illustrations"
+      path: references/minimax-image-generation.md
     - condition: writing or auditing figure/table legend text — Fig. N | title, panel style, stats in legend, Source Data boilerplate, attribution
       path: references/figure-legend-conventions.md
     - condition: "end-to-end walkthroughs: bars, trends, heatmaps"
