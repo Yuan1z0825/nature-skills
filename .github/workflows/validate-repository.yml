@@ -12,6 +12,8 @@ on:
       - 'scripts/validate-skill-index.py'
       - 'scripts/validate-skill-metadata.py'
       - 'scripts/update-reference-tocs.py'
+      - 'scripts/generate-star-history.py'
+      - 'scripts/tests/test_generate_star_history.py'
       - '.github/workflows/validate-repository.yml'
   push:
     branches:
@@ -26,6 +28,8 @@ on:
       - 'scripts/validate-skill-index.py'
       - 'scripts/validate-skill-metadata.py'
       - 'scripts/update-reference-tocs.py'
+      - 'scripts/generate-star-history.py'
+      - 'scripts/tests/test_generate_star_history.py'
       - '.github/workflows/validate-repository.yml'
 
 permissions:
@@ -45,6 +49,9 @@ jobs:
 
       - name: Run repository validation
         run: python3 scripts/validate-repository.py
+
+      - name: Test star history rendering
+        run: python3 -m unittest scripts/tests/test_generate_star_history.py
 
       - name: Verify reference navigation is current
         run: |

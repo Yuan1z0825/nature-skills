@@ -216,6 +216,43 @@ def month_ticks(start: dt.date, end: dt.date, limit: int = 8) -> list[dt.date]:
     return ticks
 
 
+def x_axis_ticks(
+    start: dt.date,
+    end: dt.date,
+    plot_width: float,
+    limit: int = 8,
+    min_end_gap_px: float = 96,
+) -> list[dt.date]:
+    """Return date ticks with enough room for the exact end-date label."""
+    ticks = month_ticks(start, end, limit)
+    if len(ticks) < 2 or ticks[-1] != end:
+        return ticks
+
+    span_days = max((end - start).days, 1)
+    end_gap_px = ((end - ticks[-2]).days / span_days) * plot_width
+    if end_gap_px < min_end_gap_px:
+        del ticks[-2]
+    return ticks
+
+
+def star_polygon_points(
+    cx: float,
+    cy: float,
+    outer_radius: float = 14,
+    inner_radius: float = 6.4,
+) -> str:
+    """Return the ten alternating vertices of a five-point star."""
+    vertices = []
+    for index in range(10):
+        radius = outer_radius if index % 2 == 0 else inner_radius
+        angle = -math.pi / 2 + index * math.pi / 5
+        vertices.append(
+            f"{cx + radius * math.cos(angle):.1f},"
+            f"{cy + radius * math.sin(angle):.1f}"
+        )
+    return " ".join(vertices)
+
+
 def generate_svg(
     repo: str,
     points: list[tuple[dt.date, int]],
@@ -260,11 +297,12 @@ def generate_svg(
         grid.append(f'<line x1="{left}" y1="{y:.1f}" x2="{width - right}" y2="{y:.1f}" stroke="#e5e7eb" stroke-width="1"/>')
         grid.append(f'<text x="{left - 12}" y="{y + 4:.1f}" text-anchor="end" font-size="12" fill="#6b7280">{tick:,}</text>')
 
-    for tick in month_ticks(start, end):
+    for tick in x_axis_ticks(start, end, plot_width):
         x = x_for(tick)
         label = tick.strftime("%Y-%m") if tick.day == 1 else tick.strftime("%Y-%m-%d")
+        text_anchor = "end" if tick == end else "middle"
         grid.append(f'<line x1="{x:.1f}" y1="{top}" x2="{x:.1f}" y2="{top + plot_height}" stroke="#f3f4f6" stroke-width="1"/>')
-        grid.append(f'<text x="{x:.1f}" y="{height - 38}" text-anchor="middle" font-size="12" fill="#6b7280">{html.escape(label)}</text>')
+        grid.append(f'<text x="{x:.1f}" y="{height - 38}" text-anchor="{text_anchor}" font-size="12" fill="#6b7280">{html.escape(label)}</text>')
 
     generated_at = generated_at or dt.datetime.now(dt.timezone.utc)
     updated = generated_at.strftime("%Y-%m-%d %H:%M UTC")
@@ -284,8 +322,8 @@ def generate_svg(
     <line x1="{left}" y1="{top + plot_height}" x2="{width - right}" y2="{top + plot_height}" stroke="#d1d5db" stroke-width="1.2"/>
     <polygon points="{area_points}" fill="#38bdf8" opacity="0.16"/>
     <polyline points="{line_points}" fill="none" stroke="#0284c7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="{x_for(end):.1f}" cy="{y_for(total):.1f}" r="4.5" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
-    <text x="{width - right}" y="{y_for(total) - 10:.1f}" text-anchor="end" font-size="13" font-weight="700" fill="#0369a1">{total_text} stars</text>
+    <polygon data-marker="latest-star-count" points="{star_polygon_points(x_for(end), y_for(total))}" fill="#dc2626" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+    <text x="{width - right}" y="{y_for(total) - 22:.1f}" text-anchor="end" font-size="13" font-weight="700" fill="#0369a1">{total_text} stars</text>
     <text x="{left}" y="{height - 16}" font-size="12" fill="#9ca3af">Source: GitHub stargazers API · Static snapshot to avoid third-party chart timeouts</text>
   </g>
 </svg>
