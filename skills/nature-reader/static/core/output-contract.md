@@ -18,6 +18,7 @@ Before final response, verify:
 - every image/table link used in `paper.md` exists under `assets/`
 - every figure/table in `assets/` has a corresponding Markdown block and source pointer
 - display equations render inside `$$...$$` (or a fenced `math` block), and inline equations render inside `$...$`
+- mathematical content is unchanged across the bilingual explanation: only prose is translated, each display equation is shown once, and Chinese text never uses `(I_0)`-style pseudo-math
 - no bare LaTeX commands such as `\\frac`, `\\sum`, or `\\begin{...}` appear as ordinary prose
 - every display equation has an `E...` anchor and a matching equation entry in `source_map.json`
 - every low-confidence or image-only equation points to an existing file under `assets/equations/`
