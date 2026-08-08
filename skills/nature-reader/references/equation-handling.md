@@ -30,6 +30,27 @@ Do not put formulas in ordinary backticks or generic code fences. Do not leave c
 
 Keep the publisher's printed equation number outside the math delimiters so the renderer cannot swallow or reposition it.
 
+## Bilingual formula preservation
+
+Do not translate mathematical content. Preserve formulas, symbols, indices, operators, Greek letters, and units exactly as they appear in the verified source. Translate only prose that introduces, defines, or interprets them.
+
+For a display equation, emit one shared `E...` block. Do not repeat or rewrite the equation under `**中文:**`:
+
+```markdown
+**Original:** The peak intensity is
+
+<a id="E001"></a>
+**Source:** p.6 E001
+
+$$
+I_0=\frac{4E_0}{\pi w_0^2\tau}\sqrt{\frac{\ln(2)}{\pi}}
+$$
+
+**中文:** 峰值强度由上方原式给出。其中 $I_0$ 为峰值强度，$E_0$ 为脉冲能量，$w_0$ 为焦斑半径，$\tau$ 为脉宽。
+```
+
+Forbidden forms include `(I_0)`, `(E_0=...)`, `(tau)`, `(Delta T)`, translated variable names, Unicode approximations that change the source notation, and bare LaTeX outside math delimiters. Ordinary parentheses remain valid for prose labels such as `Fig. 2(a)`; they must not be used as a substitute for `$...$`.
+
 ## Display-equation block
 
 Assign every display equation a stable `E...` ID in reading order:
