@@ -39,6 +39,9 @@ If the input is partial, run a bounded audit and state which parts cannot be ass
 4. **Map claims to analyses.** For each result claim, record the comparison/model, test family, assumptions, correction strategy, effect estimate, uncertainty, and exact p-value policy.
 5. **Check common failure modes.** Use `references/common-failure-modes.md` when the text involves nested data, many comparisons, cell-level measurements, interaction claims, correlations, regression, outliers, small samples, or significance-only reasoning.
 6. **Check reporting completeness.** Use `references/statistical-reporting.md` to verify that Methods and Results give enough information for readers and reviewers to understand the analysis.
+   If the target is the flagship journal Nature, also use
+   `references/nature-article-requirements.md` for its exact tail, `n`, repeat,
+   P-value, test-statistic and degrees-of-freedom requirements.
 7. **Align figure statistics.** Use `references/figure-statistics.md` when figure legends, panel labels, stars, error bars, box plots, violin plots, source data, or supplementary figure notes are involved.
 8. **Draft or revise.** Produce conservative, ready-to-paste text. Keep claims within the supplied design and evidence. Do not upgrade statistical association into mechanism or causality.
 9. **Run final QA.** Use `references/reviewer-checklist.md` before final delivery for severity labels, unresolved author questions, and reviewer-facing risk.
@@ -98,6 +101,7 @@ Reporting notes
 | File | Open when |
 |---|---|
 | [references/source-basis.md](references/source-basis.md) | You need the source hierarchy or want to justify why the skill emphasizes transparency, reproducibility, and design reporting |
+| [references/nature-article-requirements.md](references/nature-article-requirements.md) | The target is the flagship journal Nature or the user requests its exact statistical submission checklist |
 | [references/statistical-reporting.md](references/statistical-reporting.md) | You are drafting or auditing Statistical analysis, Methods, Results, or Supplementary Methods text |
 | [references/common-failure-modes.md](references/common-failure-modes.md) | You see nested measurements, many comparisons, interaction claims, correlation/regression, outliers, tiny samples, or overstrong p-value language |
 | [references/figure-statistics.md](references/figure-statistics.md) | You are checking figure legends, panel statistics, error bars, stars, box/violin plots, source-data notes, or graphical reporting |

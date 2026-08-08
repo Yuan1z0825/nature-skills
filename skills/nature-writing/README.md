@@ -13,6 +13,7 @@
 - 对 Results 或 Discussion 做章节级重排，而不是只做句子润色。
 - 准备首次投稿 cover letter、title page、highlights、作者贡献、数据/代码可用性和其他声明。
 - 整理推荐审稿人、投稿材料矩阵和提交前完整性检查。
+- 对旗舰 `Nature Article` 执行分阶段官网清单：初投稿文件、标题/字数/display 限制、Extended Data、SI、Reporting Summary、伦理和专项材料。
 
 ## 典型请求
 

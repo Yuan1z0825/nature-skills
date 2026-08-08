@@ -74,6 +74,10 @@ Data Availability is not a substitute for code, materials, or protocol availabil
   persistent identifiers where available and state distribution restrictions separately.
 - For protocols, cite protocol repositories or include enough method detail for reproducibility.
 
+For a flagship Nature Article, load `nature-article-requirements.md` and apply
+its separate Data Availability/Code Availability placement, mandatory-deposition
+and reviewer-access gates.
+
 ## Sensitive and human-participant data
 
 For sensitive data, preserve transparency without breaching consent or law.

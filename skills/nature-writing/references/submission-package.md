@@ -19,7 +19,8 @@ Use this reference for first-submission materials before peer review. Journal in
 
 Collect or mark as missing:
 
-- Target journal, article type, manuscript title, short title, abstract, and keywords.
+- Target journal, article type, submission stage, manuscript title, short title,
+  abstract, and keywords.
 - Author names, order, affiliations, corresponding-author details, email, and ORCID.
 - One-sentence claim, strongest evidence, novelty boundary, significance, and journal fit.
 - Funding identifiers, acknowledgements, conflicts, ethics approvals, consent, and permissions.
@@ -73,6 +74,8 @@ Sincerely,
 
 Rules:
 
+- First classify the cover letter as required, optional, or not accepted. Do not
+  infer that every journal requires one.
 - Usually 250-400 words unless the journal specifies otherwise.
 - Do not repeat the abstract.
 - Do not use unsupported priority claims such as "the first" or "unprecedented".
@@ -125,6 +128,7 @@ Prepare separate, fact-grounded blocks as applicable:
 - Preprint and related-manuscript disclosure.
 - Originality and all-author approval.
 - Third-party permissions.
+- AI/LLM use disclosure when required by the journal and applicable to the work.
 
 Never convert "available on request" into a public repository claim. Never invent contribution roles, grant numbers, approval IDs, accession numbers, or licenses.
 
@@ -152,10 +156,14 @@ Check:
 - Title, abstract, keywords, declarations, repository links, and manuscript metadata are consistent.
 - Anonymous and identified files are separated correctly.
 - Figures, tables, supplements, permissions, and checklists are present and cited.
+- Initial-submission and accepted-in-principle requirements have not been
+  conflated.
 - Data/code statements point to real destinations and access conditions.
 - Cover letter matches the manuscript's actual claims and does not overstate novelty.
 - Suggested reviewers pass conflict checks.
 - Required placeholders are resolved.
+- Related manuscripts that the journal requires for assessment are attached as
+  clearly marked separate files, not only named in the cover letter.
 
 Readiness:
 

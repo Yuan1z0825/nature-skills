@@ -30,7 +30,10 @@ For each axis in the manifest, decide the value using the manifest's `detect:` h
 - `paper_type` — research / methods / hypothesis / algorithmic / review. Default: research.
 - `section` — abstract / intro / related-work / method / experiments / discussion / conclusion / title. May be multiple. Ask the user if it is ambiguous and matters for the draft.
 - `language` — en or zh-to-en. Detect from the user's notes themselves.
-- `journal` — nature / nat-comms / generic. Default: generic. If the user names a Nature subjournal, treat it as `nature`.
+- `journal` — nature / nature-family / nat-comms / generic. Default: generic.
+  Use `nature` only for the flagship journal Nature, `nat-comms` for Nature
+  Communications, and `nature-family` for other Nature Portfolio titles or an
+  unspecified Nature-family request.
 
 State the detected axis values in one short line to the user before drafting, so they can correct you cheaply.
 
@@ -67,6 +70,10 @@ The files under `references/` are deep references and the example library, not d
 - The user asks "does this paragraph flow?" → `references/paragraph-flow.md`.
 - The user asks for a self-review or rejection-risk audit → `references/paper-review.md`.
 - The user requests a complete first-submission package, templates, or a submission-readiness audit → `references/submission-package.md`.
+- The target is the flagship journal Nature and exact submission or formatting
+  requirements matter → `../nature-shared/journal-formats/nature.md`.
+- The work involves regulated or specialist research compliance →
+  `../nature-shared/core/research-compliance.md`.
 
 ## Submission boundary
 

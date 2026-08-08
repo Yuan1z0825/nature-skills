@@ -11,6 +11,7 @@
 - Map every dataset supporting a conclusion to a repository, accession, DOI, license, or access condition.
 - Distinguish public data, controlled-access data, third-party data, supplementary-data cases, and not-applicable cases.
 - Turn Chinese author notes into submission-ready English and list facts that still need confirmation.
+- Check flagship `Nature Article` statement placement, mandatory repositories, reviewer access, central code, materials, and structure-data files.
 
 ## Typical Requests
 

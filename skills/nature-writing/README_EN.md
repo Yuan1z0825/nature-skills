@@ -13,6 +13,7 @@
 - Reorder Results or Discussion at the section level rather than only polishing sentences.
 - Prepare an initial cover letter, title page, highlights, author contributions, availability statements, and other declarations.
 - Organize reviewer suggestions, a deliverable matrix, and a pre-submission completeness audit.
+- Run the stage-aware official checklist for a flagship `Nature Article`: initial files, title/text/display limits, Extended Data, SI, Reporting Summary, ethics, and specialist materials.
 
 ## Typical Requests
 

@@ -16,9 +16,11 @@ always_load:
 | `core/reader-workflow.md` | `nature-polishing`, `nature-writing` |
 | `core/paper-type-taxonomy.md` | `nature-polishing`, `nature-writing` |
 | `core/ethics.md` | `nature-polishing`, `nature-writing` |
+| `core/research-compliance.md` | `nature-writing` 及需要 Nature Portfolio 专项合规检查的技能 |
 | `core/terminology-ledger.md` | `nature-polishing`, `nature-writing`, `nature-reader`, `nature-paper2ppt` |
 | `core/consistency-sweep.md` | `nature-polishing`, `nature-reviewer`, `nature-response`, `nature-statistics` |
 | `journal-formats/nat-comms.md` | `nature-polishing`, `nature-writing` |
+| `journal-formats/nature.md` | `nature-writing` 及需要旗舰 `Nature Article` 精确投稿规则的技能 |
 
 `scripts/check_consistency.py` 为一致性扫描提供机械初筛，可报告术语变体、同值不同精度和等值长度单位混用。输出是待人工核对的风险提示，不会自动改稿。
 

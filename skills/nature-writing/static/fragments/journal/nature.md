@@ -1,4 +1,7 @@
-# Journal: Nature (and Nature subjournals) — writing
+# Journal: flagship Nature — writing
+
+This fragment applies only to an Article submitted to the flagship journal
+**Nature**. It does not supply exact rules for Nature Portfolio subjournals.
 
 ## Audience
 
@@ -9,17 +12,34 @@ Broad, multi-disciplinary. A reader outside the immediate subfield must be able 
 - The opening sentence of the abstract and the introduction must signal significance for a non-specialist audience without overclaiming.
 - For a `Nature` summary paragraph, use a staged funnel: `broad field -> sharper background -> exact problem -> here we show -> what the result changes -> broader context / outlook`.
 - Avoid jargon that does not appear in a typical Nature News piece. Define or replace.
-- Word count is unforgiving. Prefer cuts to compressions when a section runs long.
+- At initial submission, formatting is flexible within reason. Use the target
+  length and display budget as a readiness check, not as grounds to reject an
+  otherwise reviewable file. Apply strict production formatting only at the
+  stage requested by the editor.
 - No em dashes in body prose.
 - Hedging must be calibrated: avoid both overclaim (`proves`, `definitive`) and timidity (`might possibly suggest`).
 - The "Significance" framing matters. If the user's material does not naturally support broad significance, surface that before drafting around it.
 
 ## Section format notes
 
-- Abstract is usually unstructured prose (no headed subsections) for many Nature titles. Check the specific journal guideline if named.
+- Articles begin with a fully referenced, unstructured summary paragraph aimed
+  at readers outside the discipline.
 - When the abstract is effectively a `Nature` summary paragraph, make sure the gap sentence and the `Here we show` sentence are both explicit and separated in function.
-- Methods often goes to the end and can be longer than in subfield journals; the main text is significance-driven.
-- References are typically capped (~50 for Articles). Plan citation budget early.
+- Methods follows the figure legends, typically stays within about 3,000 words,
+  and must support interpretation and replication.
+- References are typically capped at about 50 for the Article main text. Plan
+  the citation budget early; Methods and Supplementary references are separate.
+
+## Required companion reference
+
+For formatting, submission-package or readiness work, load
+`../../../../nature-shared/journal-formats/nature.md`. It is the canonical,
+stage-aware checklist for the current flagship Nature Article requirements.
+
+When the manuscript involves human or animal research, clinical research,
+reporting summaries, image integrity, structures, chemistry, taxonomy or
+provenance-sensitive samples, also load
+`../../../../nature-shared/core/research-compliance.md`.
 
 ## Things to flag rather than silently fix
 

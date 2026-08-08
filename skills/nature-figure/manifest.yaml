@@ -1,5 +1,5 @@
 name: nature-figure
-version: 2.2.0
+version: 2.3.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is
@@ -65,6 +65,8 @@ references:
       path: references/asset-adaptation.md
     - condition: before final delivery, revision package, rendered PDF text audit, panel-by-panel visual QA, microscopy/blot figure, or journal-specific audit
       path: references/qa-contract.md
+    - condition: target is the flagship journal Nature, or exact initial-versus-production main/Extended Data figure and legend requirements are needed
+      path: references/nature-article-requirements.md
     - condition: typography, color theory, layout rationale, export policy
       path: references/design-theory.md
     - condition: Python PALETTE, helper function signatures, validation rules
@@ -75,7 +77,7 @@ references:
       path: references/nature-2026-observations.md
     - condition: "OpenRouter/GPT Image 2 route: AI-generated graphical abstracts, mechanism diagrams, paper schematics, or concept illustrations"
       path: references/openrouter-image-generation.md
-    - condition: writing or auditing figure/table legend text — Fig. N | title, panel style, stats in legend, Source Data boilerplate, attribution
+    - condition: writing or auditing figure/table legend text — Fig. N | title, panel style, stats in legend, Source Data boilerplate, attribution; load the flagship Nature requirements too when that is the target journal
       path: references/figure-legend-conventions.md
     - condition: "end-to-end walkthroughs: bars, trends, heatmaps"
       path: references/tutorials.md

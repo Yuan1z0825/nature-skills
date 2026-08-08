@@ -10,6 +10,7 @@
 - Redraw existing figures into clearer multi-panel manuscript figures.
 - Plan Figure 1, mechanism diagrams, workflows, graphical abstracts, or supplementary figures.
 - Check panel labels, color hierarchy, panel-by-panel uncertainty, actual PDF glyph sizes, statistical annotations, source data, and export formats.
+- Separate flagship `Nature` initial, final main-figure, and Extended Data file contracts, including the under-250-word legend limit.
 - When explicitly requested, call `openai/gpt-image-2` through the OpenRouter Images API to draft AI concept schematics.
 
 ## Workflow

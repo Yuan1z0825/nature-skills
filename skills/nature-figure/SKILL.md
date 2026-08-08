@@ -64,11 +64,18 @@ Apply the loaded material in this order:
 4. Template adaptation — when reusing built-in original examples, licensed external material, or user-provided plotting code, load `references/asset-adaptation.md` before mapping data or changing the script.
 5. Delivery preflight — before final delivery, load `references/qa-contract.md`, run `scripts/validate_figure.py` on the plotting source, run `scripts/audit_pdf_text.py` on the exported PDF, then inspect every panel and the complete figure at final physical size. Automated checks do not replace the panel-by-panel uncertainty, salience, spacing, and collision audit.
 
+When the target is the flagship journal Nature, also load
+`references/nature-article-requirements.md`. It separates initial-review files
+from accepted-in-principle main and Extended Data production contracts and owns
+the flagship legend limit.
+
 The chart serves the scientific logic; aesthetic polish is subordinate to making the core conclusion clear, defensible, and reviewable.
 
 ### 5. Reach for references only when needed
 
-The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/figure-contract.md` to build the contract, `references/asset-adaptation.md` to reuse a plotting template safely, `references/template-catalog.md` for validated Python CSV templates, `references/api.md` for the Python palette and numerical/layout safety helpers, `references/r-workflow.md` for R, `references/design-theory.md` for color/typography/export rationale, `references/common-patterns.md` and `references/chart-types.md` for layout/chart recipes, `references/nature-2026-observations.md` for real Nature page archetypes, `references/qa-contract.md` before final delivery, and `references/tutorials.md` / `references/demos.md` for worked examples.
+The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/figure-contract.md` to build the contract, `references/asset-adaptation.md` to reuse a plotting template safely, `references/template-catalog.md` for validated Python CSV templates, `references/api.md` for the Python palette and numerical/layout safety helpers, `references/r-workflow.md` for R, `references/design-theory.md` for color/typography/export rationale, `references/common-patterns.md` and `references/chart-types.md` for layout/chart recipes, `references/nature-2026-observations.md` for real Nature page archetypes, `references/qa-contract.md` before final delivery, `references/nature-article-requirements.md` for exact flagship Nature stage and upload rules, and `references/tutorials.md` / `references/demos.md` for worked examples.
+
+Do not infer flagship Nature requirements from a Nature Communications corpus.
 
 ## Why this split
 

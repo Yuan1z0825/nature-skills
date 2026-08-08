@@ -1,5 +1,5 @@
 name: nature-writing
-version: 1.0.0
+version: 1.1.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a drafting, restructuring, or
@@ -76,11 +76,14 @@ axes:
 
   journal:
     detect: |
-      Use the journal value the user names. If the user says "Nature-family"
-      generically or names a Nature subjournal, use nature. If they name
-      Nature Communications, use nat-comms. Otherwise generic.
+      Use nature only for the flagship journal Nature. Use nat-comms for Nature
+      Communications. If the user says "Nature-family" generically or names a
+      different Nature Portfolio subjournal, use nature-family and check that
+      journal's current instructions before applying exact numbers. Otherwise
+      use generic.
     values:
       nature:         static/fragments/journal/nature.md
+      nature-family:  static/fragments/journal/nature-family.md
       nat-comms:      static/fragments/journal/nat-comms.md
       generic:        static/fragments/journal/generic.md
     default: generic
@@ -112,6 +115,10 @@ references:
       path: references/paper-review.md
     - condition: initial cover letter, title page, highlights, declarations, suggested reviewers, complete first-submission package, or submission-readiness audit
       path: references/submission-package.md
+    - condition: flagship Nature Article formatting, initial-submission package, submission-readiness audit, stage classification, or exact title/text/display/reference limits
+      path: ../nature-shared/journal-formats/nature.md
+    - condition: human or animal ethics, clinical research, reporting summaries, image integrity, structures, chemistry, taxonomy, geological, archaeological, or palaeontological compliance is involved
+      path: ../nature-shared/core/research-compliance.md
     - condition: deeper Chinese-author repair patterns beyond the language fragment
       path: references/chinese-author-workflow.md
     - condition: user wants concrete abstract/introduction/method examples

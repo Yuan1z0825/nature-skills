@@ -12,6 +12,7 @@
 - Identify pseudoreplication, nested data, multiple comparisons, interaction interpretation, overinterpreted correlations, and significance abuse.
 - Cross-check numeric precision, units, and statistical terminology for the same statistic across the abstract, text, tables, and conclusion.
 - Draft conservative responses or revision suggestions for reviewer statistics comments.
+- Check the flagship `Nature Article` requirements for test tails, exact n, repeat counts, significant and non-significant P values, ANOVA F/df, and t-test t/df.
 
 ## Typical Requests
 

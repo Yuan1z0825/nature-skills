@@ -54,6 +54,11 @@ Do not invent DOIs, accession numbers, repository names, licences, embargo dates
 
 The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/policy-principles.md` for the governing rules and edge cases, `references/repository-and-identifiers.md` for repository/accession/DOI choices, `references/statement-patterns.md` for ready-to-adapt statements, `references/fair-metadata-checklist.md` for the FAIR audit, `references/chinese-author-alignment.md` for Chinese wording, and `references/source-basis.md` to justify a rule with its official source.
 
+When the target is the flagship journal Nature, also open
+`references/nature-article-requirements.md` for statement placement,
+mandatory-deposition routing, central-code review access, materials and
+structure-file checks.
+
 ## Why this split
 
 - The static layer is versioned and reviewable; the core stays small for a normal statement.

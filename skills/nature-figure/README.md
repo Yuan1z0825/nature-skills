@@ -10,6 +10,7 @@
 - 将已有图件重画为更清楚的多面板论文 figure。
 - 规划 Figure 1、机制图、workflow、graphical abstract 或补充图。
 - 检查面板标签、配色与视觉层级、逐面板误差线、最终 PDF 实际字号、统计标注、source data 和导出格式。
+- 区分旗舰 `Nature` 初投稿、主图终稿和 Extended Data 的文件契约，并执行 `<250` 词图注上限。
 - 在用户明确要求时，通过 OpenRouter Images API 调用 `openai/gpt-image-2` 生成 AI 概念示意图草稿。
 
 ## 工作方式

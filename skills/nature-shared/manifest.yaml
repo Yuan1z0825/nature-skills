@@ -1,5 +1,5 @@
 name: nature-shared
-version: 1.1.1
+version: 1.2.0
 description: >
   Declarative manifest for shared Nature reference modules. This package is not
   a standalone workflow; installed Nature skills use it to load exact shared
@@ -15,6 +15,8 @@ core:
   on_demand:
     - condition: shared ethics, safety, authorship, disclosure, or non-invention guardrails are needed
       path: core/ethics.md
+    - condition: human or animal ethics, clinical research, reporting summaries, image integrity, structures, chemistry, taxonomy, geological, archaeological, or palaeontological compliance is involved
+      path: core/research-compliance.md
     - condition: classifying paper type, article genre, or manuscript family before applying a writing/reader workflow
       path: core/paper-type-taxonomy.md
     - condition: shared reader workflow is explicitly requested by another Nature skill
@@ -26,6 +28,8 @@ core:
 
 journal_formats:
   on_demand:
+    - condition: formatting, initial-submission readiness, or stage-aware checking for a flagship Nature Article
+      path: journal-formats/nature.md
     - condition: formatting or checking output for Nature Communications conventions
       path: journal-formats/nat-comms.md
 

@@ -1,5 +1,5 @@
 name: nature-statistics
-version: 1.1.0
+version: 1.2.0
 description: >
   Declarative manifest for the statistics-reporting workflow. SKILL.md uses
   this to keep the always-needed reporting rules small while loading specialized
@@ -17,6 +17,8 @@ always_load:
 
 references:
   on_demand:
+    - condition: target is the flagship journal Nature, or the user requests an exact Nature Article statistical submission/readiness audit
+      path: references/nature-article-requirements.md
     - condition: nested data, pseudoreplication, repeated measures, many comparisons, correlations, regressions, outliers, small samples, or overstrong p-value language
       path: references/common-failure-modes.md
     - condition: checking figure legends, panel-level n, error bars, stars, box/violin plots, source-data notes, or statistical annotations

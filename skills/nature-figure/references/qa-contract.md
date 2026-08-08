@@ -20,6 +20,8 @@ Use this before final delivery, before a revision package, and whenever the figu
 contains microscopy, blots, gels, clinical subgroup analysis, or statistical claims.
 Journal rules change, so verify the latest target journal author guide for final
 submission. The values below are conservative defaults for Nature-family style work.
+For the flagship journal Nature, load `nature-article-requirements.md` and use
+its stage-specific main-figure, Extended Data and legend contracts.
 
 ## Current official references to verify
 
@@ -56,7 +58,7 @@ submission. The values below are conservative defaults for Nature-family style w
 | Raster resolution | Photos/microscopy are high-resolution enough for final size; line art uses vector where possible |
 | Microscopy scale | Scale bar is present, calibrated, and not only a magnification factor |
 | Image integrity | Crop, contrast, pseudo-color, stitching, reuse, and raw-file provenance are recorded |
-| Export bundle | Script, source data, SVG, PDF, TIFF/PNG preview, and QA notes are delivered together when requested |
+| Export bundle | Script, source data, SVG, PDF, TIFF/PNG preview, and QA notes are delivered together when requested; previews are not mislabeled as accepted main-figure upload formats |
 
 ## Statistics legend minimum
 

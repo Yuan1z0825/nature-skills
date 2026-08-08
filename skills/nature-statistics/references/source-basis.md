@@ -18,6 +18,8 @@ This file keeps the skill conservative. It is a local summary of sources the age
    - The Nature collection `Statistics for Biologists` groups practical guidance on statistical design, P values, power, sample size, error bars, multiple comparisons, nonparametric tests, experimental design, replication, nested designs, regression, outliers, and correlation versus causation.
    - Treat this collection as practical guidance for common failure modes, not as a single mandatory checklist for every field.
    - Source: https://www.nature.com/collections/qghhqm
+   - For a flagship Nature Article, load `nature-article-requirements.md` rather
+     than treating this general guidance as the journal's exact checklist.
 
 4. **Study-type reporting guidelines**
    - Use these only when the study type clearly applies or the user requests them.

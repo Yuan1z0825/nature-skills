@@ -1,5 +1,5 @@
 name: nature-data
-version: 2.0.1
+version: 2.1.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a data-availability request.
@@ -22,6 +22,8 @@ references:
   on_demand:
     - condition: governing Nature/Springer Nature data-sharing rules or edge-case policy logic
       path: references/policy-principles.md
+    - condition: target is the flagship journal Nature, or exact Nature Article data, code, materials, mandatory-deposition, reviewer-access, or statement-placement rules are needed
+      path: references/nature-article-requirements.md
     - condition: the user writes in Chinese, needs bilingual wording, or provides Chinese availability notes
       path: references/chinese-author-alignment.md
     - condition: ready-to-adapt Data Availability statement patterns
