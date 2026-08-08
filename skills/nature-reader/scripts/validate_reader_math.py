@@ -24,6 +24,14 @@ LATEX_COMMAND_RE = re.compile(
     r"mathcal|mathrm|mathbf|operatorname|overline|underline|widetilde|hat)\b"
 )
 MARKDOWN_IMAGE_RE = re.compile(r"!\[[^\]]*]\(([^)]+)\)")
+CHINESE_LINE_RE = re.compile(
+    r"^\s*\*\*中文(?:说明|图注)?[:：]\*\*.*$", re.MULTILINE
+)
+PAREN_PSEUDO_MATH_RE = re.compile(
+    r"\((?:[^()\n]*\\[A-Za-z]+[^()\n]*|"
+    r"[A-Za-z][A-Za-z0-9]*_(?:\{[^}]+\}|[A-Za-z0-9]+)|"
+    r"[^()\n]*=[^()\n]*)\)"
+)
 
 
 @dataclass(frozen=True)
@@ -144,6 +152,24 @@ def validate_markdown(text: str) -> tuple[list[Finding], list[str], list[str]]:
 
     display_ranges, display_findings = display_math_ranges(without_fences)
     findings.extend(display_findings)
+
+    normalized_displays: dict[str, list[int]] = {}
+    for start, end in display_ranges:
+        body = without_fences[start + 2 : end - 2].strip()
+        normalized = re.sub(r"\s+", "", body).rstrip(",.;")
+        if normalized:
+            normalized_displays.setdefault(normalized, []).append(start)
+    for offsets in normalized_displays.values():
+        if len(offsets) > 1:
+            findings.append(
+                Finding(
+                    "WARN",
+                    "DUPLICATE_DISPLAY_EQUATION",
+                    "The same display equation appears more than once; use one shared E... block for the bilingual pair.",
+                    line_number(text, offsets[1]),
+                )
+            )
+
     prose = mask_ranges(without_fences, display_ranges)
 
     inline_problem = find_inline_dollar_problem(prose)
@@ -166,6 +192,27 @@ def validate_markdown(text: str) -> tuple[list[Finding], list[str], list[str]]:
                 line_number(text, match.start()),
             )
         )
+
+    for line_match in CHINESE_LINE_RE.finditer(plain_prose):
+        line_text = line_match.group(0)
+        if "\t" in line_text:
+            findings.append(
+                Finding(
+                    "FAIL",
+                    "TAB_IN_CHINESE_MATH_PROSE",
+                    "A tab appears in a Chinese line; this can indicate a corrupted command such as \\tau.",
+                    line_number(text, line_match.start()),
+                )
+            )
+        for pseudo_match in PAREN_PSEUDO_MATH_RE.finditer(line_text):
+            findings.append(
+                Finding(
+                    "FAIL",
+                    "PARENTHESIZED_PSEUDO_MATH",
+                    f"Use math delimiters instead of ordinary parentheses: {pseudo_match.group(0)!r}.",
+                    line_number(text, line_match.start() + pseudo_match.start()),
+                )
+            )
 
     anchors = EQUATION_ANCHOR_RE.findall(text)
     duplicates = sorted({item for item in anchors if anchors.count(item) > 1})
@@ -323,6 +370,8 @@ $$
 \\frac{a}{b} = c
 $$
 
+**中文:** 其中 $a$、$b$ 和 $c$ 保持原始数学符号。
+
 <a id="E002"></a>
 **Source:** p.2 E002 · low confidence
 
@@ -348,13 +397,14 @@ $$
         bad_markdown = """# Broken
 <a id="E001"></a>
 Raw formula: \\frac{a}{b}
+**中文:** 其中 (I_0) 为峰值强度。
 $$
 x+y
 """
         paper.write_text(bad_markdown, encoding="utf-8")
         bad_findings = run_validation(paper, None)
         bad_codes = {item.code for item in bad_findings if item.severity == "FAIL"}
-        required = {"BARE_LATEX", "UNBALANCED_DISPLAY_MATH"}
+        required = {"BARE_LATEX", "UNBALANCED_DISPLAY_MATH", "PARENTHESIZED_PSEUDO_MATH"}
         if not required.issubset(bad_codes):
             print(f"Self-test failed: missing expected failures {sorted(required - bad_codes)}.", file=sys.stderr)
             return 1
