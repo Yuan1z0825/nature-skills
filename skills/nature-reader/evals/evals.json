@@ -30,6 +30,12 @@
       "prompt": "这篇扫描论文的公式无法可靠 OCR。不要根据上下文猜公式：请把每个原始公式裁剪出来放进 assets/equations，在正文中显示原图；如果给 LaTeX 转写，必须标成低置信度并提示以原图为准。",
       "expected_output": "An image-first equation workflow with E IDs, existing equation crop paths, explicit low-confidence transcription labels, no guessed symbols, and source-map linkage for every displayed equation.",
       "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "生成中英对照全文时，数学公式本体不要翻译或在中文段落里重写。显示公式只放一份；中文只解释含义。I_0、E_0、w_0、tau 等行内符号必须继续使用与英文相同的 LaTeX 和数学定界符，不能变成 (I_0)、(tau) 或普通文本。",
+      "expected_output": "A bilingual reader with one shared copy of each display equation, unchanged mathematical notation in Chinese prose, valid $...$/$$...$$ delimiters, no parenthesized pseudo-math, and a strict validator pass.",
+      "files": []
     }
   ]
 }
