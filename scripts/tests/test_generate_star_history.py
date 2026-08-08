@@ -64,6 +64,23 @@ class StarHistoryRenderingTests(unittest.TestCase):
             svg,
         )
 
+    def test_svg_uses_reference_style_current_star_kpi(self) -> None:
+        svg = MODULE.generate_svg(
+            "example/project",
+            [
+                (dt.date(2026, 4, 24), 1),
+                (dt.date(2026, 8, 7), 100),
+            ],
+            dt.datetime(2026, 8, 7, tzinfo=dt.timezone.utc),
+        )
+
+        self.assertIn('data-kpi="current-star-count"', svg)
+        self.assertIn('data-marker="current-star-summary"', svg)
+        self.assertIn('fill="#f59e0b"', svg)
+        self.assertIn('fill="#e11d48">100</text>', svg)
+        self.assertIn(">Current Star Count</text>", svg)
+        self.assertNotIn(">100 stars</text>", svg)
+
 
 if __name__ == "__main__":
     unittest.main()

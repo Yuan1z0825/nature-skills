@@ -316,6 +316,11 @@ def generate_svg(
   <rect width="100%" height="100%" rx="18" fill="#ffffff"/>
   <text x="{left}" y="34" font-family="{font}" font-size="24" font-weight="700" fill="#111827">Star History</text>
   <text x="{left}" y="58" font-family="{font}" font-size="13" fill="#6b7280">{escaped_repo} · {total_text} stars · generated {html.escape(updated)}</text>
+  <g data-kpi="current-star-count" role="group" aria-label="Current star count: {total_text}" font-family="{font}">
+    <polygon data-marker="current-star-summary" points="{star_polygon_points(748, 31, 13, 6)}" fill="#f59e0b"/>
+    <text x="776" y="39" font-size="28" font-weight="800" letter-spacing="-0.5" fill="#e11d48">{total_text}</text>
+    <text x="776" y="58" font-size="11.5" fill="#6b7280">Current Star Count</text>
+  </g>
   <g font-family="{font}">
     {''.join(grid)}
     <line x1="{left}" y1="{top}" x2="{left}" y2="{top + plot_height}" stroke="#d1d5db" stroke-width="1.2"/>
@@ -323,7 +328,6 @@ def generate_svg(
     <polygon points="{area_points}" fill="#38bdf8" opacity="0.16"/>
     <polyline points="{line_points}" fill="none" stroke="#0284c7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     <polygon data-marker="latest-star-count" points="{star_polygon_points(x_for(end), y_for(total))}" fill="#dc2626" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
-    <text x="{width - right}" y="{y_for(total) - 22:.1f}" text-anchor="end" font-size="13" font-weight="700" fill="#0369a1">{total_text} stars</text>
     <text x="{left}" y="{height - 16}" font-size="12" fill="#9ca3af">Source: GitHub stargazers API · Static snapshot to avoid third-party chart timeouts</text>
   </g>
 </svg>
