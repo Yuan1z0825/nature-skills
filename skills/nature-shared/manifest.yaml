@@ -1,5 +1,5 @@
 name: nature-shared
-version: 1.2.0
+version: 1.3.0
 description: >
   Declarative manifest for shared Nature reference modules. This package is not
   a standalone workflow; installed Nature skills use it to load exact shared
@@ -32,6 +32,8 @@ journal_formats:
       path: journal-formats/nature.md
     - condition: formatting or checking output for Nature Communications conventions
       path: journal-formats/nat-comms.md
+    - condition: formatting, article-type selection, initial-submission readiness, or stage-aware checking for Nature Machine Intelligence
+      path: journal-formats/nature-machine-intelligence.md
 
 quality_tools:
   consistency_script: scripts/check_consistency.py

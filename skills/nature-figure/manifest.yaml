@@ -1,5 +1,5 @@
 name: nature-figure
-version: 2.3.0
+version: 2.4.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is
@@ -67,6 +67,8 @@ references:
       path: references/qa-contract.md
     - condition: target is the flagship journal Nature, or exact initial-versus-production main/Extended Data figure and legend requirements are needed
       path: references/nature-article-requirements.md
+    - condition: target is Nature Machine Intelligence, or exact NMI main-display, Extended Data, legend, source-data, initial-review, or production-figure requirements are needed
+      path: ../nature-shared/journal-formats/nature-machine-intelligence.md
     - condition: typography, color theory, layout rationale, export policy
       path: references/design-theory.md
     - condition: Python PALETTE, helper function signatures, validation rules

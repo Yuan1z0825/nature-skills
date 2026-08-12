@@ -1,5 +1,5 @@
 name: nature-polishing
-version: 6.2.0
+version: 6.3.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given polishing request.
@@ -57,12 +57,14 @@ axes:
 
   journal:
     detect: |
-      Use the journal value the user names. If the user says "Nature-family"
-      generically or names a Nature subjournal, use nature. If they name
-      Nature Communications, use nat-comms. Otherwise generic.
+      Use nature only for the flagship journal Nature. Use nat-comms for Nature
+      Communications and nat-mach-intell for Nature Machine Intelligence or
+      NMI. If the user says "Nature-family" generically or names another Nature
+      Portfolio subjournal, use generic and check that title's current guide.
     values:
       nature:         static/fragments/journal/nature.md
       nat-comms:      static/fragments/journal/nat-comms.md
+      nat-mach-intell: static/fragments/journal/nat-mach-intell.md
       generic:        static/fragments/journal/generic.md
     default: generic
     multi: false
@@ -85,3 +87,5 @@ references:
       path: references/writing-strategy.md
     - condition: needs LaTeX layout/typesetting help (排版) — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, "Float too large", multi-panel figure arrangement, or Supplementary Information that looks empty
       path: references/latex-layout.md
+    - condition: target is Nature Machine Intelligence and exact content-type, word/display, data/code, initial-submission, or production requirements affect the polish
+      path: ../nature-shared/journal-formats/nature-machine-intelligence.md

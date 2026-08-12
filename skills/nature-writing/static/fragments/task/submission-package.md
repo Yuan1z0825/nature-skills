@@ -11,6 +11,10 @@ Use this task only before the first editorial decision. Read `references/submiss
 4. For the flagship journal Nature, load
    `../../../../nature-shared/journal-formats/nature.md`; load the conditional
    research-compliance reference when its applicability gate is triggered.
+   For Nature Machine Intelligence, load
+   `../../../../nature-shared/journal-formats/nature-machine-intelligence.md`
+   and treat the cover letter, availability statements and central-code review
+   access as initial-package checks.
 5. Build a deliverable matrix: required, optional, not applicable, or author input needed.
 6. Draft only from author-supplied facts. Never invent author identities, affiliations, ORCIDs, funding numbers, ethics approvals, repository links, accession numbers, conflicts, reviewer identities, or permissions.
 7. Keep the initial cover letter concise and editor-facing: what the study shows, what is new, why it fits the journal/readership, and any required declarations.

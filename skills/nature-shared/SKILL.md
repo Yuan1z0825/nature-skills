@@ -12,4 +12,7 @@ Use this package only as a dependency of another installed Nature skill.
 - Use `journal-formats/nature.md` only for the flagship journal Nature and
   `core/research-compliance.md` only when its specialist applicability gate is
   triggered.
+- Use `journal-formats/nature-machine-intelligence.md` for exact NMI article
+  types, limits, initial-submission files, data/code duties and production
+  requirements; do not import flagship Nature or Nature Communications limits.
 - Return to the requesting skill for task logic, output format, and final QA.

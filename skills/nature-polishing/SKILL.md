@@ -29,7 +29,10 @@ For each axis in the manifest, decide the value using the manifest's `detect:` h
 - `paper_type` — research / methods / hypothesis / algorithmic / review. Default: research.
 - `section` — abstract / intro / results / discussion / conclusion / title / methods. May be multiple. Ask the user if it is ambiguous and matters for the polish.
 - `language` — en or zh-to-en. Detect from the draft itself.
-- `journal` — nature / nat-comms / generic. Default: generic. If the user names a Nature subjournal, treat it as `nature`.
+- `journal` — nature / nat-comms / nat-mach-intell / generic. Default:
+  generic. Use `nature` only for flagship Nature, `nat-comms` for Nature
+  Communications and `nat-mach-intell` for Nature Machine Intelligence (NMI).
+  Do not route another Nature Portfolio title through flagship Nature rules.
 
 State the detected axis values in one short line to the user before proceeding, so they can correct you cheaply.
 
@@ -54,6 +57,11 @@ If a paragraph's structural problem cannot be fixed without inventing content, f
 ### 5. Reach for references only when needed
 
 The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest, for example when the user explicitly asks for phrasebank-style alternatives or a stricter style audit.
+
+When the target is Nature Machine Intelligence and exact limits, availability
+sections, conference-extension disclosure or production checks affect the
+revision, load
+`../nature-shared/journal-formats/nature-machine-intelligence.md`.
 
 When the job is a whole manuscript rather than a passage, or the text has already been through more than one round of editing, also load `../nature-shared/core/consistency-sweep.md`. Polishing passage by passage cannot see accumulated drift: one experimental factor under several names, the same quantity in two units, a metric at two precisions, or a superlative the paper's own table contradicts. Sweep for those before working on sentences, and repeat the sweep until a pass finds nothing new.
 

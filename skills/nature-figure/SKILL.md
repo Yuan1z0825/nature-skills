@@ -69,13 +69,21 @@ When the target is the flagship journal Nature, also load
 from accepted-in-principle main and Extended Data production contracts and owns
 the flagship legend limit.
 
+When the target is Nature Machine Intelligence, instead load
+`../nature-shared/journal-formats/nature-machine-intelligence.md`. Apply its
+combined six-item main display budget, ten-item Extended Data maximum,
+initial-versus-production boundary, 300-dpi/180-mm production checks and source-
+data contract. NMI's current public pages do not state a numeric per-legend
+word limit; do not import flagship Nature's limit.
+
 The chart serves the scientific logic; aesthetic polish is subordinate to making the core conclusion clear, defensible, and reviewable.
 
 ### 5. Reach for references only when needed
 
-The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/figure-contract.md` to build the contract, `references/asset-adaptation.md` to reuse a plotting template safely, `references/template-catalog.md` for validated Python CSV templates, `references/api.md` for the Python palette and numerical/layout safety helpers, `references/r-workflow.md` for R, `references/design-theory.md` for color/typography/export rationale, `references/common-patterns.md` and `references/chart-types.md` for layout/chart recipes, `references/nature-2026-observations.md` for real Nature page archetypes, `references/qa-contract.md` before final delivery, `references/nature-article-requirements.md` for exact flagship Nature stage and upload rules, and `references/tutorials.md` / `references/demos.md` for worked examples.
+The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/figure-contract.md` to build the contract, `references/asset-adaptation.md` to reuse a plotting template safely, `references/template-catalog.md` for validated Python CSV templates, `references/api.md` for the Python palette and numerical/layout safety helpers, `references/r-workflow.md` for R, `references/design-theory.md` for color/typography/export rationale, `references/common-patterns.md` and `references/chart-types.md` for layout/chart recipes, `references/nature-2026-observations.md` for real Nature page archetypes, `references/qa-contract.md` before final delivery, `references/nature-article-requirements.md` for exact flagship Nature stage and upload rules, `../nature-shared/journal-formats/nature-machine-intelligence.md` for exact NMI figure rules, and `references/tutorials.md` / `references/demos.md` for worked examples.
 
-Do not infer flagship Nature requirements from a Nature Communications corpus.
+Do not infer flagship Nature or NMI requirements from a Nature Communications
+corpus or from the visual-style examples in this skill.
 
 ## Why this split
 
