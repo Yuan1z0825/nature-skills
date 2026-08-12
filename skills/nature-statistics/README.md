@@ -13,6 +13,7 @@
 - 交叉检查摘要、正文、表格和结论中同一统计量的数值精度、单位及统计术语是否一致。
 - 根据审稿人统计意见生成保守回应或修改建议。
 - 对旗舰 `Nature Article` 检查单尾/双尾、exact n、重复次数、显著与非显著 P 值、ANOVA F/df 和 t 检验 t/df。
+- 对 `Nature Machine Intelligence` 检查图注中的 n/误差/检验、source data、适用的 Reporting Summary，以及初投稿与终稿的不同要求。
 
 ## 典型请求
 

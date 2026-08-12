@@ -12,6 +12,7 @@
 - 区分公开数据、受控访问数据、第三方数据、补充材料数据和不适用场景。
 - 将中文作者笔记转成投稿可用英文，并列出需要作者确认的信息。
 - 对旗舰 `Nature Article` 检查声明位置、强制仓储、审稿访问、中心代码、材料和结构数据文件。
+- 对 `Nature Machine Intelligence`（NMI）检查 Data Availability、其后独立的 Code availability、审稿期数据/中心代码访问、限制条件和 Software Submission Checklist。
 
 ## 典型请求
 

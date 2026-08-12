@@ -11,6 +11,7 @@
 - Plan Figure 1, mechanism diagrams, workflows, graphical abstracts, or supplementary figures.
 - Check panel labels, color hierarchy, panel-by-panel uncertainty, actual PDF glyph sizes, statistical annotations, source data, and export formats.
 - Separate flagship `Nature` initial, final main-figure, and Extended Data file contracts, including the under-250-word legend limit.
+- Apply `Nature Machine Intelligence` (NMI)'s separate six-main-display, up-to-ten Extended Data, initial/final, 300-dpi/180-mm, and source-data requirements without inventing an NMI legend word limit.
 - When explicitly requested, call `openai/gpt-image-2` through the OpenRouter Images API to draft AI concept schematics.
 
 ## Workflow

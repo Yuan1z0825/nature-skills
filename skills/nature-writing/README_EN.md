@@ -14,6 +14,7 @@
 - Prepare an initial cover letter, title page, highlights, author contributions, availability statements, and other declarations.
 - Organize reviewer suggestions, a deliverable matrix, and a pre-submission completeness audit.
 - Run the stage-aware official checklist for a flagship `Nature Article`: initial files, title/text/display limits, Extended Data, SI, Reporting Summary, ethics, and specialist materials.
+- Apply a dedicated stage-aware `Nature Machine Intelligence` contract covering Article/Analysis word and six-display limits, the required cover letter, up to ten Extended Data items, substantial conference-paper extensions, and data/central-code review access.
 
 ## Typical Requests
 

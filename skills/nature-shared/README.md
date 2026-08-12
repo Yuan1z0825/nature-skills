@@ -21,6 +21,7 @@ always_load:
 | `core/consistency-sweep.md` | `nature-polishing`, `nature-reviewer`, `nature-response`, `nature-statistics` |
 | `journal-formats/nat-comms.md` | `nature-polishing`, `nature-writing` |
 | `journal-formats/nature.md` | `nature-writing` 及需要旗舰 `Nature Article` 精确投稿规则的技能 |
+| `journal-formats/nature-machine-intelligence.md` | NMI 投稿的写作、润色、图表、数据与统计工作流 |
 
 `scripts/check_consistency.py` 为一致性扫描提供机械初筛，可报告术语变体、同值不同精度和等值长度单位混用。输出是待人工核对的风险提示，不会自动改稿。
 

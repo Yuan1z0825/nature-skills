@@ -21,6 +21,7 @@ always_load:
 | `core/consistency-sweep.md` | `nature-polishing`, `nature-reviewer`, `nature-response`, `nature-statistics` |
 | `journal-formats/nat-comms.md` | `nature-polishing`, `nature-writing` |
 | `journal-formats/nature.md` | `nature-writing` and skills needing exact flagship `Nature Article` submission rules |
+| `journal-formats/nature-machine-intelligence.md` | Writing, polishing, figure, data, and statistics workflows for NMI submissions |
 
 `scripts/check_consistency.py` provides a mechanical first pass for terminology variants, equal values reported at different precision, and equivalent lengths expressed in different units. Its output is a set of warnings for contextual review, not automatic edits.
 

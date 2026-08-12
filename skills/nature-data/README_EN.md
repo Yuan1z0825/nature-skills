@@ -12,6 +12,7 @@
 - Distinguish public data, controlled-access data, third-party data, supplementary-data cases, and not-applicable cases.
 - Turn Chinese author notes into submission-ready English and list facts that still need confirmation.
 - Check flagship `Nature Article` statement placement, mandatory repositories, reviewer access, central code, materials, and structure-data files.
+- Check `Nature Machine Intelligence` (NMI) Data Availability, the following separate Code availability section, review-stage data/central-code access, restrictions, and the Software Submission Checklist.
 
 ## Typical Requests
 

@@ -8,7 +8,8 @@
 
 - Translate Chinese academic paragraphs into submission-ready English.
 - Shorten long sentences and improve argument order and paragraph movement.
-- Adjust abstracts, introductions, results, discussions, or titles using Nature / Nature Communications article patterns.
+- Adjust abstracts, introductions, results, discussions, or titles using Nature / Nature Communications / Nature Machine Intelligence article patterns.
+- Route NMI separately to check its 3,500-word main text, 150-word abstract, six-display budget, code-review duties, and substantial conference-paper extension without importing flagship Nature numbers.
 - Distinguish research-paper and methods-paper writing priorities.
 - Check AI-like phrasing, exaggerated claims, excessive causal language, and unnatural collocations.
 - Sweep full or repeatedly revised manuscripts for terminology, unit, numeric-precision, and internal-claim drift.

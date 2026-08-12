@@ -8,7 +8,8 @@
 
 - 将中文学术段落翻译为投稿可用英文。
 - 精简冗长句子，增强论证顺序和段落推进。
-- 按 Nature / Nature Communications 论文范式调整摘要、引言、结果、讨论或标题。
+- 按 Nature / Nature Communications / Nature Machine Intelligence 论文范式调整摘要、引言、结果、讨论或标题。
+- 对 NMI 识别独立路由，检查 3,500 词正文、150 词摘要、6 个 display、代码审查与会议论文实质扩展，不再误用旗舰 Nature 数字。
 - 区分 research paper 与 methods paper 的写作重点。
 - 检查 AI 味、夸张声称、过度因果表达和不自然搭配。
 - 对全文或多轮修改稿执行一致性扫描，定位术语、单位、数值精度和内部声称漂移。
