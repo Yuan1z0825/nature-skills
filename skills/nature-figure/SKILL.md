@@ -73,8 +73,12 @@ When the target is Nature Machine Intelligence, instead load
 `../nature-shared/journal-formats/nature-machine-intelligence.md`. Apply its
 combined six-item main display budget, ten-item Extended Data maximum,
 initial-versus-production boundary, 300-dpi/180-mm production checks and source-
-data contract. NMI's current public pages do not state a numeric per-legend
-word limit; do not import flagship Nature's limit.
+data contract. NMI's current live pages do not assign a standalone per-legend
+number, but its official 2018 brief guide set a historical advisory ceiling of
+fewer than 300 English words per complete figure legend. Count the whole legend,
+not each panel; aim for 150–250 words and keep it below 300 unless the live
+submission system or editor gives a newer instruction. Do not import flagship
+Nature's limit.
 
 The chart serves the scientific logic; aesthetic polish is subordinate to making the core conclusion clear, defensible, and reviewable.
 

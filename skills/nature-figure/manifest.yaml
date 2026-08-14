@@ -1,5 +1,5 @@
 name: nature-figure
-version: 2.4.0
+version: 2.4.1
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is

@@ -49,5 +49,9 @@ the prose fit.
 - Preserve Data Availability and the separate Code availability section.
 - Flag missing reviewer access or a missing Software Submission Checklist when
   new code is central to the conclusions.
-- Do not apply a flagship Nature title, Methods or legend limit: NMI's current
-  public pages state no fixed number for those three items.
+- Do not apply a flagship Nature title, Methods or legend limit. NMI's current
+  public pages state no current fixed number for those items. For figure
+  legends, use the official 2018 NMI below-300-word instruction only as a
+  historical advisory ceiling: count the complete legend, not each panel, aim
+  for 150–250 English words, and obey any newer editor or submission-system
+  instruction.

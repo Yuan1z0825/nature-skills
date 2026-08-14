@@ -27,13 +27,14 @@ class NatureMachineIntelligenceSubmissionRequirementsTests(unittest.TestCase):
             "proof",
         ):
             self.assertIn(stage, rules)
-        self.assertIn("Verified **2026-08-12**", rules)
+        self.assertIn("Current pages verified **2026-08-14**", rules)
 
         for url in (
             "https://www.nature.com/natmachintell/submission-guidelines",
             "https://www.nature.com/natmachintell/content",
             "https://www.nature.com/natmachintell/editorial-policies/reporting-standards",
             "https://www.nature.com/natmachintell/editorial-policies/preprints-conference-proceedings",
+            "https://www.nature.com/documents/natmachintell-brief-submission-guide.pdf",
         ):
             self.assertIn(url, rules)
 
@@ -84,14 +85,38 @@ class NatureMachineIntelligenceSubmissionRequirementsTests(unittest.TestCase):
         ):
             self.assertIn(requirement, normalized)
 
-    def test_unpublished_numeric_limits_are_not_invented(self) -> None:
+    def test_current_limits_and_historical_legend_advisory_are_separate(self) -> None:
         rules = read(CONTRACT)
+        normalized = squash(rules)
 
         self.assertIn("do not publish", rules)
         self.assertIn("a fixed title character or word limit", rules)
         self.assertIn("a separate numeric Methods word limit", rules)
-        self.assertIn("a separate numeric per-figure-legend word limit", rules)
-        self.assertIn("do not import", rules)
+        self.assertIn("a current separate numeric per-figure-legend word limit", rules)
+        for requirement in (
+            "historical advisory ceiling",
+            "below **300 English words**",
+            "**150–250 English words**",
+            "one whole-figure legend",
+            "300 words is not a per-panel allowance",
+            "revised 9 July 2018",
+        ):
+            self.assertIn(requirement, normalized)
+
+    def test_legend_guardrail_reaches_figure_and_text_routes(self) -> None:
+        routes = (
+            "skills/nature-figure/SKILL.md",
+            "skills/nature-figure/references/figure-legend-conventions.md",
+            "skills/nature-writing/static/fragments/journal/nat-mach-intell.md",
+            "skills/nature-polishing/static/fragments/journal/nat-mach-intell.md",
+        )
+
+        for route in routes:
+            text = squash(read(route))
+            self.assertIn("2018", text)
+            self.assertIn("300", text)
+            self.assertIn("150–250", text)
+            self.assertIn("panel", text)
 
     def test_writing_and_polishing_have_distinct_nmi_routes(self) -> None:
         writing = read("skills/nature-writing/manifest.yaml")

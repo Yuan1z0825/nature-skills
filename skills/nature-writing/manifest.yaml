@@ -1,5 +1,5 @@
 name: nature-writing
-version: 1.2.0
+version: 1.2.1
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a drafting, restructuring, or

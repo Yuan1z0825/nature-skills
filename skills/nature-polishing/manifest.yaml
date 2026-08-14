@@ -1,5 +1,5 @@
 name: nature-polishing
-version: 6.3.0
+version: 6.3.1
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given polishing request.

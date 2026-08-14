@@ -316,9 +316,27 @@ should define:
   applicable
 - scale bars and necessary sample identifiers
 
-Avoid placing a second Methods section in the legend. The current public NMI
-pages do **not** state a separate numeric per-legend word limit; do not import
-the flagship *Nature* below-250-word limit or invent an NMI number.
+Avoid placing a second Methods section in the legend. The current live NMI AIP
+page says that a legend should not exceed the word limit of the article type,
+but the current Content Types page does **not** assign a separate numeric limit
+to each figure legend.
+
+The official NMI brief submission guide revised 9 July 2018 explicitly said to
+keep each figure legend below **300 English words**. Because that number is not
+repeated on the current live pages, treat it as a **historical advisory ceiling**,
+not as a current journal hard limit.
+
+Use this operating guardrail unless the live submission system or handling
+editor gives a newer instruction:
+
+- count the title and all panel descriptions as **one whole-figure legend**;
+  300 words is not a per-panel allowance
+- aim for **150–250 English words** for an ordinary multi-panel legend
+- keep the complete legend below **300 English words** as a conservative
+  preflight ceiling
+- move expendable methodological detail to Methods or Supplementary
+  Information, but retain the `n`, uncertainty and statistical information
+  needed to interpret the figure
 
 ### Supplementary Information
 
@@ -376,11 +394,14 @@ The current official NMI pages reviewed for this contract do not publish:
 
 - a fixed title character or word limit
 - a separate numeric Methods word limit
-- a separate numeric per-figure-legend word limit
+- a current separate numeric per-figure-legend word limit; the older official
+  2018 guide's below-300-word instruction is retained only as an advisory
+  preflight ceiling
 
-Do not borrow numbers from flagship *Nature*, *Nature Communications*, a third-
-party checklist or an older template. Write concisely, then verify any new
-editor- or system-provided limit at the active submission stage.
+Do not borrow numbers from flagship *Nature*, *Nature Communications* or a
+third-party checklist. Do not present NMI's historical below-300-word figure-
+legend instruction as a current hard limit. Write concisely, then follow any
+new editor- or submission-system instruction at the active stage.
 
 Open-access article-processing charges and currencies can change. If the author
 asks for cost planning, check the live Publishing Options page instead of
@@ -388,7 +409,7 @@ treating a stored price as a submission rule.
 
 ## 12. Official sources
 
-Verified **2026-08-12**:
+Current pages verified **2026-08-14**:
 
 - Submission guidelines: <https://www.nature.com/natmachintell/submission-guidelines>
 - Content types: <https://www.nature.com/natmachintell/content>
@@ -403,3 +424,8 @@ Verified **2026-08-12**:
 - Presubmission enquiries: <https://www.nature.com/natmachintell/submission-guidelines/presubmission-enquiries>
 - Aims and scope: <https://www.nature.com/natmachintell/aims>
 - Publishing options: <https://www.nature.com/natmachintell/submission-guidelines/publishing-options>
+
+Historical official source retained for conservative preflight only:
+
+- Brief guide for submission to Nature Machine Intelligence, revised 9 July
+  2018: <https://www.nature.com/documents/natmachintell-brief-submission-guide.pdf>

@@ -69,6 +69,12 @@ than figures.
   universal Nature Portfolio word limit.
 - For the flagship journal Nature, load `nature-article-requirements.md` and
   keep each complete figure legend below 250 words.
+- For Nature Machine Intelligence, load the shared NMI contract. Its current
+  live pages give no standalone per-legend number, while its official 2018
+  brief guide said to keep each figure legend below 300 English words. Count
+  the complete title-plus-panels legend, not each panel; aim for 150–250 words
+  and use below 300 as a historical advisory ceiling unless the live submission
+  system or editor gives a newer instruction.
 - For Nature Communications or another subjournal, verify the current journal
   and article-type instructions before enforcing a numerical cap.
 - Keep the `Fig. N |` title short and nominal; no numbers/results in the figure

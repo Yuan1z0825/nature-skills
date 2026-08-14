@@ -74,5 +74,8 @@ artifacts while drafting Methods rather than after acceptance.
 ## Numeric non-invention rule
 
 The current public NMI pages do not state a fixed title limit, Methods word
-limit or separate per-legend word limit. Do not borrow those numbers from
-flagship Nature or Nature Communications.
+limit or current separate per-legend word limit. Do not borrow those numbers
+from flagship Nature or Nature Communications. For figure legends, retain the
+official 2018 NMI below-300-word instruction only as a historical advisory:
+count the complete legend rather than each panel, aim for 150–250 English words,
+and follow any newer editor or submission-system instruction.
