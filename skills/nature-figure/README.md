@@ -11,7 +11,7 @@
 - 规划 Figure 1、机制图、workflow、graphical abstract 或补充图。
 - 检查面板标签、配色与视觉层级、逐面板误差线、最终 PDF 实际字号、统计标注、source data 和导出格式。
 - 区分旗舰 `Nature` 初投稿、主图终稿和 Extended Data 的文件契约，并执行 `<250` 词图注上限。
-- 对 `Nature Machine Intelligence` 单独执行 6 个主 display、最多 10 个 Extended Data、初投稿/终稿边界、300 dpi/180 mm 和 source data 要求；不虚构 NMI 图注字数上限。
+- 对 `Nature Machine Intelligence` 单独执行 6 个主 display、最多 10 个 Extended Data、初投稿/终稿边界、300 dpi/180 mm 和 source data 要求；当前官网未给独立图注数字，保留 2018 官方 `<300` 英文词为历史建议线，整张图注建议 150–250 词且不是每个 panel 分别计算。
 - 在用户明确要求时，通过 OpenRouter Images API 调用 `openai/gpt-image-2` 生成 AI 概念示意图草稿。
 
 ## 工作方式
