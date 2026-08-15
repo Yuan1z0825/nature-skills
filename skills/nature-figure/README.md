@@ -13,6 +13,7 @@
 - 区分旗舰 `Nature` 初投稿、主图终稿和 Extended Data 的文件契约，并执行 `<250` 词图注上限。
 - 对 `Nature Machine Intelligence` 单独执行 6 个主 display、最多 10 个 Extended Data、初投稿/终稿边界、300 dpi/180 mm 和 source data 要求；当前官网未给独立图注数字，保留 2018 官方 `<300` 英文词为历史建议线，整张图注建议 150–250 词且不是每个 panel 分别计算。
 - 在用户明确要求时，通过 OpenRouter Images API 调用 `openai/gpt-image-2` 生成 AI 概念示意图草稿。
+- 对 AI 辅助 graphical abstract 先定义单一中心信息、图件类型、目标读者和证据边界，再比较构图与可访问配色；投稿前单独核验目标期刊最新 AI 政策、科学准确性、版权、披露和 provenance。`Nature Careers` 专栏仅作为实践建议，不等于投稿许可。
 
 ## 工作方式
 
@@ -62,6 +63,8 @@
 - `references/chart-types.md`：常见图型选择和视觉规则。
 - `references/demos.md`：第三方 `figures4papers` 示例索引、使用边界和原创适配模式。
 - `references/qa-contract.md`：导出前检查项、source-data 约束和静态预检入口。
+- `references/ai-graphical-abstract-workflow.md`：AI 图形摘要的信息简报、构图与配色、期刊政策门、人工科学核验、披露和 provenance 工作流。
+- `references/openrouter-image-generation.md`：OpenRouter / GPT Image 2 的 provider-specific 生成与 QA 路径。
 - `scripts/validate_figure.py`：Python/R 绘图源码的可复现静态 QA。
 - `scripts/audit_pdf_text.py`：扫描导出 PDF 的 `Tf` 操作符，发现 mathtext 上下标等低于 5 pt 的实际字形。
 - `scripts/figure_safety.py`：严格单调插值和基于数据/误差范围的标签高度 helper。
@@ -70,6 +73,7 @@
 ## 边界
 
 - 不会把 AI 生成图片当作真实实验结果或定量数据面板。
+- 不会把内部可用的 AI 草稿自动称为可投稿终稿；两者分别判定。
 - 不会凭空补统计检验、样本量、误差线含义或实验条件。
 - 不会为了渲染方便静默抽样、忽略变量或删除不完整观测。
 - 不会把自动校验通过当作视觉验收；最终交付仍需逐面板检查不确定性、标签碰撞、间距和显著性层级。

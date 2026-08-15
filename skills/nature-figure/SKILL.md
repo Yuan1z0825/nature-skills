@@ -17,16 +17,28 @@ Do not try to apply the figure logic from memory or from this router. Always loa
 
 Follow these steps every time the skill is invoked.
 
-### 0. Check for the OpenRouter AI-schematic route
+### 0. Check for graphical-abstract and AI-schematic routes
+
+For every graphical-abstract planning, generation, revision, or audit task that
+uses AI, read
+[references/ai-graphical-abstract-workflow.md](references/ai-graphical-abstract-workflow.md)
+first. It owns the message/audience brief, composition and palette workflow,
+policy gate, human scientific review, disclosure boundary, and provenance
+requirements. A Nature Careers article is practitioner advice, not submission
+clearance; verify the current official policy for the exact target journal.
+
+If the request is planning or auditing only, do not ask for Python or R unless
+the user also asks to render or revise a data-driven figure.
 
 If the user explicitly asks to generate a manuscript schematic, graphical abstract, mechanism diagram, concept illustration, or paper schematic with OpenRouter, GPT Image 2, an image-generation API, or similar wording, do **not** ask "Python or R?". This is a non-plotting AI-schematic route.
 
 For this route:
 
 1. Read [manifest.yaml](manifest.yaml) and the `always_load` files.
-2. Read [references/openrouter-image-generation.md](references/openrouter-image-generation.md).
-3. Use [scripts/generate_openrouter_schematic.py](scripts/generate_openrouter_schematic.py) when the user wants a real API call or a reproducible payload.
-4. Treat output as a draft schematic / graphical abstract, not as a quantitative data panel. Do not invent experimental values, author logos, institutional marks, or unsupported mechanisms.
+2. Read [references/ai-graphical-abstract-workflow.md](references/ai-graphical-abstract-workflow.md).
+3. Read [references/openrouter-image-generation.md](references/openrouter-image-generation.md).
+4. Use [scripts/generate_openrouter_schematic.py](scripts/generate_openrouter_schematic.py) when the user wants a real API call or a reproducible payload.
+5. Treat output as a draft schematic / graphical abstract, not as a quantitative data panel. Do not invent experimental values, author logos, institutional marks, or unsupported mechanisms. Keep internal usefulness separate from submission eligibility.
 
 Only continue to the Python/R backend gate for plotting, charting, data visualization, or manuscript figure assembly tasks that are not explicit OpenRouter AI image-generation requests.
 
@@ -84,7 +96,7 @@ The chart serves the scientific logic; aesthetic polish is subordinate to making
 
 ### 5. Reach for references only when needed
 
-The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/figure-contract.md` to build the contract, `references/asset-adaptation.md` to reuse a plotting template safely, `references/template-catalog.md` for validated Python CSV templates, `references/api.md` for the Python palette and numerical/layout safety helpers, `references/r-workflow.md` for R, `references/design-theory.md` for color/typography/export rationale, `references/common-patterns.md` and `references/chart-types.md` for layout/chart recipes, `references/nature-2026-observations.md` for real Nature page archetypes, `references/qa-contract.md` before final delivery, `references/nature-article-requirements.md` for exact flagship Nature stage and upload rules, `../nature-shared/journal-formats/nature-machine-intelligence.md` for exact NMI figure rules, and `references/tutorials.md` / `references/demos.md` for worked examples.
+The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/figure-contract.md` to build the contract, `references/asset-adaptation.md` to reuse a plotting template safely, `references/template-catalog.md` for validated Python CSV templates, `references/api.md` for the Python palette and numerical/layout safety helpers, `references/r-workflow.md` for R, `references/design-theory.md` for color/typography/export rationale, `references/common-patterns.md` and `references/chart-types.md` for layout/chart recipes, `references/nature-2026-observations.md` for real Nature page archetypes, `references/qa-contract.md` before final delivery, `references/nature-article-requirements.md` for exact flagship Nature stage and upload rules, `../nature-shared/journal-formats/nature-machine-intelligence.md` for exact NMI figure rules, `references/ai-graphical-abstract-workflow.md` for AI-assisted graphical-abstract planning, policy gating, human verification, and provenance, and `references/tutorials.md` / `references/demos.md` for worked examples.
 
 Do not infer flagship Nature or NMI requirements from a Nature Communications
 corpus or from the visual-style examples in this skill.

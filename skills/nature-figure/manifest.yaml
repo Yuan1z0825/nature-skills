@@ -1,5 +1,5 @@
 name: nature-figure
-version: 2.4.1
+version: 2.5.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is
@@ -14,6 +14,14 @@ always_load:
   - static/core/stance.md
 
 routes:
+  graphical_abstract_workflow:
+    detect: |
+      Use this route whenever AI assists the planning, generation, revision, or
+      audit of a graphical abstract. Planning and audit-only tasks do not need
+      the Python/R backend gate. The reference owns the policy check,
+      message/audience brief, visual design workflow, human verification,
+      disclosure boundary, and provenance record.
+    reference: references/ai-graphical-abstract-workflow.md
   openrouter_image_generation:
     detect: |
       Use this route only when the user explicitly asks for OpenRouter, GPT
@@ -79,6 +87,8 @@ references:
       path: references/nature-2026-observations.md
     - condition: "OpenRouter/GPT Image 2 route: AI-generated graphical abstracts, mechanism diagrams, paper schematics, or concept illustrations"
       path: references/openrouter-image-generation.md
+    - condition: AI-assisted graphical abstract planning, generation, revision, audit, journal-policy check, scientific verification, disclosure, or provenance
+      path: references/ai-graphical-abstract-workflow.md
     - condition: writing or auditing figure/table legend text — Fig. N | title, panel style, stats in legend, Source Data boilerplate, attribution; load the flagship Nature requirements too when that is the target journal
       path: references/figure-legend-conventions.md
     - condition: "end-to-end walkthroughs: bars, trends, heatmaps"

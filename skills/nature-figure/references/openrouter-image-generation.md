@@ -12,6 +12,11 @@
 
 Use this reference only when the user explicitly asks to generate a paper schematic, graphical abstract, mechanism diagram, or concept illustration through OpenRouter / GPT Image 2 / an image-generation API.
 
+Read `ai-graphical-abstract-workflow.md` first. Complete its journal-policy gate,
+communication brief, scientific-review plan, and provenance plan before making a
+real API call. If submission eligibility has not been verified, mark the result
+as an internal design draft rather than a submission-ready asset.
+
 Do not use this route for quantitative plots, data panels, heatmaps, microscopy plates, blots, or figure assembly unless the user explicitly wants an AI-generated draft illustration. Keep data-driven figures in the Python or R route.
 
 ## Source
@@ -27,6 +32,9 @@ Authentication uses `OPENROUTER_API_KEY` as a bearer token.
 ## Safety and scientific integrity
 
 - Treat generated images as draft visual concepts, not evidence.
+- Do not treat a Nature Careers article as permission to submit generative-AI
+  artwork. Verify the exact target journal's current official rules and keep
+  internal usefulness separate from submission eligibility.
 - Do not invent quantitative values, p-values, spectra, microscopy findings, institution logos, author photos, journal marks, or unsupported mechanisms.
 - Prefer short labels and simple shapes. AI image models can misspell text; final publication labels should usually be redrawn in Illustrator, Inkscape, PowerPoint, or a Python/R vector workflow.
 - If the schematic could be interpreted as a data panel, explicitly mark it as conceptual.
@@ -43,6 +51,7 @@ Before calling the API, collect or infer:
 5. target aspect ratio and output format
 6. any labels that must appear, keeping them short
 7. things that must be excluded
+8. target journal, policy URL, access date, and intended AI-use disclosure
 
 Write a compact prompt with:
 
@@ -129,3 +138,4 @@ After generation:
 3. list any scientific hallucinations or unsupported visual claims
 4. recommend which labels or arrows should be redrawn as vector objects
 5. keep the generated image and metadata together for provenance
+6. report separate verdicts for internal design use and submission eligibility

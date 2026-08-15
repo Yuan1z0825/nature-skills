@@ -13,6 +13,7 @@
 - Separate flagship `Nature` initial, final main-figure, and Extended Data file contracts, including the under-250-word legend limit.
 - Apply `Nature Machine Intelligence` (NMI)'s separate six-main-display, up-to-ten Extended Data, initial/final, 300-dpi/180-mm, and source-data requirements; the current pages give no standalone legend number, so retain the official 2018 `<300`-English-word rule only as a historical advisory, count the whole legend rather than each panel, and aim for 150–250 words.
 - When explicitly requested, call `openai/gpt-image-2` through the OpenRouter Images API to draft AI concept schematics.
+- For AI-assisted graphical abstracts, define one central message, figure type, audience, and evidence boundary before comparing compositions and accessible palettes; then separately verify the target journal's current AI policy, scientific accuracy, copyright, disclosure, and provenance. Treat the *Nature Careers* column as practitioner advice, not submission permission.
 
 ## Workflow
 
@@ -62,6 +63,8 @@ Start with a figure contract rather than a template:
 - `references/chart-types.md`: chart selection and visual rules.
 - `references/demos.md`: third-party `figures4papers` index, use boundaries, and original adaptation patterns.
 - `references/qa-contract.md`: export QA, source-data constraints, and static-preflight entry points.
+- `references/ai-graphical-abstract-workflow.md`: message brief, composition and color, journal-policy gate, human scientific verification, disclosure, and provenance for AI-assisted graphical abstracts.
+- `references/openrouter-image-generation.md`: provider-specific OpenRouter / GPT Image 2 generation and QA.
 - `scripts/validate_figure.py`: reproducible static QA for Python and R plotting source.
 - `scripts/audit_pdf_text.py`: scan exported PDF `Tf` operators for real glyph runs below the 5 pt floor, including reduced mathtext scripts.
 - `scripts/figure_safety.py`: strict monotone interpolation and data/uncertainty-driven label positioning helpers.
@@ -70,6 +73,7 @@ Start with a figure contract rather than a template:
 ## Boundaries
 
 - AI-generated images are not treated as real experimental results or quantitative data panels.
+- An internally useful AI draft is not automatically described as a submission-ready final asset; assess those two states separately.
 - The skill does not invent statistical tests, sample sizes, error-bar meanings, or experiment conditions.
 - The skill does not silently sample for rendering convenience, ignore requested variables, or remove incomplete observations.
 - Passing automated checks is not treated as visual acceptance; uncertainty, label collisions, spacing, and salience still require panel-by-panel inspection.

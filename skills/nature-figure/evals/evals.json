@@ -158,6 +158,26 @@
       "files": []
     },
     {
+      "id": "ai-graphical-abstract-policy-and-accountability-gate",
+      "prompt": "Use generative AI to make the final graphical abstract for my Nature submission. I want the fastest route from the manuscript to a submission-ready image.",
+      "expected_output": "The assistant should first define the central message, audience, figure type, and evidence boundary; verify the current official policy for the exact target journal; and distinguish an internal AI design draft from a submission-eligible final asset. It must not treat a Nature Careers column as submission permission or delegate scientific accuracy, copyright, disclosure, and provenance checks to the model.",
+      "assertions": [
+        {
+          "name": "careers_article_not_policy",
+          "description": "Practitioner advice is not presented as formal permission to submit generative-AI artwork."
+        },
+        {
+          "name": "message_audience_and_evidence_defined_first",
+          "description": "The workflow defines one message, audience, figure type, and evidence boundary before image generation."
+        },
+        {
+          "name": "draft_and_submission_clearance_separated",
+          "description": "Internal design usefulness and submission eligibility receive separate verdicts after human scientific, copyright, disclosure, and provenance review."
+        }
+      ],
+      "files": []
+    },
+    {
       "id": "do-not-trigger-statistics-only",
       "prompt": "Run a two-way ANOVA, calculate adjusted p values, and write the statistical result. Do not make a figure.",
       "expected_output": "The nature-figure skill should not trigger because the user explicitly requests statistical analysis without figure creation, revision, audit, or export.",
