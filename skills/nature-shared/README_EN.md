@@ -19,6 +19,7 @@ always_load:
 | `core/research-compliance.md` | `nature-writing` and skills needing Nature Portfolio specialist compliance checks |
 | `core/terminology-ledger.md` | `nature-polishing`, `nature-writing`, `nature-reader`, `nature-paper2ppt` |
 | `core/consistency-sweep.md` | `nature-polishing`, `nature-reviewer`, `nature-response`, `nature-statistics` |
+| `core/main-text-discipline.md` | `nature-writing`, `nature-polishing`, `nature-response` |
 | `journal-formats/nat-comms.md` | `nature-polishing`, `nature-writing` |
 | `journal-formats/nature.md` | `nature-writing` and skills needing exact flagship `Nature Article` submission rules |
 | `journal-formats/nature-machine-intelligence.md` | Writing, polishing, figure, data, and statistics workflows for NMI submissions |

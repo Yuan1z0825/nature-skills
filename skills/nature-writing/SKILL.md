@@ -1,6 +1,6 @@
 ---
 name: nature-writing
-description: Draft, restructure, or plan Nature-style manuscript sections and initial-submission materials from author-provided claims, results, figures, notes, or Chinese drafts. Use when the user wants to write or rebuild an abstract, introduction, related-work, method, experiments, discussion, conclusion, title, full manuscript argument, pre-submission cover letter, title page, highlights, author-contribution statement, availability/declaration text, reviewer suggestions, or a complete initial submission package rather than only polish finished prose. Also trigger on general academic-writing and first-submission requests such as writing a paper from scratch, drafting a manuscript/section, structuring a paper, submission package, 投稿材料、首次投稿、投稿前 cover letter、投稿信、标题页、亮点、作者贡献、数据可用性声明、推荐审稿人.
+description: Draft, restructure, or plan Nature-style manuscript sections and initial-submission materials from author-provided claims, results, figures, notes, or Chinese drafts. Use for abstracts, introductions, related work, methods, Results or experiments, discussions, conclusions, titles, full manuscript arguments, and first-submission packages such as cover letters, title pages, highlights, author contributions, availability or declaration text, and reviewer suggestions. Also use to classify Results evidence, decide what belongs in main text, captions, Methods or source data, or Supplementary Information, compress Results to the shortest sufficient evidence chain, prevent revision accretion, and audit paragraph necessity or claim repetition. Trigger on drafting a paper or section, structuring a manuscript, academic writing, first submission, 投稿材料、首次投稿、投稿信、标题页、亮点、作者贡献、数据可用性声明、推荐审稿人.
 ---
 
 # Nature-Style Scientific Writing — Router
@@ -57,6 +57,13 @@ Apply the loaded fragments in this priority order:
 
 For `task=manuscript`, run the workflow in `core/workflow.md` end-to-end. Do not skip planning just because the user asked for prose immediately.
 
+When drafting or restructuring Results, or compressing a full manuscript's main
+text, also load `../nature-shared/core/main-text-discipline.md` before building
+the paragraph map. Classify every result by function, allocate it across main
+text, captions, Methods/source data, and SI, then draft the shortest sufficient
+evidence chain. Do not equate a complete analysis record with a complete main
+text.
+
 For `task=submission-package`, follow `static/fragments/task/submission-package.md` and `references/submission-package.md` instead. Build the deliverable matrix and readiness audit; do not force manuscript paragraph architecture onto administrative submission materials.
 
 If essential evidence or boundary is missing, write a placeholder and list it under `Assumptions or missing inputs:` instead of inventing content.
@@ -70,6 +77,9 @@ The files under `references/` are deep references and the example library, not d
 - The user needs a broad-audience `Nature` abstract opening or asks about a `summary paragraph` → `references/nature-summary-paragraph.md`.
 - The user asks "does this paragraph flow?" → `references/paragraph-flow.md`.
 - The user asks for a self-review or rejection-risk audit → `references/paper-review.md`.
+- The user asks what belongs in the main text, captions, or SI; wants a shorter
+  Results section; or is adding reviewer-driven explanation →
+  `../nature-shared/core/main-text-discipline.md`.
 - The user requests a complete first-submission package, templates, or a submission-readiness audit → `references/submission-package.md`.
 - The target is the flagship journal Nature and exact submission or formatting
   requirements matter → `../nature-shared/journal-formats/nature.md`.

@@ -12,6 +12,17 @@ Default output:
 
 For Chinese-author notes, provide polished English first, then brief Chinese notes explaining major structural choices.
 
+For a Results or full-main-text restructuring task, also include a compact
+`Main-text discipline audit:` after the prose:
+
+- result allocation: core / necessary support / qualification / SI-bound detail
+- relocated, replaced, compressed, or deleted material
+- primary statistic retained in the main text and secondary analyses routed to SI
+- before/after word count for each revised subsection
+
+Return the full allocation and claim-repetition tables only when the manuscript
+is being comprehensively restructured or the user asks for the audit trail.
+
 If essential evidence or boundary is missing, do not invent. Write a placeholder such as `[Evidence needed: comparator group accuracy on test set X]` and list it under `Assumptions or missing inputs:`.
 
 For `task=submission-package`, replace the default manuscript format with:

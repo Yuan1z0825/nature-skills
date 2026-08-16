@@ -11,6 +11,7 @@
 - Turn Chinese research notes into English manuscript paragraphs.
 - Build the background, gap, question, and contribution chain for an Introduction.
 - Reorder Results or Discussion at the section level rather than only polishing sentences.
+- Classify results as core discovery, necessary support, conclusion-changing qualification, robustness, heterogeneity, provenance, alternative inference, or edge case; allocate them across main text, captions, Methods/source data, and SI; and compress the main text to the shortest sufficient evidence chain.
 - Prepare an initial cover letter, title page, highlights, author contributions, availability statements, and other declarations.
 - Organize reviewer suggestions, a deliverable matrix, and a pre-submission completeness audit.
 - Run the stage-aware official checklist for a flagship `Nature Article`: initial files, title/text/display limits, Extended Data, SI, Reporting Summary, ethics, and specialist materials.
@@ -32,6 +33,7 @@
 ## Outputs
 
 - Section outline, claim-evidence map, or ready-to-paste prose.
+- A Results allocation table, deletion/replacement record, and before/after main-text word-count delta when needed.
 - Revision suggestions for novelty, significance, evidence chain, and reader path.
 - Facts, references, or figure notes requiring author confirmation.
 - Initial-submission materials, editable LaTeX templates, a missing-input checklist, and a `ready / ready_with_author_checks / blocked` status.

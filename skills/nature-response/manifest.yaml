@@ -1,5 +1,5 @@
 name: nature-response
-version: 1.6.0
+version: 1.7.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments and templates to load for a reviewer-response or
@@ -12,9 +12,9 @@ description: >
 # decision type, user language — is identified at runtime, mainly by
 # references/intake-and-routing.md, not by loading different large content
 # bodies. There is therefore no content axis; the split is core (always loaded)
-# plus the existing on-demand references. nature-response does not use the
-# prose-oriented nature-shared layer (it has its own response-specific stance and
-# source basis).
+# plus the existing on-demand references. nature-response keeps its own
+# response-specific stance and source basis, but loads the shared main-text
+# discipline when a reviewer response proposes or performs manuscript edits.
 
 always_load:
   - static/core/stance.md
@@ -22,6 +22,8 @@ always_load:
 
 references:
   on_demand:
+    - condition: a reviewer or editor comment leads to additions, deletions, compression, relocation, or statistical-detail changes in the manuscript main text — classify the result, prevent revision accretion, separate main text/caption/SI functions, and run deletion, paragraph-necessity, and claim-repetition checks
+      path: ../nature-shared/core/main-text-discipline.md
     - condition: before drafting — identify task mode, enforce the Major/Minor decision-type gate, parse pasted decision emails, minimum inputs, editor IDs, readiness state, and clarifying-question need
       path: references/intake-and-routing.md
     - condition: source hierarchy, rule provenance, or policy-vs-advice boundaries

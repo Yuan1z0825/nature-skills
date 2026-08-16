@@ -1,6 +1,6 @@
 ---
 name: nature-polishing
-description: Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English. Also covers LaTeX layout/typesetting (排版) fixes — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, "Float too large", multi-panel figure arrangement, and Supplementary Information that looks empty — via references/latex-layout.md. Also trigger on general academic/scientific writing requests even without the word "Nature", including academic writing, scientific writing, SCI/paper writing, English manuscript polishing, language editing, proofreading, and Chinese phrasings such as 学术写作、科研写作、论文润色、写paper、SCI写作、英文论文润色、语言润色、润色、改写、学术英语、英文写作.
+description: Polish, restructure, or translate academic prose into concise Nature-leaning English while preserving facts, evidence boundaries, terminology, and citation intent. Use for manuscript paragraphs, abstracts, introductions, Results, discussions, conclusions, titles, Methods, Chinese drafts, proofreading, language editing, and general academic or scientific writing. Also use to shorten bloated Results, allocate evidence across main text, captions, and Supplementary Information, prevent reviewer-driven revision accretion, reduce repeated statistics or claims, and apply paragraph-necessity checks. Covers LaTeX layout or typesetting fixes such as sparse pages, stranded headings, oversized or split figures, float errors, multi-panel arrangement, and sparse Supplementary Information via references/latex-layout.md. Trigger on 学术写作、科研写作、论文润色、SCI写作、英文论文润色、语言润色、润色、改写、学术英语、排版.
 ---
 
 # Nature-Style Academic Polishing — Router
@@ -53,6 +53,12 @@ Apply the loaded fragments in this priority order, matching the `paper type -> s
 5. Core stance and ethics throughout.
 
 If a paragraph's structural problem cannot be fixed without inventing content, flag it instead of papering over it.
+
+For Results, full-main-text compression, main-versus-SI allocation, or prose
+added during revision, load `../nature-shared/core/main-text-discipline.md`
+before sentence polishing. Classify each result, retain the shortest sufficient
+evidence chain, and require every addition to trigger a deletion or replacement
+check across the affected paragraph.
 
 ### 5. Reach for references only when needed
 

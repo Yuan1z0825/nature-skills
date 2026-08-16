@@ -11,6 +11,7 @@
 - 将中文研究笔记转成英文手稿段落。
 - 为 Introduction 建立背景、缺口、问题和贡献链。
 - 对 Results 或 Discussion 做章节级重排，而不是只做句子润色。
+- 将结果分为核心发现、必要支撑、结论性限定、稳健性、异质性、provenance、替代推断和边缘情况，决定主文、图注、Methods/source data 与 SI 的位置，并压缩成最短充分证据链。
 - 准备首次投稿 cover letter、title page、highlights、作者贡献、数据/代码可用性和其他声明。
 - 整理推荐审稿人、投稿材料矩阵和提交前完整性检查。
 - 对旗舰 `Nature Article` 执行分阶段官网清单：初投稿文件、标题/字数/display 限制、Extended Data、SI、Reporting Summary、伦理和专项材料。
@@ -32,6 +33,7 @@
 ## 产出
 
 - 章节大纲、claim-evidence map 或可粘贴正文。
+- Results allocation table、删除/替换记录和主文压缩前后字数差（需要时提供）。
 - 对 novelty、significance、证据链和读者路径的修改建议。
 - 需要作者确认的事实、引用或图表说明。
 - 首次投稿材料包、可编辑 LaTeX 模板、缺失信息清单和 `ready / ready_with_author_checks / blocked` 状态。

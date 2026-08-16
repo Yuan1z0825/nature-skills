@@ -1,5 +1,5 @@
 name: nature-shared
-version: 1.3.1
+version: 1.4.0
 description: >
   Declarative manifest for shared Nature reference modules. This package is not
   a standalone workflow; installed Nature skills use it to load exact shared
@@ -25,6 +25,8 @@ core:
       path: core/terminology-ledger.md
     - condition: auditing an existing or multi-round-revised manuscript for accumulated drift — terminology/unit/number variants, headline counts that do not reconcile with the Methods, claims contradicted by the paper's own tables, over- or under-claiming, tense parallelism, and prose that restates displays
       path: core/consistency-sweep.md
+    - condition: drafting, restructuring, compressing, or reviewer-revising scientific main text — classify results as core/support/qualification/robustness/heterogeneity/provenance/alternative inference/edge case; allocate evidence across main text, captions, and SI; run paragraph-necessity, deletion, statistics-location, and claim-repetition checks
+      path: core/main-text-discipline.md
 
 journal_formats:
   on_demand:

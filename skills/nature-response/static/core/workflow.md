@@ -46,7 +46,7 @@ Minor Revision. Journal instructions and explicit editor directions override the
 10. When a reviewer asks about material that already existed in the submitted manuscript, use `CLARIFY_EXISTING` and treat the missed point as a presentation problem. Answer directly, acknowledge that the original wording or placement did not make the point sufficiently clear, make or propose a small clarification, and cite the revised location. Do not say that the reviewer should have seen it or that it was already stated.
 11. If explicit current journal or portal instructions require one combined response document, follow that submission requirement and flag its visibility implications. Otherwise default to an editor/internal master plus separate reviewer-specific files. Never silently treat the master tracker as reviewer-facing.
 12. For `cover-letter` or `revision-package`, draft a concise editor-facing cover letter that summarizes revision scope and points to the point-by-point responses without duplicating them.
-13. Map each claimed change to manuscript location, figure, table, supplement, citation, or explicit placeholder.
+13. Map each claimed change to manuscript location, figure, table, supplement, citation, or explicit placeholder. For every main-text edit, load `../../../nature-shared/core/main-text-discipline.md`, classify the result or explanation, and decide whether it belongs in the main text, caption, Methods/source data, SI, or response letter. Answer the reviewer fully in the letter while keeping the manuscript change to the shortest reader-facing text that preserves the central inference. Every addition triggers a deletion check across the affected paragraph; prefer replacement or compression before appending.
 14. If editing manuscript text, create or instruct use of a backed-up manuscript copy and mark changed text in red. For LaTeX, use `\revised{...}` from `templates/revised-manuscript-redline.tex`.
 15. If pasting revised manuscript text after a response, format it in italics. For LaTeX response files, use `\RevisedExcerpt{...}` from `templates/response-to-reviewers.tex`.
 16. If the user requests LaTeX, create one filled copy of `templates/response-to-reviewers.tex` per reviewer and use `templates/cover-letter.tex` and/or `templates/revised-manuscript-redline.tex` as needed. Preserve visible placeholders for missing facts.
@@ -91,6 +91,8 @@ LaTeX files
 
 Manuscript change checklist
 - [specific manuscript changes or placeholders]
+- Main-text discipline audit: [result/explanation class; destination; appended,
+  replaced, compressed, relocated, or deleted; before/after paragraph word count]
 
 Missing information / risk flags
 - [specific unresolved items or "None"]

@@ -13,6 +13,7 @@
 - Distinguish research-paper and methods-paper writing priorities.
 - Check AI-like phrasing, exaggerated claims, excessive causal language, and unnatural collocations.
 - Sweep full or repeatedly revised manuscripts for terminology, unit, numeric-precision, and internal-claim drift.
+- Audit Results for main-text necessity: separate core discovery and necessary support from robustness, heterogeneity, and alternative inference; allocate material across main text, captions, and SI; and make every addition trigger a deletion or replacement check.
 
 ## Method Sources
 
@@ -37,6 +38,7 @@
 - Ready-to-paste English rewrite or Chinese-English paired version.
 - Key change notes: logic reordering, tone tightening, terminology alignment, and claim boundaries.
 - A manuscript-wide consistency risk list, with mechanical warnings inspected in context before revision.
+- For main-text compression, an optional result-allocation table, deletion record, statistics-location record, and claim-repetition map.
 - Facts or citation intent that require author confirmation.
 
 ## Boundaries

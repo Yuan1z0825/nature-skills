@@ -19,6 +19,7 @@ always_load:
 | `core/research-compliance.md` | `nature-writing` 及需要 Nature Portfolio 专项合规检查的技能 |
 | `core/terminology-ledger.md` | `nature-polishing`, `nature-writing`, `nature-reader`, `nature-paper2ppt` |
 | `core/consistency-sweep.md` | `nature-polishing`, `nature-reviewer`, `nature-response`, `nature-statistics` |
+| `core/main-text-discipline.md` | `nature-writing`, `nature-polishing`, `nature-response` |
 | `journal-formats/nat-comms.md` | `nature-polishing`, `nature-writing` |
 | `journal-formats/nature.md` | `nature-writing` 及需要旗舰 `Nature Article` 精确投稿规则的技能 |
 | `journal-formats/nature-machine-intelligence.md` | NMI 投稿的写作、润色、图表、数据与统计工作流 |

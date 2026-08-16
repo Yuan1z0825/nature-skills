@@ -16,6 +16,7 @@
 - Draft formal, restrained, submission-ready English point-by-point responses and cover letters.
 - Audit rebuttal drafts for missed replies, defensive tone, unsupported claims, and missing line numbers.
 - When a reviewer misses material already present in the manuscript, treat it as a clarity problem and improve the presentation instead of replying that it was already stated.
+- Answer the reviewer fully in the letter but keep manuscript changes to what readers need for the central inference; every new main-text sentence triggers a replacement, compression, deletion, or SI-relocation check to prevent revision accretion.
 - Mechanically check LaTeX revision packages for quoted-text drift, comment-response count mismatches, and clean-versus-marked manuscript text drift.
 
 ## Typical Requests
@@ -46,6 +47,7 @@
 - The skill does not invent experiments, analyses, line numbers, figures, statistical results, or editor requirements.
 - It does not use cross-reviewer phrases such as "another reviewer also noted" or "see our response to Reviewer 2" in a reviewer-facing response.
 - It does not rebuke reviewers with "we already stated this". It answers directly, clarifies the presentation, and identifies the revised location.
+- It does not turn the main text into a pre-emptive reviewer response or keep appending non-central robustness and recursive reconciliation prose to Results.
 - Information that needs author confirmation is marked in Chinese rather than written as fact.
 - For pre-submission simulated review, use `nature-reviewer`.
 

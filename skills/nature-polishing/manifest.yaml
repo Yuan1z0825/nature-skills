@@ -1,5 +1,5 @@
 name: nature-polishing
-version: 6.3.1
+version: 6.4.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given polishing request.
@@ -71,6 +71,8 @@ axes:
 
 references:
   on_demand:
+    - condition: polishing, restructuring, or shortening Results or full main text; deciding what belongs in main text versus captions or SI; preventing revision accretion; reducing statistical or claim repetition; or applying a paragraph necessity test
+      path: ../nature-shared/core/main-text-discipline.md
     - condition: needs Nature/Nature Communications article-level patterns for abstracts, intros, Results openings, Discussion, conclusions, titles
       path: references/published-article-patterns.md
     - condition: empirical 2025 Nat Commun diction calibration — connector frequencies, the significantly red line, hedge/booster/tense word choices

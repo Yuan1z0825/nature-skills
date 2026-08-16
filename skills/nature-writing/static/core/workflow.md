@@ -22,6 +22,16 @@ Each paragraph must do exactly one job from: context, gap, approach, result, com
 
 If a paragraph carries two jobs, split it before drafting.
 
+## 3a. Allocate Results evidence before drafting
+
+When the task includes Results, a full manuscript, main-text compression, or
+main-versus-SI placement, load
+`../../../nature-shared/core/main-text-discipline.md`. Classify each result as
+core discovery, necessary support, qualification, robustness, heterogeneity,
+provenance detail, alternative inference, or edge case. Build the shortest
+sufficient main-text evidence chain and record the destination of everything
+else. Do not bury conclusion-changing evidence in SI.
+
 ## 3b. Confirmation gate — align before drafting
 
 Drafting a full section on a wrong assumed premise wastes the whole draft and is the main reason output "does not match what I meant". Before writing full prose, show the user a short alignment block and **stop for confirmation**:
@@ -74,3 +84,7 @@ When the user reacts to a draft, "this is not what I meant" is usually local —
 - Keep the Terminology Ledger (step 1b) stable across revisions unless the user changes a term; never let a revision reintroduce a variant of a locked term.
 - After revising, re-run only the checks relevant to what changed (steps 5-7), not the whole workflow.
 - If the user's redirection reveals the original premise was wrong, return to the confirmation gate (step 3b) instead of patching prose on a broken premise.
+- Every proposed addition triggers the main-text deletion check: identify the
+  new sentence's function, find existing text with the same function, and prefer
+  replacement or compression before appending. Re-run the paragraph necessity
+  and claim-repetition checks after the edit.
