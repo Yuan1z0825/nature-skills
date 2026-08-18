@@ -44,7 +44,15 @@ class IsolatedLifecycleTests(unittest.TestCase):
                 windows_dir = Path(os.environ.get("SystemRoot", "C:/Windows"))
                 clean_path = str(windows_dir / "System32" / "WindowsPowerShell" / "v1.0")
             else:
-                clean_path = os.pathsep.join(path for path in ("/usr/bin", "/bin") if Path(path).is_dir())
+                # Keep only the declared system dependencies while excluding any
+                # legacy Image2PPT command. Homebrew and bundled runtimes commonly
+                # install LibreOffice/fontconfig outside /usr/bin on macOS.
+                allowed_dirs = [path for path in ("/usr/bin", "/bin") if Path(path).is_dir()]
+                for command in ("soffice", "libreoffice", "fc-match"):
+                    resolved = shutil.which(command)
+                    if resolved:
+                        allowed_dirs.append(str(Path(resolved).resolve().parent))
+                clean_path = os.pathsep.join(dict.fromkeys(allowed_dirs))
             external_command = "edit" + "ppt"
             self.assertIsNone(shutil.which(external_command, path=clean_path))
             env = os.environ.copy()
@@ -58,7 +66,7 @@ class IsolatedLifecycleTests(unittest.TestCase):
             doctor = self.run_ok([*cli, "doctor", "--json"], env=env, cwd=isolated)
             doctor_payload = json.loads(doctor.stdout)
             self.assertTrue(doctor_payload["ok"], doctor_payload)
-            self.assertEqual(Path(doctor_payload["skill_root"]), isolated)
+            self.assertEqual(Path(doctor_payload["skill_root"]).resolve(), isolated.resolve())
             self.assertEqual(doctor_payload["ocr"]["selection"], "builtin-ink")
 
             source = Path(tmp) / "source.png"

@@ -40,6 +40,7 @@
 ## 运行和依赖
 
 - 使用 Python 3.10 或更高版本，并安装 `requirements.txt`。
+- 复制或同步技能文件不会自动安装 Python 包；必须在实际运行 CLI 的同一 Python 环境中安装依赖，并以 `doctor --json` 成功为准。
 - 使用 Microsoft PowerPoint（Windows）或 LibreOffice 完成渲染检查；以 `python cli/image2ppt/cli.py doctor --json` 的结果为准。
 - 在线文字识别使用百度 AI Studio `PADDLE_OCR_TOKEN`。将 `config.example.yaml` 复制为同目录的 `config.yaml` 后填写 Token；真实配置已被 Git 忽略，不能提交。
 - 完整实现同步自 [Paul-Jeo/Image2PPT](https://github.com/Paul-Jeo/Image2PPT)，并在本技能目录中保留 MIT License。

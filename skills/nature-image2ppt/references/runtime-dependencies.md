@@ -11,6 +11,11 @@ Use Python 3.10 or later and install the bundled requirements:
 python -m pip install -r <image2ppt-root>/requirements.txt
 ```
 
+Copying or synchronizing the Skill does not install Python packages. Run the
+command above in the Python environment that will execute the CLI, then require a
+successful `doctor --json` result before preparing an input. Prefer a dedicated
+environment over modifying the operating system Python.
+
 Required packages are pypdfium2, Pillow, NumPy, Requests, PyYAML, and OpenAI. The
 OpenAI package supports the optional image-generation fallback; OCR uses Requests.
 The builder writes OOXML directly and does not require `python-pptx`.

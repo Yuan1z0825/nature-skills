@@ -36,6 +36,11 @@ if ! grep -Fq "ignoring unsafe managed skill name" "$TMP_DIR/stderr"; then
   exit 1
 fi
 
+if ! grep -Fq "nature-image2ppt/requirements.txt" "$TMP_DIR/stdout"; then
+  echo "Required Image2PPT dependency setup was not reported." >&2
+  exit 1
+fi
+
 ROLLBACK_DEST="$TMP_DIR/rollback-skills"
 FAKE_BIN="$TMP_DIR/fake-bin"
 REAL_MV=$(command -v mv)

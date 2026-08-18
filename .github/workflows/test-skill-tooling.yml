@@ -82,15 +82,7 @@ jobs:
 
       - name: Test nature-image2ppt cross-platform runtime
         working-directory: skills/nature-image2ppt
-        run: |
-          python -m pytest -q \
-            tests/test_pdf_backend.py \
-            tests/test_page_hints.py \
-            tests/test_ocr_http.py \
-            tests/test_multi_agent_backend.py \
-            tests/test_migration_parity.py \
-            tests/test_project_metadata.py \
-            tests/test_runtime_paths.py
+        run: python -m pytest -q tests
 
       - name: Test nature-paper-card
         working-directory: skills/nature-paper-card

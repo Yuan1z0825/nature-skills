@@ -11,10 +11,11 @@ Use this directory as the complete runtime. Run deterministic actions only throu
 python <image2ppt-root>/cli/image2ppt/cli.py <command> ...
 ```
 
-For this project-local Windows deployment, substitute
-`<image2ppt-root>/.venv/Scripts/python.exe` for every `python` command below when
-that interpreter exists. It contains the pinned runtime dependencies and avoids
-depending on the user's global Python environment.
+Use Python 3.10 or later with `requirements.txt` installed. When a dedicated
+environment exists, substitute `<image2ppt-root>/.venv/bin/python` on macOS/Linux
+or `<image2ppt-root>/.venv/Scripts/python.exe` on Windows for every `python`
+command below. Do not continue after a failed `doctor`; install only the reported
+missing dependency, then rerun it.
 
 Do not discover or invoke another Skill, CLI, Prompt, Schema, module, or state machine.
 

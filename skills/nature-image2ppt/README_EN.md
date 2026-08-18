@@ -40,6 +40,7 @@
 ## Runtime and Dependencies
 
 - Use Python 3.10 or later and install `requirements.txt`.
+- Copying or synchronizing the skill does not install Python packages; install them in the same Python environment that runs the CLI and require `doctor --json` to pass.
 - Use Microsoft PowerPoint on Windows or LibreOffice for rendered checks; follow the result of `python cli/image2ppt/cli.py doctor --json`.
 - Online text recognition uses a Baidu AI Studio `PADDLE_OCR_TOKEN`. Copy `config.example.yaml` to the adjacent `config.yaml` and fill the Token there; Git ignores the real configuration and it must never be committed.
 - The complete implementation is synchronized from [Paul-Jeo/Image2PPT](https://github.com/Paul-Jeo/Image2PPT), with its MIT License retained in this skill directory.
