@@ -19,22 +19,19 @@ missing dependency, then rerun it.
 
 Do not discover or invoke another Skill, CLI, Prompt, Schema, module, or state machine.
 
-## Read the local contracts
+## Read the local contracts progressively
 
-Before a run, read:
+Always read `references/workflow.md`. Read `references/runtime-dependencies.md`
+only for setup or `doctor` failures, and read
+`references/ocr-text-hints-contract.md` only when choosing or troubleshooting OCR.
 
-- `references/workflow.md`
-- `references/runtime-dependencies.md`
-- `references/ocr-text-hints-contract.md`
+Before writing a page manifest, read `references/page-decision-tree.md` and
+`references/manifest-schema.md`. Add only the references needed by that page:
 
-Before reconstructing a page, also read:
-
-- `references/page-decision-tree.md`
-- `references/manifest-schema.md`
-- `references/region-decomposition.md`
-- `references/object-routing.md`
-- `references/manifest-arrow-extension.md`
-- `references/assets-provenance-contract.md`
+- structured or compound page: `references/region-decomposition.md` and
+  `references/object-routing.md`;
+- arrows: `references/manifest-arrow-extension.md`;
+- raster assets or image-backend work: `references/assets-provenance-contract.md`.
 
 Before accepting or delivering output, read `references/qa-contract.md`.
 
@@ -50,6 +47,20 @@ Before accepting or delivering output, read `references/qa-contract.md`.
   controller, packager, or finalize path.
 - Let supplemental QA report failures; never let it mutate lifecycle state.
 
+## Keep every write inside its owner directory
+
+- Page build, validation, hints, and QA may read and write only inside that page
+  directory. Manifest paths, recorded assets, formulas, reports, previews, and
+  `--out` overrides must not use `..`, symlinks, or absolute paths to escape it.
+  The sole external-input exception is an explicit image-tool result supplied to
+  `image import` or as `process-sheet --asset-sheet-source`; it is copied into the
+  page before becoming a build dependency.
+- Run-level manifests and final outputs must remain inside the prepared run
+  directory. Finalization rebuilds into a same-directory temporary file and
+  publishes it atomically only after a successful build.
+- Treat any boundary rejection as a hard failure; do not copy the rejected file
+  back into scope and present it as runtime output.
+
 ## Preserve pre-migration behavior
 
 - Treat self-containment as a path/import/entrypoint migration, not a redesign of
@@ -62,6 +73,16 @@ Before accepting or delivering output, read `references/qa-contract.md`.
 - Never re-author an accepted baseline page merely to prove runtime independence.
 
 ## Run the workflow
+
+### Image backend selection
+
+Use `builtin-imagegen` when the agent runtime exposes `image_gen.imagegen`; it is
+the preferred backend because the worker can inspect edit inputs and import the
+explicit local result. Use the CLI image contract only when the built-in tool is
+unavailable, errors, cannot read an input, or returns no valid local output. A
+missing optional argument such as model, mask, size, quality, or output path never
+authorizes fallback. Record the actual producer and permitted fallback reason in
+`imagegen-jobs.json`.
 
 ### 1. Preflight and OCR choice
 
@@ -114,17 +135,31 @@ Represent a filled arrow as one Arrow AutoShape, with centered label text inside
 same object. Never construct an ordinary arrow from a line plus triangle and never
 flatten a whole knowledge graph into one image.
 
+Write new page manifests with `schema_version: 2`. Use structured
+`visual_inventory` items with explicit `kind` and `representation` values, and
+write a concrete `quality_evidence` observation for every required quality check.
+Formula rendering is a hard gate: a missing engine, converter, or failed compile
+must keep the page failed unless the user explicitly approves that exact formula
+exception and the manifest records both `user_approved_exception: true` and a
+concrete `approval_note`.
+
 The worker Prompt performs the deterministic sequence. Its final gates are:
 
 ```bash
 python <image2ppt-root>/cli/image2ppt/cli.py page build <page-dir>
 python <image2ppt-root>/scripts/run_image2ppt_qa.py <page-dir>
-# inspect source.png against render/rendered.png, repair, then:
+# The first run writes visual-review-evidence.template.json and remains pending.
+# Inspect source.png against render/rendered.png, copy and complete the template
+# as visual-review-evidence.json, repair if needed, then:
 python <image2ppt-root>/scripts/run_image2ppt_qa.py <page-dir> \
   --visual-review-status reviewed \
-  --visual-review-notes "<specific observations checked>"
+  --visual-review-evidence <page-dir>/visual-review-evidence.json
 python <image2ppt-root>/cli/image2ppt/cli.py page contact-sheet <page-dir>
 ```
+
+The evidence file must cover the current source/render hashes and every required
+check with a specific observation. `--visual-review-notes` is optional context and
+cannot substitute for the evidence file.
 
 Record only after standard validation and the Image2PPT region, arrow, and rendered
 gates pass:
@@ -143,10 +178,11 @@ When `run next` reports `finalize`, run:
 ```bash
 python <image2ppt-root>/cli/image2ppt/cli.py run finalize <run-dir>
 python <image2ppt-root>/scripts/run_final_image2ppt_qa.py <run-dir>
-# inspect every rendered slide against its source, repair manifests if needed, then:
+# The first run writes final/visual-review-evidence.template.json and remains pending.
+# Inspect every rendered slide, complete final/visual-review-evidence.json, then:
 python <image2ppt-root>/scripts/run_final_image2ppt_qa.py <run-dir> \
   --visual-review-status reviewed \
-  --visual-review-notes "<specific checks covering every slide>"
+  --visual-review-evidence <run-dir>/final/visual-review-evidence.json
 ```
 
 Finalize rebuilds from page manifests, preserves source speaker notes, validates the

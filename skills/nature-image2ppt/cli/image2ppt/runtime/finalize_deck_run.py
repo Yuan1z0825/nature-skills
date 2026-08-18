@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from deck_run_state import load_deck, load_jobs, now_iso, run_dir_from_target, save_deck, save_jobs, set_run_status, write_json
+from deck_run_state import load_deck, load_jobs, now_iso, resolve_inside, run_dir_from_target, save_deck, save_jobs, set_run_status, write_json
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -17,10 +17,10 @@ def run(command):
 
 
 def final_output_path(run_dir, deck):
-    output = Path(deck.get("output", "final/deck_edited.pptx"))
-    if output.is_absolute():
-        return output
-    return run_dir / output
+    try:
+        return resolve_inside(run_dir, deck.get("output", "final/deck_edited.pptx"))
+    except ValueError as exc:
+        raise SystemExit(f"Final output must stay inside run directory: {deck.get('output')}") from exc
 
 
 def assert_pages_ready(run_dir, jobs):

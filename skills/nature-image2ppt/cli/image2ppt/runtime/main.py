@@ -18,6 +18,7 @@ from deck_run_state import (
     load_jobs,
     load_run_state,
     page_dir_for,
+    resolve_inside,
     run_dir_from_target,
 )
 from formula_renderer import (
@@ -312,24 +313,36 @@ def cmd_reset(args: argparse.Namespace) -> int:
 
 def cmd_page_build(args: argparse.Namespace) -> int:
     page_dir = Path(args.page_dir).expanduser().resolve()
+    manifest = page_local_path(page_dir, args.manifest, "manifest")
+    out = page_local_path(page_dir, args.out, "PPTX output")
+    preview = page_local_path(page_dir, args.preview, "preview output")
     return run_script(
         "build_pptx_from_manifest.py",
         [
-            str(page_dir / args.manifest),
+            str(manifest),
             "--out",
-            str(page_dir / args.out),
+            str(out),
             "--preview",
-            str(page_dir / args.preview),
+            str(preview),
         ],
     )
 
 
 def cmd_page_validate(args: argparse.Namespace) -> int:
     page_dir = Path(args.page_dir).expanduser().resolve()
-    argv = [str(page_dir / args.pptx), "--manifest", str(page_dir / args.manifest)]
+    pptx = page_local_path(page_dir, args.pptx, "PPTX input")
+    manifest = page_local_path(page_dir, args.manifest, "manifest")
+    argv = [str(pptx), "--manifest", str(manifest)]
     if args.report:
-        argv.extend(["--report", str(page_dir / args.report)])
+        argv.extend(["--report", str(page_local_path(page_dir, args.report, "validation report"))])
     return run_script("validate_pptx.py", argv)
+
+
+def page_local_path(page_dir: Path, value: str | Path, label: str) -> Path:
+    try:
+        return resolve_inside(page_dir, value)
+    except ValueError as exc:
+        raise SystemExit(f"{label} must stay inside page_dir: {value}") from exc
 
 
 def cmd_finalize(args: argparse.Namespace) -> int:
@@ -337,6 +350,17 @@ def cmd_finalize(args: argparse.Namespace) -> int:
 
 
 def cmd_formula_render_latex(args: argparse.Namespace) -> int:
+    page_dir = Path(args.page_dir).expanduser().resolve() if args.page_dir else None
+    if page_dir:
+        args.out = str(page_local_path(page_dir, args.out, "formula output"))
+        if args.fragment:
+            args.fragment = str(page_local_path(page_dir, args.fragment, "formula fragment"))
+        if args.keep_workdir:
+            args.keep_workdir = str(page_local_path(page_dir, args.keep_workdir, "formula work directory"))
+        if args.tex_file:
+            args.tex_file = str(page_local_path(page_dir, args.tex_file, "formula source"))
+        if args.preamble_file:
+            args.preamble_file = str(page_local_path(page_dir, args.preamble_file, "formula preamble"))
     if args.tex_file:
         tex = Path(args.tex_file).read_text(encoding="utf-8")
     elif args.tex:
@@ -352,7 +376,7 @@ def cmd_formula_render_latex(args: argparse.Namespace) -> int:
         rendered = render_latex_asset(
             tex=tex,
             out=args.out,
-            page_dir=args.page_dir,
+            page_dir=page_dir,
             output_format=args.format,
             engine=args.engine,
             preamble=preamble,
@@ -372,7 +396,7 @@ def cmd_formula_render_latex(args: argparse.Namespace) -> int:
                 image_path=rendered["out"],
                 tex_source=rendered["tex_source"],
                 box_px=args.box,
-                page_dir=args.page_dir,
+                page_dir=page_dir,
                 z_index=args.z_index,
                 alt=args.alt,
             )

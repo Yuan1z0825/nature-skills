@@ -80,7 +80,7 @@ jobs:
         working-directory: skills/nature-downloader
         run: python -m pytest -q tests/python
 
-      - name: Test nature-image2ppt cross-platform runtime
+      - name: Test nature-image2ppt full Linux runtime
         working-directory: skills/nature-image2ppt
         run: python -m pytest -q tests
 
@@ -103,6 +103,48 @@ jobs:
       - name: Test nature-shared consistency tooling
         working-directory: skills/nature-shared
         run: python -m pytest -q tests
+
+  image2ppt-portable-core:
+    name: Image2PPT portable core (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.10'
+          - os: ubuntu-latest
+            python: '3.12'
+          - os: macos-latest
+            python: '3.12'
+          - os: windows-latest
+            python: '3.12'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: skills/nature-image2ppt/requirements.txt
+
+      - name: Install portable dependencies
+        run: python -m pip install pytest -r skills/nature-image2ppt/requirements.txt
+
+      - name: Test portable contracts without Office rendering
+        working-directory: skills/nature-image2ppt
+        run: >-
+          python -m pytest -q
+          tests/test_project_metadata.py
+          tests/test_script_inventory.py
+          tests/test_formula_renderer.py
+          tests/test_page_hints.py
+          tests/test_pdf_backend.py
+          tests/test_quality_contracts.py
+          tests/test_path_confinement.py
+          tests/test_visual_review_evidence.py
 
   javascript-tests:
     runs-on: ubuntu-latest

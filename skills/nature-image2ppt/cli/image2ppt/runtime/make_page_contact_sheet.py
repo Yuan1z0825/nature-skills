@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 
 from _page_artifacts import write_pair
+from deck_run_state import resolve_inside
 
 
 def main():
@@ -14,9 +15,12 @@ def main():
     args = parser.parse_args()
 
     page_dir = Path(args.page_dir).resolve()
-    source = page_dir / args.source
-    preview = page_dir / args.preview
-    out = page_dir / args.out
+    try:
+        source = resolve_inside(page_dir, args.source)
+        preview = resolve_inside(page_dir, args.preview)
+        out = resolve_inside(page_dir, args.out)
+    except ValueError as exc:
+        raise SystemExit(f"Contact-sheet paths must stay inside page_dir: {exc}") from exc
     if not source.exists():
         raise SystemExit(f"Missing source image: {source}")
     if not preview.exists():

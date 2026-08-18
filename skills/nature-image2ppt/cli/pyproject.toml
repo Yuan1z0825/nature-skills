@@ -1,6 +1,6 @@
 [project]
 name = "image2ppt-cli"
-version = "0.1.0"
+version = "1.1.0"
 description = "Self-contained image2ppt CLI for the image2ppt skill."
 requires-python = ">=3.10"
 dependencies = [

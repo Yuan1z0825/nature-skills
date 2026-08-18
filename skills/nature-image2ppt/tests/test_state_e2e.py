@@ -7,7 +7,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from support import SCRIPTS, build_page, image2ppt_command, filled_arrow_manifest, write_json
+from support import (
+    SCRIPTS,
+    build_page,
+    complete_visual_review_evidence,
+    image2ppt_command,
+    filled_arrow_manifest,
+    write_json,
+)
 
 
 class Image2PPTStateEndToEndTests(unittest.TestCase):
@@ -110,6 +117,17 @@ class Image2PPTStateEndToEndTests(unittest.TestCase):
                 ]
             )
             build_page(page)
+            pending_page_qa = subprocess.run(
+                [sys.executable, str(SCRIPTS / "run_image2ppt_qa.py"), str(page)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(pending_page_qa.returncode, 2, pending_page_qa.stdout + pending_page_qa.stderr)
+            page_evidence = page / "visual-review-evidence.json"
+            complete_visual_review_evidence(
+                page / "visual-review-evidence.template.json", page_evidence
+            )
             self.run_ok(
                 [
                     sys.executable,
@@ -117,6 +135,8 @@ class Image2PPTStateEndToEndTests(unittest.TestCase):
                     str(page),
                     "--visual-review-status",
                     "reviewed",
+                    "--visual-review-evidence",
+                    str(page_evidence),
                     "--visual-review-notes",
                     "fixture: source and render checked for arrow silhouette, direction, text, and bounds",
                 ]
@@ -147,6 +167,17 @@ class Image2PPTStateEndToEndTests(unittest.TestCase):
                 ]
             )
             self.run_ok([*image2ppt_command(), "run", "finalize", str(run)])
+            pending_final_qa = subprocess.run(
+                [sys.executable, str(SCRIPTS / "run_final_image2ppt_qa.py"), str(run)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(pending_final_qa.returncode, 2, pending_final_qa.stdout + pending_final_qa.stderr)
+            final_evidence = run / "final" / "visual-review-evidence.json"
+            complete_visual_review_evidence(
+                run / "final" / "visual-review-evidence.template.json", final_evidence
+            )
             self.run_ok(
                 [
                     sys.executable,
@@ -154,6 +185,8 @@ class Image2PPTStateEndToEndTests(unittest.TestCase):
                     str(run),
                     "--visual-review-status",
                     "reviewed",
+                    "--visual-review-evidence",
+                    str(final_evidence),
                     "--visual-review-notes",
                     "fixture: final rendered slide checked against source for arrow, text, and page geometry",
                 ]

@@ -363,7 +363,7 @@ def _post_codex_image_json(url: str, body: Dict[str, Any], timeout: int) -> Dict
         "Accept": "application/json",
         "Content-Type": "application/json",
         "originator": "image2ppt-image-cli",
-        "User-Agent": "image2ppt-image-cli/0.1.0",
+        "User-Agent": "image2ppt-image-cli/1.1.0",
     }
     if account_id:
         headers["ChatGPT-Account-ID"] = account_id

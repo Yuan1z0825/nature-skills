@@ -20,6 +20,8 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
+from runtime_paths import resolve_inside
+
 
 NS = {
     "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
@@ -355,17 +357,13 @@ def slide_sort_key(name: str) -> int:
 
 
 def load_run_manifests(run_dir: Path) -> tuple[list[Path], Path]:
-    deck_path = run_dir / "deck_manifest.json"
+    run_dir = run_dir.expanduser().resolve()
+    deck_path = resolve_inside(run_dir, "deck_manifest.json")
     deck = read_json(deck_path)
-    root = Path(deck.get("job_dir") or run_dir)
-    if not root.is_absolute():
-        root = (run_dir / root).resolve()
     manifests: list[Path] = []
     for page in deck.get("pages") or []:
-        value = Path(str(page.get("manifest") or ""))
-        manifests.append(value.resolve() if value.is_absolute() else (root / value).resolve())
-    output = Path(deck.get("output") or "final/deck_edited.pptx")
-    output = output.resolve() if output.is_absolute() else (root / output).resolve()
+        manifests.append(resolve_inside(run_dir, str(page.get("manifest") or "")))
+    output = resolve_inside(run_dir, deck.get("output") or "final/deck_edited.pptx")
     return manifests, output
 
 
@@ -462,13 +460,17 @@ def main() -> int:
     if args.run:
         run_dir = args.run.expanduser().resolve()
         manifests, default_pptx = load_run_manifests(run_dir)
-        pptx = args.pptx.expanduser().resolve() if args.pptx else default_pptx
+        pptx = resolve_inside(run_dir, args.pptx) if args.pptx else default_pptx
+        report_path = resolve_inside(run_dir, args.report) if args.report else None
     else:
-        manifests = [args.manifest.expanduser().resolve()]
+        manifest = args.manifest.expanduser().resolve()
+        page_dir = manifest.parent
+        manifests = [manifest]
         if args.pptx is None:
             raise SystemExit("a PPTX path is required with --manifest")
-        pptx = args.pptx.expanduser().resolve()
-    report = postprocess_pptx(pptx, manifests, args.report)
+        pptx = resolve_inside(page_dir, args.pptx)
+        report_path = resolve_inside(page_dir, args.report) if args.report else None
+    report = postprocess_pptx(pptx, manifests, report_path)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["passed"] else 2
 

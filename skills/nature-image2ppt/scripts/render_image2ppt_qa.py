@@ -16,6 +16,8 @@ from typing import Any
 
 from PIL import Image, ImageChops, ImageStat
 
+from runtime_paths import resolve_inside
+
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -219,10 +221,14 @@ def main() -> int:
     args = parser.parse_args()
 
     pptx = args.pptx.expanduser().resolve()
-    out_dir = args.out_dir.expanduser().resolve()
-    report_path = args.report.expanduser().resolve()
-    source = args.source.expanduser().resolve() if args.source else None
-    existing = args.existing_rendered.expanduser().resolve() if args.existing_rendered else None
+    scope = pptx.parent
+    try:
+        out_dir = resolve_inside(scope, args.out_dir)
+        report_path = resolve_inside(scope, args.report)
+        source = resolve_inside(scope, args.source) if args.source else None
+        existing = resolve_inside(scope, args.existing_rendered) if args.existing_rendered else None
+    except ValueError as exc:
+        raise SystemExit(f"render QA paths must stay inside {scope}") from exc
     if existing and source and existing.is_file() and source.is_file() and sha256_file(existing) == sha256_file(source):
         report = {
             "schema_version": "image2ppt-render-qa-v1",

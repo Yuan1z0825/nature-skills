@@ -16,6 +16,7 @@ class ScriptInventoryTests(unittest.TestCase):
             SCRIPT_DIR / "build_page_worker_prompt.py",
             SCRIPT_DIR / "run_image2ppt_qa.py",
             SCRIPT_DIR / "run_final_image2ppt_qa.py",
+            SCRIPT_DIR / "visual_review_evidence.py",
             SCRIPT_DIR / "inspect_region_decomposition.py",
             SCRIPT_DIR / "inspect_arrow_atomicity.py",
             RUNTIME_DIR / "paddle_text_hints.py",
@@ -23,6 +24,7 @@ class ScriptInventoryTests(unittest.TestCase):
             RUNTIME_DIR / "build_pptx_from_manifest.py",
             RUNTIME_DIR / "validate_pptx.py",
             RUNTIME_DIR / "finalize_deck_run.py",
+            ROOT / "schemas/page-manifest-v2.schema.json",
         }
         self.assertEqual([str(path) for path in sorted(required) if not path.is_file()], [])
 

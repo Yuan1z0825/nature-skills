@@ -26,6 +26,18 @@ def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def complete_visual_review_evidence(template: Path, evidence: Path) -> None:
+    payload = json.loads(template.read_text(encoding="utf-8"))
+    for page in payload.get("pages", []):
+        page["reviewed"] = True
+        page_id = page.get("page_id", "page")
+        for check in page.get("checks", {}):
+            page["checks"][check] = (
+                f"Verified {check} for {page_id} against the current source and rendered slide."
+            )
+    write_json(evidence, payload)
+
+
 def base_manifest(page_dir: Path, shape: dict, *, text_inventory: list[str] | None = None) -> Path:
     page_dir.mkdir(parents=True, exist_ok=True)
     source = page_dir / "source.png"
@@ -45,13 +57,20 @@ def base_manifest(page_dir: Path, shape: dict, *, text_inventory: list[str] | No
             "source_bbox_px": shape["box_px"],
         }
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "slide": {"width": 13.333, "height": 7.5, "background": "#FFFFFF"},
         "content_box": {"left": 0, "top": 0, "width": 13.333, "height": 7.5},
         "source": {"path": "source.png", "width_px": 1280, "height_px": 720},
         "page_strategy": "native-structure",
         "text_inventory": text_inventory or [],
-        "visual_inventory": [{"id": shape["id"], "kind": "ordinary-arrow", "decision": "native"}],
+        "visual_inventory": [
+            {
+                "id": shape["id"],
+                "kind": "native-structure",
+                "representation": "native",
+                "description": "Measured native structural fixture object.",
+            }
+        ],
         "background_strategy": {
             "mode": "native-or-script",
             "reason": "solid white fixture background",
@@ -62,6 +81,12 @@ def base_manifest(page_dir: Path, shape: dict, *, text_inventory: list[str] | No
             "visual_inventory_matched": True,
             "background_strategy_checked": True,
             "shape_corner_geometry_checked": True,
+        },
+        "quality_evidence": {
+            "font_size_calibrated": {"observation": "Fixture text sizing was checked against the source geometry."},
+            "visual_inventory_matched": {"observation": "Fixture object inventory matches the single source object."},
+            "background_strategy_checked": {"observation": "Solid white fixture background was compared with the source."},
+            "shape_corner_geometry_checked": {"observation": "Fixture object corner and boundary geometry were reviewed."},
         },
         "text_boxes": [],
         "shapes": [shape],

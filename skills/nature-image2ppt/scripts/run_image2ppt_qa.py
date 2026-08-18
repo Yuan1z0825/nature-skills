@@ -10,7 +10,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from runtime_paths import SCRIPT_DIR, image2ppt_command
+from runtime_paths import SCRIPT_DIR, image2ppt_command, resolve_inside
+from visual_review_evidence import expected_page, validate_evidence, write_template
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -42,6 +43,7 @@ def main() -> int:
     parser.add_argument("page_dir", type=Path)
     parser.add_argument("--visual-review-status", choices=["needs_review", "reviewed", "failed"], default="needs_review")
     parser.add_argument("--visual-review-notes", default="")
+    parser.add_argument("--visual-review-evidence", type=Path)
     parser.add_argument("--existing-rendered", type=Path)
     parser.add_argument("--render-timeout", type=int, default=120)
     args = parser.parse_args()
@@ -57,9 +59,13 @@ def main() -> int:
         "inspection": page_dir / "arrow_inspection_report.json",
         "render": page_dir / "render_report.json",
         "profile": page_dir / "image2ppt_qa.json",
+        "review_template": page_dir / "visual-review-evidence.template.json",
     }
     errors: list[str] = []
     checks: dict[str, Any] = {}
+    expected_review_pages: list[dict[str, Any]] = []
+    review_evidence: dict[str, Any] = {}
+    review_evidence_path: Path | None = None
     for path, label in ((manifest, "manifest.json"), (pptx, "page.pptx"), (source, "source.png")):
         if not path.is_file():
             errors.append(f"missing standard image2ppt artifact: {label}")
@@ -140,14 +146,43 @@ def main() -> int:
             str(args.render_timeout),
         ]
         if args.existing_rendered:
-            command.extend(["--existing-rendered", str(args.existing_rendered.expanduser().resolve())])
+            try:
+                existing_rendered = resolve_inside(page_dir, args.existing_rendered)
+            except ValueError as exc:
+                raise SystemExit(
+                    f"existing render must stay inside page directory: {args.existing_rendered}"
+                ) from exc
+            command.extend(["--existing-rendered", str(existing_rendered)])
         checks["render_command"] = run(command)
         checks["render"] = read_json(paths["render"])
         if checks["render_command"]["returncode"] != 0 or checks["render"].get("status") != "rendered":
             errors.append("PowerPoint/LibreOffice rendered QA failed")
+        else:
+            rendered = page_dir / "render" / "rendered.png"
+            expected_review_pages = [
+                expected_page(
+                    page_id=page_dir.name,
+                    source=source,
+                    rendered=rendered,
+                    manifest=read_json(manifest),
+                )
+            ]
+            write_template(paths["review_template"], expected_review_pages)
 
-    if args.visual_review_status == "reviewed" and not args.visual_review_notes.strip():
-        errors.append("reviewed visual QA requires concrete --visual-review-notes")
+    if args.visual_review_status == "reviewed":
+        try:
+            review_evidence_path = resolve_inside(
+                page_dir, args.visual_review_evidence or "visual-review-evidence.json"
+            )
+        except ValueError as exc:
+            errors.append(str(exc))
+        if review_evidence_path and expected_review_pages:
+            review_evidence, evidence_errors = validate_evidence(
+                review_evidence_path, expected_review_pages
+            )
+            errors.extend(evidence_errors)
+        elif not expected_review_pages:
+            errors.append("reviewed visual QA requires a successful current render")
     if args.visual_review_status == "failed":
         errors.append("source-versus-render comparison was marked failed")
     passed = not errors and args.visual_review_status == "reviewed"
@@ -163,6 +198,9 @@ def main() -> int:
             "notes": args.visual_review_notes,
             "source": str(source),
             "rendered": str(page_dir / "render" / "rendered.png"),
+            "evidence": str(review_evidence_path) if review_evidence_path else None,
+            "evidence_template": str(paths["review_template"]),
+            "evidence_payload": review_evidence,
         },
         "checks": checks,
         "errors": errors,
@@ -182,6 +220,9 @@ def main() -> int:
         "region_decomposition": paths["regions"].name,
         "render_report": paths["render"].name,
         "visual_review_status": args.visual_review_status,
+        "visual_review_evidence": (
+            str(review_evidence_path.relative_to(page_dir)) if review_evidence_path else None
+        ),
         "errors": errors,
     }
     validation["passed"] = bool(validation.get("passed") is True and passed)

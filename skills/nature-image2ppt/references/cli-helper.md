@@ -6,7 +6,9 @@ Usage principles:
 
 - If a deterministic action can be completed with `image2ppt`, call the CLI directly instead of rewriting it as a temporary Python script.
 - When full CLI parameters are needed, read `image2ppt <command> --help` or `image2ppt image <command> --help` first.
-- In network-restricted agents, `image2ppt prepare`/`image2ppt run hints` with a PaddleOCR token and CLI fallback `image2ppt image generate/edit` calls need network approval. The approval and user-interaction policy lives in `SKILL.md` Entry Contract and Phase 1.
+- In network-restricted agents, `image2ppt prepare`/`image2ppt run hints` with a PaddleOCR token and CLI fallback `image2ppt image generate/edit` calls need network approval. The approval and user-interaction policy lives under "Preflight and OCR choice" and "Image backend selection" in `SKILL.md`.
+- Every page command confines manifest paths, assets, reports, and output overrides
+  to the supplied page directory. Run/final commands confine outputs to the run.
 
 ## Contents
 
@@ -120,7 +122,7 @@ Optional but recommended on first use: configure a PaddleOCR-VL token. The offli
 image2ppt config --paddle-ocr-token "<token>"
 ```
 
-`image2ppt doctor` reports the current text-hints backend; without a token everything still works through the built-in offline detector. When and how to ask the user about the token — including the application URL and the regenerate step — is defined in `SKILL.md` Phase 1.
+`image2ppt doctor` reports the current text-hints backend; without a token everything still works through the built-in offline detector. When and how to ask the user about the token — including the application URL and the regenerate step — is defined under "Preflight and OCR choice" in `SKILL.md`.
 
 ## Run Commands
 
@@ -130,9 +132,9 @@ image2ppt prepare input.pdf
 image2ppt prepare input.png --image-backend builtin-imagegen
 ```
 
-Purpose: normalize a single image, multiple images, a PDF, or an image-based PPTX into a run directory and generate `deck_manifest.json`, `page_jobs.json`, `notes_manifest.json`, plus per-page `pages/page_NNN/source.png`, `page_request.json`, and text hints. `--image-backend` records the requested run/page contract; selection policy lives in `SKILL.md` subsection "Image Backend Selection".
+Purpose: normalize a single image, multiple images, a PDF, or an image-based PPTX into a run directory and generate `deck_manifest.json`, `page_jobs.json`, `notes_manifest.json`, plus per-page `pages/page_NNN/source.png`, `page_request.json`, and text hints. `--image-backend` records the requested run/page contract; selection policy lives under "Image backend selection" in `SKILL.md`.
 
-When a PaddleOCR token is configured, `prepare` may submit the input pages to PaddleOCR for content-aware text hints. In a sandboxed or approval-gated environment, request network approval up front for this command instead of accepting a DNS/sandbox failure followed by lower-quality `builtin-ink` fallback; see `SKILL.md` Phase 1 for the approval-rejection policy.
+When a PaddleOCR token is configured, `prepare` may submit the input pages to PaddleOCR for content-aware text hints. In a sandboxed or approval-gated environment, request network approval up front for this command instead of accepting a DNS/sandbox failure followed by lower-quality `builtin-ink` fallback; see "Preflight and OCR choice" in `SKILL.md` for the approval-rejection policy.
 
 ```bash
 image2ppt run next <run> --json
@@ -168,7 +170,7 @@ Purpose: after the page reconstructor writes its required outputs (see `manifest
 image2ppt run reset <run> --page page_001 --agent-id <worker-id> --confirm-lost
 ```
 
-Purpose: return a dispatched or recorded page to `pending`, clearing its dispatch and result records, so a new worker can be dispatched. Recorded pages can be reset with only `--page`. Dispatched pages require `--agent-id` plus `--confirm-lost`, and the id must match the recorded dispatch. Use this only when a worker returned a failed page, `run record` rejected the outputs, the runtime reports a terminal worker state, the user cancels that worker, or repeated reachability checks prove the worker is lost. The failure-handling policy is in `SKILL.md` Phase 3.
+Purpose: return a dispatched or recorded page to `pending`, clearing its dispatch and result records, so a new worker can be dispatched. Recorded pages can be reset with only `--page`. Dispatched pages require `--agent-id` plus `--confirm-lost`, and the id must match the recorded dispatch. Use this only when a worker returned a failed page, `run record` rejected the outputs, the runtime reports a terminal worker state, the user cancels that worker, or repeated reachability checks prove the worker is lost. The failure-handling policy is under "Advance and claim pages" and "Reconstruct and gate each page" in `SKILL.md`.
 
 ```bash
 image2ppt run finalize <run>
@@ -184,7 +186,7 @@ These are the worker-side commands for turning a finished `manifest.json` into t
 image2ppt page build pages/page_001
 ```
 
-Purpose: build `page.pptx` and render `preview.png` from `manifest.json` with the deterministic runtime. Optional `--manifest/--out/--preview` override the default file names inside the page directory.
+Purpose: build `page.pptx` and render `preview.png` from `manifest.json` with the deterministic runtime. Optional `--manifest/--out/--preview` override the default file names but must still resolve inside the page directory. The PPTX is staged beside the requested output and atomically published only after a successful build.
 
 ```bash
 image2ppt page contact-sheet pages/page_001
@@ -206,7 +208,7 @@ image2ppt run hints <run>
 
 Purpose: regenerate `text_hints.json`/`text_hints.png` for every page of a prepared run — for example right after configuring a PaddleOCR token, so the current run gets content-aware hints without re-running prepare.
 
-When used with a configured PaddleOCR token, this command calls the external OCR service. If the runtime requires approval for network access, request it with the task-local conversion-data justification from `SKILL.md`; see `SKILL.md` Phase 1 for the approval-rejection policy.
+When used with a configured PaddleOCR token, this command calls the external OCR service. If the runtime requires approval for network access, request it with the task-local conversion-data justification from `SKILL.md`; see "Preflight and OCR choice" for the approval-rejection policy.
 
 ```bash
 image2ppt page hints pages/page_001

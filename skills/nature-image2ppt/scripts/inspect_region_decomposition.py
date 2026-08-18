@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from postprocess_manifest_arrows import load_run_manifests
+from runtime_paths import resolve_inside
 
 
 SCHEMA = "image2ppt-region-decomposition-v1"
@@ -341,9 +342,16 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.run:
-        manifest_paths, _ = load_run_manifests(args.run.expanduser().resolve())
+        scope = args.run.expanduser().resolve()
+        manifest_paths, _ = load_run_manifests(scope)
     else:
-        manifest_paths = [args.manifest.expanduser().resolve()]
+        manifest = args.manifest.expanduser().resolve()
+        scope = manifest.parent
+        manifest_paths = [manifest]
+    try:
+        out = resolve_inside(scope, args.out)
+    except ValueError as exc:
+        raise SystemExit(f"region report must stay inside {scope}: {args.out}") from exc
     pages: list[dict[str, Any]] = []
     errors: list[str] = []
     for path in manifest_paths:
@@ -364,7 +372,7 @@ def main() -> int:
         },
         "errors": errors,
     }
-    write_json(args.out.expanduser().resolve(), report)
+    write_json(out, report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["passed"] else 2
 

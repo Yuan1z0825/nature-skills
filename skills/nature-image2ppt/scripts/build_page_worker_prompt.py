@@ -8,7 +8,7 @@ import json
 import shlex
 from pathlib import Path
 
-from runtime_paths import CLI_ENTRY, SKILL_ROOT
+from runtime_paths import CLI_ENTRY, SKILL_ROOT, resolve_inside
 
 
 BASE_TEMPLATE = SKILL_ROOT / "prompts" / "page-worker-base.md"
@@ -37,8 +37,7 @@ def find_page(run_dir: Path, page_ref: str) -> tuple[dict, Path]:
         candidates.add(f"page_{int(page_ref):03d}")
     for page in jobs.get("pages") or []:
         if str(page.get("page_id")) in candidates:
-            page_dir = Path(str(page.get("page_dir") or ""))
-            page_dir = page_dir.resolve() if page_dir.is_absolute() else (run_dir / page_dir).resolve()
+            page_dir = resolve_inside(run_dir, str(page.get("page_dir") or ""))
             return page, page_dir
     raise ValueError(f"page not found in page_jobs.json: {page_ref}")
 
@@ -86,11 +85,10 @@ def main() -> int:
 
     run_dir = run_dir_from_target(args.run)
     page, page_dir = find_page(run_dir, args.page)
-    out = Path(args.out).expanduser().resolve()
     try:
-        out.relative_to(page_dir)
+        out = resolve_inside(page_dir, args.out)
     except ValueError as exc:
-        raise SystemExit(f"worker prompt must live inside the page directory: {out}") from exc
+        raise SystemExit(f"worker prompt must live inside the page directory: {args.out}") from exc
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_prompt(run_dir, page, page_dir), encoding="utf-8")
     cli = shlex.join([__import__("sys").executable, str(CLI_ENTRY)])

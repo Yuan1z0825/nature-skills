@@ -28,6 +28,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from build_pptx_from_manifest import choose_preview_font, content_box_for_manifest
+from deck_run_state import resolve_inside
 from page_text_metrics import crop_ink_mask, despeckle, glyph_em_ratio, load_gray, measure_crop
 
 
@@ -236,7 +237,7 @@ def draw_overlay(source: Image.Image, lines: list[dict], out_path: Path) -> None
 
 def page_text_hints(page_dir: Path, source_name: str = "source.png",
                     min_glyph: int = MIN_GLYPH_PX) -> dict:
-    source_path = page_dir / source_name
+    source_path = resolve_inside(page_dir, source_name)
     if not source_path.exists():
         raise SystemExit(f"Missing source image: {source_path}")
     gray = load_gray(source_path)
@@ -294,12 +295,17 @@ def main() -> int:
     page_dir = Path(args.page_dir).expanduser().resolve()
     hints = page_text_hints(page_dir, source_name=args.source, min_glyph=args.min_glyph)
 
-    out_path = page_dir / args.out
+    try:
+        source_path = resolve_inside(page_dir, args.source)
+        out_path = resolve_inside(page_dir, args.out)
+        overlay_path = resolve_inside(page_dir, args.overlay) if args.overlay else None
+    except ValueError as exc:
+        raise SystemExit(f"Text-hint paths must stay inside page_dir: {exc}") from exc
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(hints, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    if args.overlay:
-        source = Image.open(page_dir / args.source)
-        draw_overlay(source, hints["lines"], page_dir / args.overlay)
+    if overlay_path:
+        source = Image.open(source_path)
+        draw_overlay(source, hints["lines"], overlay_path)
         hints["overlay"] = args.overlay
     print(json.dumps(hints, ensure_ascii=False, indent=2))
     return 0

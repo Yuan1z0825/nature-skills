@@ -14,6 +14,21 @@ CLI_ENTRY = SKILL_ROOT / "cli" / "image2ppt" / "cli.py"
 RUNTIME_ROOT = SKILL_ROOT / "cli" / "image2ppt" / "runtime"
 
 
+def resolve_inside(base: Path, value: str | Path) -> Path:
+    """Resolve a task path and reject traversal or absolute-path escape."""
+
+    root = base.expanduser().resolve()
+    candidate = Path(value).expanduser()
+    if not candidate.is_absolute():
+        candidate = root / candidate
+    candidate = candidate.resolve()
+    try:
+        candidate.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(f"path must stay inside {root}: {value}") from exc
+    return candidate
+
+
 def image2ppt_command() -> list[str]:
     """Return the source-tree CLI command for this exact Skill checkout."""
 
@@ -46,8 +61,10 @@ def required_runtime_files() -> dict[str, Path]:
         "region_inspector": SCRIPT_DIR / "inspect_region_decomposition.py",
         "page_qa": SCRIPT_DIR / "run_image2ppt_qa.py",
         "final_qa": SCRIPT_DIR / "run_final_image2ppt_qa.py",
+        "visual_review_evidence": SCRIPT_DIR / "visual_review_evidence.py",
         "renderer": SCRIPT_DIR / "render_image2ppt_qa.py",
         "manifest_schema": SKILL_ROOT / "references" / "manifest-schema.md",
+        "manifest_json_schema": SKILL_ROOT / "schemas" / "page-manifest-v2.schema.json",
         "decision_tree": SKILL_ROOT / "references" / "page-decision-tree.md",
         "cli_contract": SKILL_ROOT / "references" / "cli-helper.md",
         "ocr_contract": SKILL_ROOT / "references" / "ocr-text-hints-contract.md",

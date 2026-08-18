@@ -28,14 +28,15 @@
 
 1. Check the runtime, normalize inputs, and generate OCR text hints.
 2. Decompose each page into semantic regions and use mixed native-object and local-image reconstruction.
-3. Run structure, arrow, region-decomposition, and rendered checks on each page before recording it.
-4. Assemble the final PPTX from page manifests, then revalidate rendering and speaker notes.
+3. Run structure, arrow, region-decomposition, and rendered checks on each page; visual conclusions require itemized evidence bound to the current source/render hashes rather than a generic approval note.
+4. Assemble the final PPTX from structured v2 page manifests, then revalidate rendering and speaker notes.
 
 ## Outputs
 
 - An object-level editable PowerPoint file.
 - Per-page manifests, text hints, rendered previews, and QA reports.
 - Final validation results and a list of complex visuals retained as replaceable image assets.
+- Page outputs confined to their owning page directory and atomic final output confined to the prepared run, so a failed build cannot publish a partial deck.
 
 ## Runtime and Dependencies
 

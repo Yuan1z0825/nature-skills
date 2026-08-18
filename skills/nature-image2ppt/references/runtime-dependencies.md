@@ -43,7 +43,8 @@ image2ppt --help
 - ImageMagick is optional for formula PNG conversion and unusual image formats;
   Pillow is the primary image processor.
 - Formula rendering optionally uses a TeX engine plus `dvisvgm`, `pdf2svg`, or
-  ImageMagick. Missing formula tooling must be reported for formula-bearing pages.
+  ImageMagick. Missing formula tooling is a hard failure for formula-bearing pages
+  unless the user explicitly approves omission of that exact formula.
 
 Ubuntu/Debian example:
 

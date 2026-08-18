@@ -62,7 +62,7 @@ Key fields:
 }
 ```
 
-`image_backend` is written by `image2ppt prepare` and may be overwritten by `image2ppt run backend` when needed. Parent-level backend selection policy lives in `SKILL.md` subsection "Image Backend Selection".
+`image_backend` is written by `image2ppt prepare` and may be overwritten by `image2ppt run backend` when needed. Parent-level backend selection policy lives in `SKILL.md` under "Image backend selection".
 
 For `backend_id: "builtin-imagegen"`, these fields are required and have fixed meanings:
 
@@ -75,7 +75,7 @@ For `backend_id: "builtin-imagegen"`, these fields are required and have fixed m
 - `fallback_policy.on`: the only events that permit leaving the built-in tool: it is unavailable/not callable, its call errors, an edit input is unreadable, or it returns no valid local image.
 - `fallback_policy.missing_optional_parameters`: always `false`; absent optional controls never authorize fallback.
 
-Other backend metadata may describe model labels, runtime homes, or handoff text, but it does not change this order. Parent-level tool selection and user-interaction policy live in `SKILL.md` subsection "Image Backend Selection"; page reconstructors execute the copied contract above.
+Other backend metadata may describe model labels, runtime homes, or handoff text, but it does not change this order. Parent-level tool selection and user-interaction policy live in `SKILL.md` under "Image backend selection"; page reconstructors execute the copied contract above.
 
 ## `page_jobs.json`
 
@@ -167,6 +167,9 @@ Minimal required shape (paths are relative to the page directory):
 }
 ```
 
+Every path in this object must resolve inside the owning page directory. Absolute
+paths, `..` traversal, and symlink escapes are rejected even if the target exists.
+
 The `manifest` artifact is the authoritative page source for final assembly. `image2ppt run finalize` rebuilds the final deck from recorded page manifests in page order. The `page_pptx` artifact remains a page-level deliverability artifact and is validated by `image2ppt run record`, but it is not the final assembly input.
 
 ## `pages/page_NNN/validation.json`
@@ -187,7 +190,9 @@ Must contain at top level:
 
 ## `pages/page_NNN/manifest.json`
 
-Owner: page reconstructor.
+Owner: page reconstructor. New manifests use `schema_version: 2`; schema version 1
+remains readable for existing runs. The machine-readable v2 contract is
+`schemas/page-manifest-v2.schema.json`.
 
 Purpose: source of truth for page-level PPTX construction.
 
@@ -195,6 +200,7 @@ The manifest is not a summary of a separately authored `page.pptx`. It is the bu
 
 Must contain:
 
+- `schema_version: 2`
 - `slide`
 - `content_box`
 - `source`
@@ -202,11 +208,17 @@ Must contain:
 - `visual_inventory`
 - `background_strategy`
 - `quality_checks`
+- `quality_evidence`
 - `text_boxes`
 - `shapes`
 - `images`
 - `asset_provenance`
 - page strategy
+
+All paths referenced by the manifest, including `source`, `images`, provenance
+sources, formula files, reports, and build overrides, must resolve inside the page
+directory. Page build output is staged in the same directory and published
+atomically; a failed build must not leave a new partial PPTX at the requested path.
 
 `slide`, `content_box`, and `source.width_px/source.height_px` must come from `page_request.json`. All `box_px`, `points_px`, and `polygon_px` values use `source.png` pixel coordinates; the runtime maps these coordinates into `content_box` instead of stretching them to the whole slide. Coordinate layouts:
 
@@ -228,6 +240,37 @@ Positioned build object requirements:
   continuous geometry.
 
 `text_inventory` and `visual_inventory` are only inventories; they do not substitute for positioned `text_boxes`, `images`, and `shapes`. The manifest must be sufficient to rebuild the page without reading any custom page script.
+
+In schema v2, every `visual_inventory` item is structured:
+
+```json
+{
+  "id": "company-mark",
+  "kind": "foreground-asset",
+  "representation": "asset-sheet-separated",
+  "path": "assets/company-mark.png",
+  "description": "Source-faithful mark separated on the reviewed asset sheet"
+}
+```
+
+Allowed `kind` values are `background`, `foreground-asset`,
+`native-structure`, and `formula`. Allowed `representation` values are `native`,
+`asset-sheet-separated`, `source-preserving-local-cleanup`, `imagegen`, and
+`latex-rendered-formula`. Valid pairs are:
+
+- background: `native`, `source-preserving-local-cleanup`, or `imagegen`;
+- foreground-asset: `asset-sheet-separated` with a path and matching provenance;
+- native-structure: `native`;
+- formula: `latex-rendered-formula`.
+
+Every structured formula item must match a `formula_inventory` entry by id or
+rendered image path; merely classifying a visual as a formula does not prove it was
+rendered or explicitly approved for omission.
+
+These fields, rather than substring matches in prose, determine the object-source
+contract. This avoids false matches such as `benchmark` containing `mark`, and it
+prevents a foreground icon from being excused merely because its description also
+contains the word `background`.
 
 Missing coordinates are page-contract violations. The runtime must reject them during `image2ppt run record` and deck validation because otherwise missing values fall back to default positions such as the top-left corner.
 
@@ -264,6 +307,28 @@ Text alignment:
 }
 ```
 
+Schema v2 also requires matching `quality_evidence`. Every required check has an
+object with a concrete `observation` of at least 12 characters and may identify the
+inspected `artifact`:
+
+```json
+{
+  "font_size_calibrated": {
+    "observation": "Title and body levels match the source without clipping",
+    "artifact": "preview.png"
+  },
+  "visual_inventory_matched": {
+    "observation": "All five source visuals appear once in the reconstructed page"
+  },
+  "background_strategy_checked": {
+    "observation": "Background geometry and palette remain aligned with source.png"
+  },
+  "shape_corner_geometry_checked": {
+    "observation": "Card radii and straight table corners match the enlarged source"
+  }
+}
+```
+
 `background_strategy` must explain at least:
 
 - `mode`: `native-or-script`, `source-preserving-local-cleanup`, `imagegen-full-clean-base`, or similar.
@@ -278,7 +343,9 @@ Text alignment:
 - `source_type`: exactly one of `asset-sheet-separated`, `imagegen`, `latex-rendered-formula`, `user-provided`, `user-approved-rasterization`. No other value passes validation.
 - `provenance_note`: a non-empty explanation of how the asset was produced.
 
-Validation keyword-scans the free text of `visual_inventory` and `asset_provenance` entries:
+Legacy schema-v1 manifests use conservative free-text checks for backward
+compatibility. Schema-v2 manifests use the structured fields above and do not use
+substring classification. In legacy manifests:
 
 - An item whose description names a foreground object (icon, photo, logo, screenshot, badge, 图标, 照片, ...) must state its separation method in its text — include a term like "asset-sheet separated" / "image edit" / "分离" — unless the text marks it as background, formula, or native structure. Matching is substring-level, so words like "benchmark" or "trademark" also trigger the foreground check ("mark"); give native structural items an explicit "native structural" / "结构" marker in their description to exempt them.
 - Terms naming forbidden fallbacks — "crop", "approximation", "fallback", "emoji", "裁剪", "近似", "降级", and similar — fail validation wherever they appear in these texts, even inside negations such as "no crop". Describe what was done ("asset-sheet separated from source"), not what was avoided.
@@ -334,6 +401,23 @@ Allowed `corner_category` values: `straight`, `small-radius`, `large-radius`, `p
 
 Formula images must be generated by `image2ppt formula render-latex`. Do not use source-image formula snippets, and do not assemble complex formulas from hand-written native text boxes.
 
+Every `formula_inventory` item is a hard validation contract. A formula marked
+`failed`, `missing`, or `blocked`, or one without a rendered image/provenance pair,
+fails the page. The only exception is explicit approval from the user for that
+exact formula, recorded as:
+
+```json
+{
+  "id": "formula_c2_1",
+  "status": "blocked",
+  "user_approved_exception": true,
+  "approval_note": "User approved delivery without formula_c2_1 on 2026-08-18"
+}
+```
+
+An internal decision, generic warning, or `validation.json.passed=true` cannot
+create this exception.
+
 ## `pages/page_NNN/imagegen-jobs.json`
 
 Owner: created by `image2ppt prepare`, updated by `image2ppt image import` and `image2ppt image process-sheet` (`generate`/`edit` do not write it — importing the selected output is what records the job).
@@ -362,7 +446,8 @@ Each imported job records at least the selected output and the backend that actu
 
 `backend` is the actual producer: `builtin-imagegen`, `codex-oauth`, or `openai-compatible-api`; `unknown` is reserved for legacy page directories that have no `image_backend` contract. `image2ppt image import` requires an explicit producer, rejects files that are not readable images, and checks `backend`/`fallback_reason` against the page contract. `fallback_reason` is `null` when the preferred backend succeeded or the run selected a CLI contract directly; when a built-in contract enters its CLI fallback, it records the matching event from `image_backend.fallback_policy.on`.
 
-State and provenance record rules are described in the State Principles section of `SKILL.md` and in the asset processing examples in `cli-helper.md`.
+State and provenance record rules are described under "Preserve the single source
+of truth" in `SKILL.md` and in the asset processing examples in `cli-helper.md`.
 
 ## `notes_manifest.json`
 

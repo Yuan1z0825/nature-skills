@@ -11,6 +11,7 @@ from pathlib import Path
 from support import (
     build_deck,
     build_page,
+    complete_visual_review_evidence,
     connector_manifest,
     filled_arrow_manifest,
     SCRIPTS,
@@ -94,6 +95,17 @@ class ManifestArrowTests(unittest.TestCase):
             page = Path(name)
             filled_arrow_manifest(page)
             build_page(page)
+            pending = subprocess.run(
+                [sys.executable, str(SCRIPTS / "run_image2ppt_qa.py"), str(page)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(pending.returncode, 2, pending.stdout + pending.stderr)
+            evidence = page / "visual-review-evidence.json"
+            complete_visual_review_evidence(
+                page / "visual-review-evidence.template.json", evidence
+            )
             result = subprocess.run(
                 [
                     sys.executable,
@@ -101,6 +113,8 @@ class ManifestArrowTests(unittest.TestCase):
                     str(page),
                     "--visual-review-status",
                     "reviewed",
+                    "--visual-review-evidence",
+                    str(evidence),
                     "--visual-review-notes",
                     "fixture: rendered arrow direction, embedded text, silhouette, and page bounds checked",
                 ],
@@ -144,6 +158,17 @@ class ManifestArrowTests(unittest.TestCase):
                 },
             )
             build_deck(deck, out)
+            pending = subprocess.run(
+                [sys.executable, str(SCRIPTS / "run_final_image2ppt_qa.py"), str(run)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(pending.returncode, 2, pending.stdout + pending.stderr)
+            evidence = run / "final" / "visual-review-evidence.json"
+            complete_visual_review_evidence(
+                run / "final" / "visual-review-evidence.template.json", evidence
+            )
             result = subprocess.run(
                 [
                     sys.executable,
@@ -151,6 +176,8 @@ class ManifestArrowTests(unittest.TestCase):
                     str(run),
                     "--visual-review-status",
                     "reviewed",
+                    "--visual-review-evidence",
+                    str(evidence),
                     "--visual-review-notes",
                     "fixture: all rendered slides checked for arrow object, text, direction, and page bounds",
                 ],

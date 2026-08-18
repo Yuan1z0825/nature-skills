@@ -10,6 +10,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from deck_run_state import resolve_inside
+
 
 DEFAULT_ENGINE_CANDIDATES = ("xelatex", "lualatex", "pdflatex")
 DEFAULT_TIMEOUT = 120
@@ -196,8 +198,11 @@ def write_json(payload: dict[str, Any], path: str | Path) -> None:
 
 def resolve_output_path(out: str | Path, page_dir: str | Path | None = None) -> Path:
     path = Path(out)
-    if not path.is_absolute() and page_dir:
-        path = Path(page_dir) / path
+    if page_dir:
+        try:
+            return resolve_inside(page_dir, path)
+        except ValueError as exc:
+            raise FormulaRenderError(f"Formula output must stay inside page_dir: {out}") from exc
     return path.resolve()
 
 

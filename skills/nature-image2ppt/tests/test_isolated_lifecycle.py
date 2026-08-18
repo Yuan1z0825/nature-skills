@@ -11,7 +11,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-from support import SKILL_ROOT, filled_arrow_manifest, write_json
+from support import SKILL_ROOT, complete_visual_review_evidence, filled_arrow_manifest, write_json
 
 
 class IsolatedLifecycleTests(unittest.TestCase):
@@ -25,7 +25,7 @@ class IsolatedLifecycleTests(unittest.TestCase):
             isolated_parent = Path(tmp) / "isolated-skills"
             isolated = isolated_parent / "image2ppt"
             isolated.mkdir(parents=True)
-            for directory in ("cli", "scripts", "prompts", "references"):
+            for directory in ("cli", "scripts", "prompts", "references", "schemas"):
                 shutil.copytree(
                     SKILL_ROOT / directory,
                     isolated / directory,
@@ -121,6 +121,19 @@ class IsolatedLifecycleTests(unittest.TestCase):
                 cwd=isolated,
             )
             self.run_ok([*cli, "page", "build", str(page)], env=env, cwd=isolated)
+            pending_page_qa = subprocess.run(
+                [sys.executable, str(isolated / "scripts" / "run_image2ppt_qa.py"), str(page)],
+                env=env,
+                cwd=isolated,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(pending_page_qa.returncode, 2, pending_page_qa.stdout + pending_page_qa.stderr)
+            page_evidence = page / "visual-review-evidence.json"
+            complete_visual_review_evidence(
+                page / "visual-review-evidence.template.json", page_evidence
+            )
             self.run_ok(
                 [
                     sys.executable,
@@ -128,6 +141,8 @@ class IsolatedLifecycleTests(unittest.TestCase):
                     str(page),
                     "--visual-review-status",
                     "reviewed",
+                    "--visual-review-evidence",
+                    str(page_evidence),
                     "--visual-review-notes",
                     "isolated fixture: source and render checked for arrow silhouette, direction, text, and bounds",
                 ],
@@ -160,6 +175,19 @@ class IsolatedLifecycleTests(unittest.TestCase):
             next_after = self.run_ok([*cli, "run", "next", str(run), "--json"], env=env, cwd=isolated)
             self.assertEqual(json.loads(next_after.stdout)["stage"], "finalize")
             self.run_ok([*cli, "run", "finalize", str(run)], env=env, cwd=isolated)
+            pending_final_qa = subprocess.run(
+                [sys.executable, str(isolated / "scripts" / "run_final_image2ppt_qa.py"), str(run)],
+                env=env,
+                cwd=isolated,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(pending_final_qa.returncode, 2, pending_final_qa.stdout + pending_final_qa.stderr)
+            final_evidence = run / "final" / "visual-review-evidence.json"
+            complete_visual_review_evidence(
+                run / "final" / "visual-review-evidence.template.json", final_evidence
+            )
             self.run_ok(
                 [
                     sys.executable,
@@ -167,6 +195,8 @@ class IsolatedLifecycleTests(unittest.TestCase):
                     str(run),
                     "--visual-review-status",
                     "reviewed",
+                    "--visual-review-evidence",
+                    str(final_evidence),
                     "--visual-review-notes",
                     "isolated fixture: final render checked against the source for arrow, text, and page geometry",
                 ],

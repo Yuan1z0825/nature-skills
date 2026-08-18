@@ -22,6 +22,7 @@ from postprocess_manifest_arrows import (
     slide_sort_key,
     write_json,
 )
+from runtime_paths import resolve_inside
 
 
 def local_name(tag: str) -> str:
@@ -156,12 +157,20 @@ def main() -> int:
     source.add_argument("--run", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
+    if args.run:
+        scope = args.run.expanduser().resolve()
+        paths, _default = load_run_manifests(scope)
+    else:
+        manifest = args.manifest.expanduser().resolve()
+        scope = manifest.parent
+        paths = [manifest]
     try:
-        if args.run:
-            paths, _default = load_run_manifests(args.run.expanduser().resolve())
-        else:
-            paths = [args.manifest.expanduser().resolve()]
-        report = inspect([read_json(path) for path in paths], args.pptx.expanduser().resolve())
+        pptx = resolve_inside(scope, args.pptx)
+        out = resolve_inside(scope, args.out)
+    except ValueError as exc:
+        raise SystemExit(f"arrow inspection paths must stay inside {scope}") from exc
+    try:
+        report = inspect([read_json(path) for path in paths], pptx)
     except Exception as exc:
         report = {
             "schema_version": "image2ppt-manifest-arrow-inspection-v1",
@@ -169,7 +178,7 @@ def main() -> int:
             "errors": [repr(exc)],
             "summary": {"fragmented_or_missing": 1},
         }
-    write_json(args.out.expanduser().resolve(), report)
+    write_json(out, report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["passed"] else 2
 

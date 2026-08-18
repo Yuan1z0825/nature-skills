@@ -8,8 +8,11 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
+
+from deck_run_state import resolve_inside
 
 
 EMU_PER_INCH = 914400
@@ -779,19 +782,18 @@ def write_pptx(manifest, out_path, manifest_path):
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     normalized = normalize_manifest(manifest)
+    base = Path(manifest_path).resolve().parent
+    image_sources = [resolve_inside(base, item["path"]) for item in normalized.get("images", [])]
     media_index = 1
-    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("[Content_Types].xml", content_types_xml([normalized], []))
-        write_common_parts(z, 1, width, height, 0)
-        z.writestr("ppt/slides/slide1.xml", slide_xml(normalized))
-        z.writestr("ppt/slides/_rels/slide1.xml.rels", rels_xml(normalized, media_index, None))
-        base = Path(manifest_path).resolve().parent
-        for item in normalized.get("images", []):
-            src = Path(item["path"])
-            if not src.is_absolute():
-                src = base / src
-            z.write(src, f"ppt/media/image{media_index}{image_ext(src)}")
-            media_index += 1
+    with atomic_output(out) as staged:
+        with zipfile.ZipFile(staged, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("[Content_Types].xml", content_types_xml([normalized], []))
+            write_common_parts(z, 1, width, height, 0)
+            z.writestr("ppt/slides/slide1.xml", slide_xml(normalized))
+            z.writestr("ppt/slides/_rels/slide1.xml.rels", rels_xml(normalized, media_index, None))
+            for src in image_sources:
+                z.write(src, f"ppt/media/image{media_index}{image_ext(src)}")
+                media_index += 1
 
 
 def deck_slide_size(deck, page_entries):
@@ -811,57 +813,72 @@ def write_deck(deck, page_entries, out_path, notes_entries):
     notes_indices = sorted(notes_by_page)
     normalized_entries = [{**entry, "manifest": normalize_manifest(entry["manifest"])} for entry in page_entries]
     manifests = [entry["manifest"] for entry in normalized_entries]
+    image_sources = [
+        [
+            resolve_inside(Path(entry["manifest_path"]).resolve().parent, item["path"])
+            for item in entry["manifest"].get("images", [])
+        ]
+        for entry in normalized_entries
+    ]
     media_index = 1
-    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("[Content_Types].xml", content_types_xml(manifests, notes_indices))
-        write_common_parts(z, len(page_entries), width, height, len(notes_by_page))
-        for slide_index, entry in enumerate(normalized_entries, start=1):
-            manifest = entry["manifest"]
-            notes_index = slide_index if slide_index in notes_by_page else None
-            z.writestr(f"ppt/slides/slide{slide_index}.xml", slide_xml(manifest))
-            z.writestr(f"ppt/slides/_rels/slide{slide_index}.xml.rels", rels_xml(manifest, media_index, notes_index))
-            base = Path(entry["manifest_path"]).resolve().parent
-            for item in manifest.get("images", []):
-                src = Path(item["path"])
-                if not src.is_absolute():
-                    src = base / src
-                z.write(src, f"ppt/media/image{media_index}{image_ext(src)}")
-                media_index += 1
-            if notes_index is not None:
-                note = notes_by_page[slide_index]
-                notes_xml = note.get("notes_xml")
-                if notes_xml and Path(notes_xml).exists():
-                    z.writestr(f"ppt/notesSlides/notesSlide{notes_index}.xml", Path(notes_xml).read_bytes())
-                else:
-                    z.writestr(f"ppt/notesSlides/notesSlide{notes_index}.xml", notes_slide_xml(note.get("text", "")))
-                z.writestr(f"ppt/notesSlides/_rels/notesSlide{notes_index}.xml.rels", notes_rels_xml(slide_index))
+    with atomic_output(out) as staged:
+        with zipfile.ZipFile(staged, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("[Content_Types].xml", content_types_xml(manifests, notes_indices))
+            write_common_parts(z, len(page_entries), width, height, len(notes_by_page))
+            for slide_index, (entry, slide_sources) in enumerate(zip(normalized_entries, image_sources), start=1):
+                manifest = entry["manifest"]
+                notes_index = slide_index if slide_index in notes_by_page else None
+                z.writestr(f"ppt/slides/slide{slide_index}.xml", slide_xml(manifest))
+                z.writestr(f"ppt/slides/_rels/slide{slide_index}.xml.rels", rels_xml(manifest, media_index, notes_index))
+                for src in slide_sources:
+                    z.write(src, f"ppt/media/image{media_index}{image_ext(src)}")
+                    media_index += 1
+                if notes_index is not None:
+                    note = notes_by_page[slide_index]
+                    notes_xml = note.get("notes_xml")
+                    if notes_xml and Path(notes_xml).exists():
+                        z.writestr(f"ppt/notesSlides/notesSlide{notes_index}.xml", Path(notes_xml).read_bytes())
+                    else:
+                        z.writestr(f"ppt/notesSlides/notesSlide{notes_index}.xml", notes_slide_xml(note.get("text", "")))
+                    z.writestr(f"ppt/notesSlides/_rels/notesSlide{notes_index}.xml.rels", notes_rels_xml(slide_index))
+
+
+@contextmanager
+def atomic_output(out: Path):
+    """Expose a same-directory staging path and publish it only on success."""
+
+    out = out.resolve()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        prefix=f".{out.stem}.", suffix=out.suffix or ".tmp", dir=out.parent, delete=False
+    ) as handle:
+        staged = Path(handle.name)
+    try:
+        yield staged
+        staged.replace(out)
+    finally:
+        staged.unlink(missing_ok=True)
 
 
 def page_entries_from_deck_manifest(deck_manifest_path):
     deck_path = Path(deck_manifest_path).resolve()
     deck = json.loads(deck_path.read_text(encoding="utf-8"))
-    root = Path(deck.get("job_dir", deck_path.parent)).resolve()
+    root = deck_path.parent
     entries = []
     for page in deck.get("pages", []):
-        manifest_path = Path(page.get("manifest", ""))
-        if not manifest_path.is_absolute():
-            manifest_path = root / manifest_path
+        manifest_path = resolve_inside(root, page.get("manifest", ""))
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         entries.append({"manifest": manifest, "manifest_path": manifest_path})
     notes_path = deck.get("notes_manifest")
     notes_entries = []
     if notes_path:
-        notes_file = Path(notes_path)
-        if not notes_file.is_absolute():
-            notes_file = root / notes_file
+        notes_file = resolve_inside(root, notes_path)
         if notes_file.exists():
             notes_entries = json.loads(notes_file.read_text(encoding="utf-8")).get("notes", [])
             for note in notes_entries:
                 notes_xml = note.get("notes_xml")
                 if notes_xml:
-                    notes_xml_path = Path(notes_xml)
-                    if not notes_xml_path.is_absolute():
-                        notes_xml_path = root / notes_xml_path
+                    notes_xml_path = resolve_inside(root, notes_xml)
                     note["notes_xml"] = str(notes_xml_path)
     return deck, entries, notes_entries
 
@@ -869,11 +886,7 @@ def page_entries_from_deck_manifest(deck_manifest_path):
 def output_path_from_deck_manifest(deck_manifest_path):
     deck_path = Path(deck_manifest_path).resolve()
     deck = json.loads(deck_path.read_text(encoding="utf-8"))
-    root = Path(deck.get("job_dir", deck_path.parent)).resolve()
-    output = Path(deck.get("output", "final/deck_edited.pptx"))
-    if not output.is_absolute():
-        output = root / output
-    return output
+    return resolve_inside(deck_path.parent, deck.get("output", "final/deck_edited.pptx"))
 
 
 def render_preview(manifest, manifest_path, out_path):
@@ -1052,8 +1065,10 @@ def render_preview(manifest, manifest_path, out_path):
         layered.append((float(item.get("z_index", 300)), index, render_text, item))
     for _z_index, _order, renderer, item in sorted(layered, key=lambda entry: (entry[0], entry[1])):
         renderer(item)
-    Path(out_path).parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(out_path)
+    out = Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with atomic_output(out) as staged:
+        canvas.save(staged)
 
 
 def choose_preview_font(preferred):
@@ -1102,7 +1117,8 @@ def main():
     args = parser.parse_args()
     if args.deck_manifest:
         deck, entries, notes_entries = page_entries_from_deck_manifest(args.deck_manifest)
-        out = Path(args.out) if args.out else output_path_from_deck_manifest(args.deck_manifest)
+        deck_root = Path(args.deck_manifest).resolve().parent
+        out = resolve_inside(deck_root, args.out) if args.out else output_path_from_deck_manifest(args.deck_manifest)
         write_deck(deck, entries, out, notes_entries)
         print(f"Wrote {out}")
         return
@@ -1110,13 +1126,17 @@ def main():
         parser.error("manifest is required unless --deck-manifest is used")
     if not args.out:
         parser.error("--out is required unless --deck-manifest provides an output")
-    manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
-    write_pptx(manifest, args.out, args.manifest)
+    manifest_path = Path(args.manifest).expanduser().resolve()
+    page_root = manifest_path.parent
+    out = resolve_inside(page_root, args.out)
+    preview = resolve_inside(page_root, args.preview) if args.preview else None
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    write_pptx(manifest, out, manifest_path)
+    if preview:
+        render_preview(manifest, manifest_path, preview)
+    print(f"Wrote {out}")
     if args.preview:
-        render_preview(manifest, args.manifest, args.preview)
-    print(f"Wrote {args.out}")
-    if args.preview:
-        print(f"Wrote {args.preview}")
+        print(f"Wrote {preview}")
 
 
 if __name__ == "__main__":

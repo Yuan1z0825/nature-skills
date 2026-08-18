@@ -17,10 +17,15 @@ def run(command):
 
 
 def resolve_input_path(page_dir, value):
-    path = Path(value).expanduser()
-    if path.is_absolute():
-        return path
-    return page_dir / path
+    raw = Path(value).expanduser()
+    if raw.is_absolute() or raw.drive:
+        return raw.resolve()
+    try:
+        return resolve_inside(page_dir, raw)
+    except ValueError as exc:
+        raise SystemExit(
+            f"Relative input path must stay inside page_dir: {value}"
+        ) from exc
 
 
 def resolve_output_path(page_dir, value):

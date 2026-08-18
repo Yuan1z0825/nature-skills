@@ -1,5 +1,5 @@
 name: nature-image2ppt
-version: 1.0.1
+version: 1.1.0
 description: >
   Self-contained Image2PPT runtime for reconstructing slide images, scanned PDFs,
   and image-only PPTX files as object-level editable PowerPoint with rendered QA.

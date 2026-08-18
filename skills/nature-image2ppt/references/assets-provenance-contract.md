@@ -19,6 +19,13 @@ producer, selected file, destination, hash, role, and fallback reason. `image
 process-sheet` records chroma cleanup and split artifacts. These are asset records,
 not a second page state machine.
 
+Every recorded source, destination, split artifact, and provenance path must
+resolve inside the owning page directory. An absolute path may be used as the
+input to `image import` or as the explicit `process-sheet --asset-sheet-source`
+only long enough to copy a selected image-tool result into the page; it must never
+be recorded as the page asset path or reused as a build dependency. Relative
+inputs remain page-confined and may not use `..` traversal.
+
 Valid producer identifiers are `builtin-imagegen`, `codex-oauth`, and
 `openai-compatible-api`. A fallback reason is allowed only when it matches the
 run/page image-backend contract.

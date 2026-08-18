@@ -115,10 +115,7 @@ def find_page(jobs, page):
 
 
 def resolve_run_path(run_dir, value):
-    path = Path(value)
-    if path.is_absolute():
-        return path.resolve()
-    return (Path(run_dir) / path).resolve()
+    return resolve_inside(run_dir, value)
 
 
 def rel_to_run(run_dir, value):
@@ -197,7 +194,7 @@ def safe_agent_label(agent_id, nickname=None):
 
 
 def page_dir_for(run_dir, page):
-    return resolve_run_path(run_dir, page["page_dir"])
+    return resolve_inside(run_dir, page["page_dir"])
 
 
 def ensure_file(path, label):

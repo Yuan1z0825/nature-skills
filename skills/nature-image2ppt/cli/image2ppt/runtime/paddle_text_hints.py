@@ -25,6 +25,7 @@ from pathlib import Path
 import requests
 from PIL import Image
 
+from deck_run_state import resolve_inside
 from page_text_metrics import contains_cjk, load_gray, measure_crop
 from text_hints import attach_font_sizes, draw_overlay
 
@@ -143,7 +144,7 @@ def text_blocks_to_lines(pruned: dict, gray, min_glyph: int,
 def build_page_hints(page_dir: Path, pruned: dict, source_name: str = "source.png",
                      min_glyph: int = 6) -> dict:
     """Turn one page's prunedResult into the hints payload for its page dir."""
-    source_path = page_dir / source_name
+    source_path = resolve_inside(page_dir, source_name)
     gray = load_gray(source_path)
     height, width = gray.shape
     scale_x = width / float(pruned["width"]) if pruned.get("width") else 1.0
@@ -186,7 +187,12 @@ def main() -> int:
     if not args.token:
         raise SystemExit("Missing token: set PADDLE_OCR_TOKEN or pass --token.")
     page_dir = Path(args.page_dir).expanduser().resolve()
-    source_path = page_dir / args.source
+    try:
+        source_path = resolve_inside(page_dir, args.source)
+        out_path = resolve_inside(page_dir, args.out)
+        overlay_path = resolve_inside(page_dir, args.overlay) if args.overlay else None
+    except ValueError as exc:
+        raise SystemExit(f"OCR hint paths must stay inside page_dir: {exc}") from exc
     if not source_path.exists():
         raise SystemExit(f"Missing source image: {source_path}")
 
@@ -198,10 +204,9 @@ def main() -> int:
     hints = build_page_hints(page_dir, pages[0], source_name=args.source, min_glyph=args.min_glyph)
     hints["elapsed_seconds"] = round(time.time() - started, 1)
     lines = hints["lines"]
-    out_path = page_dir / args.out
     out_path.write_text(json.dumps(hints, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    if args.overlay:
-        draw_overlay(Image.open(source_path), lines, page_dir / args.overlay)
+    if overlay_path:
+        draw_overlay(Image.open(source_path), lines, overlay_path)
         hints["overlay"] = args.overlay
     print(json.dumps({"lines": len(lines), "elapsed_seconds": hints["elapsed_seconds"],
                       "out": str(out_path)}, ensure_ascii=False))

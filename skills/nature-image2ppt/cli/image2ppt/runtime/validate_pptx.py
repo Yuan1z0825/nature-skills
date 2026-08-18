@@ -9,6 +9,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 from build_pptx_from_manifest import TEXT_ALIGNMENTS, TEXT_VERTICAL_ALIGNMENTS, normalize_manifest
+from deck_run_state import resolve_inside
 
 
 NS = {
@@ -29,6 +30,20 @@ REQUIRED_QUALITY_CHECKS = {
     "visual_inventory_matched",
     "background_strategy_checked",
     "shape_corner_geometry_checked",
+}
+VISUAL_KINDS = {"background", "foreground-asset", "native-structure", "formula"}
+VISUAL_REPRESENTATIONS = {
+    "native",
+    "asset-sheet-separated",
+    "source-preserving-local-cleanup",
+    "imagegen",
+    "latex-rendered-formula",
+}
+REPRESENTATIONS_BY_KIND = {
+    "background": {"native", "source-preserving-local-cleanup", "imagegen"},
+    "foreground-asset": {"asset-sheet-separated"},
+    "native-structure": {"native"},
+    "formula": {"latex-rendered-formula"},
 }
 FOREGROUND_TERMS = {
     "badge",
@@ -127,6 +142,13 @@ def contains_any(text, terms):
     return any(term in text for term in terms)
 
 
+def manifest_schema_version(manifest):
+    try:
+        return int(manifest.get("schema_version", 1))
+    except (TypeError, ValueError):
+        return 1
+
+
 def visual_item_path(item):
     for key in ("path", "asset", "asset_path", "image", "image_path", "corresponding_asset"):
         value = item.get(key) if isinstance(item, dict) else None
@@ -150,11 +172,53 @@ def foreground_asset_contract_violations(manifest):
         if entry.get("path")
     }
 
+    structured_paths = set()
     for index, item in enumerate(manifest.get("visual_inventory", [])):
         if not isinstance(item, dict):
             continue
         text = compact_text(item)
         field = f"visual_inventory[{index}]"
+        kind = item.get("kind")
+        representation = item.get("representation")
+        structured = kind is not None or representation is not None or manifest_schema_version(manifest) >= 2
+        if structured:
+            if kind not in VISUAL_KINDS:
+                violations.append(
+                    {"field": f"{field}.kind", "reason": f"kind must be one of {sorted(VISUAL_KINDS)}"}
+                )
+            if representation not in VISUAL_REPRESENTATIONS:
+                violations.append(
+                    {
+                        "field": f"{field}.representation",
+                        "reason": f"representation must be one of {sorted(VISUAL_REPRESENTATIONS)}",
+                    }
+                )
+            if kind in REPRESENTATIONS_BY_KIND and representation not in REPRESENTATIONS_BY_KIND[kind]:
+                violations.append(
+                    {
+                        "field": f"{field}.representation",
+                        "reason": f"{kind} requires one of {sorted(REPRESENTATIONS_BY_KIND[kind])}",
+                    }
+                )
+            path = visual_item_path(item)
+            if path:
+                structured_paths.add(path)
+            if kind == "foreground-asset":
+                if not path:
+                    violations.append(
+                        {"field": field, "reason": "foreground-asset requires a path to its separated asset"}
+                    )
+                else:
+                    provenance = provenance_by_path.get(path, {})
+                    if provenance.get("source_type") != "asset-sheet-separated":
+                        violations.append(
+                            {
+                                "field": field,
+                                "path": path,
+                                "reason": "foreground-asset provenance must use source_type asset-sheet-separated",
+                            }
+                        )
+            continue
         if contains_any(text, FORBIDDEN_FOREGROUND_FALLBACK_TERMS):
             violations.append(
                 {
@@ -191,6 +255,8 @@ def foreground_asset_contract_violations(manifest):
         source_type = entry.get("source_type")
         path = Path(entry.get("path", "")).as_posix()
         field = f"asset_provenance[{index}]"
+        if path in structured_paths:
+            continue
         if source_type in {"user-provided", "user-approved-rasterization"} and contains_any(
             text, FOREGROUND_TERMS | FORBIDDEN_FOREGROUND_FALLBACK_TERMS
         ):
@@ -301,6 +367,24 @@ def quality_contract_violations(manifest):
                     }
                 )
 
+    if manifest_schema_version(manifest) >= 2:
+        quality_evidence = manifest.get("quality_evidence")
+        if not isinstance(quality_evidence, dict):
+            violations.append(
+                {"field": "quality_evidence", "reason": "schema v2 requires structured quality evidence"}
+            )
+        else:
+            for key in sorted(REQUIRED_QUALITY_CHECKS):
+                evidence = quality_evidence.get(key)
+                observation = evidence.get("observation") if isinstance(evidence, dict) else None
+                if not isinstance(observation, str) or len(re.sub(r"\s+", "", observation)) < 12:
+                    violations.append(
+                        {
+                            "field": f"quality_evidence.{key}.observation",
+                            "reason": "quality evidence requires a specific observation of at least 12 characters",
+                        }
+                    )
+
     for index, shape in enumerate(manifest.get("shapes", [])):
         is_round_rect = shape.get("type") == "roundRect" or shape.get("preset") == "roundRect"
         if is_round_rect and not shape.get("source_corner_radius_px"):
@@ -341,6 +425,78 @@ def quality_contract_violations(manifest):
             )
 
     violations.extend(foreground_asset_contract_violations(manifest))
+    violations.extend(formula_contract_violations(manifest))
+    return violations
+
+
+def formula_contract_violations(manifest):
+    violations = []
+    formula_inventory = manifest.get("formula_inventory", [])
+    inventory_ids = {
+        str(item.get("id"))
+        for item in formula_inventory
+        if isinstance(item, dict) and item.get("id")
+    }
+    inventory_paths = {
+        Path(item.get("image", "")).as_posix()
+        for item in formula_inventory
+        if isinstance(item, dict) and item.get("image")
+    }
+    for index, visual in enumerate(manifest.get("visual_inventory", [])):
+        if not isinstance(visual, dict) or visual.get("kind") != "formula":
+            continue
+        visual_id = str(visual.get("id") or "")
+        visual_path = visual_item_path(visual)
+        if visual_id not in inventory_ids and visual_path not in inventory_paths:
+            violations.append(
+                {
+                    "field": f"visual_inventory[{index}]",
+                    "reason": "formula visual requires a matching formula_inventory entry",
+                }
+            )
+    images = {
+        Path(item.get("path", "")).as_posix(): item
+        for item in manifest.get("images", [])
+        if isinstance(item, dict) and item.get("path")
+    }
+    provenance = {
+        Path(item.get("path", "")).as_posix(): item
+        for item in manifest.get("asset_provenance", [])
+        if isinstance(item, dict) and item.get("path")
+    }
+    for index, formula in enumerate(formula_inventory):
+        field = f"formula_inventory[{index}]"
+        if not isinstance(formula, dict):
+            violations.append({"field": field, "reason": "formula inventory item must be an object"})
+            continue
+        status = str(formula.get("status") or "rendered").strip().lower()
+        if status in {"failed", "missing", "blocked"}:
+            if formula.get("user_approved_exception") is not True:
+                violations.append(
+                    {
+                        "field": field,
+                        "reason": "an unrendered formula is a hard failure unless user_approved_exception is true",
+                    }
+                )
+            note = formula.get("approval_note")
+            if formula.get("user_approved_exception") is True and (
+                not isinstance(note, str) or len(note.strip()) < 12
+            ):
+                violations.append(
+                    {"field": f"{field}.approval_note", "reason": "approved formula exception requires a concrete note"}
+                )
+            continue
+        image_path = formula.get("image")
+        if not image_path:
+            violations.append({"field": f"{field}.image", "reason": "rendered formula requires an image path"})
+            continue
+        key = Path(image_path).as_posix()
+        if key not in images:
+            violations.append({"field": f"{field}.image", "reason": "formula image is missing from images[]"})
+        if provenance.get(key, {}).get("source_type") != "latex-rendered-formula":
+            violations.append(
+                {"field": f"{field}.image", "reason": "formula image requires latex-rendered-formula provenance"}
+            )
     return violations
 
 
@@ -483,16 +639,18 @@ def collect_notes_texts(z, names):
 def validate_deck(args):
     deck_path = Path(args.deck_manifest).resolve()
     deck = read_manifest(deck_path)
-    root = Path(deck.get("job_dir", deck_path.parent)).resolve()
+    root = deck_path.parent
     expected_pages = int(deck.get("page_count", len(deck.get("pages", []))))
     notes_manifest = {}
+    deck_path_violations = []
     notes_path = deck.get("notes_manifest")
     if notes_path:
-        notes_file = Path(notes_path)
-        if not notes_file.is_absolute():
-            notes_file = root / notes_file
-        if notes_file.exists():
-            notes_manifest = read_manifest(notes_file)
+        try:
+            notes_file = resolve_inside(root, notes_path)
+            if notes_file.exists():
+                notes_manifest = read_manifest(notes_file)
+        except ValueError as exc:
+            deck_path_violations.append({"field": "notes_manifest", "reason": str(exc)})
 
     report = {
         "pptx": str(Path(args.pptx).resolve()),
@@ -502,7 +660,11 @@ def validate_deck(args):
         "page_manifests_missing": [],
         "page_validation_missing": [],
         "failed_page_validations": [],
-        "page_contract_violations": [],
+        "page_contract_violations": (
+            [{"page_id": None, "manifest": str(deck_path), "violations": deck_path_violations}]
+            if deck_path_violations
+            else []
+        ),
         "notes_expected": len(notes_manifest.get("notes", [])),
         "notes_found": 0,
         "notes_hash_mismatches": [],
@@ -512,12 +674,18 @@ def validate_deck(args):
     }
 
     for page in deck.get("pages", []):
-        manifest_path = Path(page.get("manifest", ""))
-        validation_path = Path(page.get("validation", ""))
-        if not manifest_path.is_absolute():
-            manifest_path = root / manifest_path
-        if not validation_path.is_absolute():
-            validation_path = root / validation_path
+        try:
+            manifest_path = resolve_inside(root, page.get("manifest", ""))
+            validation_path = resolve_inside(root, page.get("validation", ""))
+        except ValueError as exc:
+            report["page_contract_violations"].append(
+                {
+                    "page_id": page.get("page_id"),
+                    "manifest": str(page.get("manifest", "")),
+                    "violations": [{"field": "page path", "reason": str(exc)}],
+                }
+            )
+            continue
         if not manifest_path.exists():
             report["page_manifests_missing"].append(str(manifest_path))
         else:
@@ -648,11 +816,21 @@ def main():
     args = parser.parse_args()
 
     if args.deck_manifest:
+        deck_root = Path(args.deck_manifest).expanduser().resolve().parent
+        args.pptx = str(resolve_inside(deck_root, args.pptx))
+        if args.report:
+            args.report = str(resolve_inside(deck_root, args.report))
         validate_deck(args)
+
+    if not args.manifest:
+        parser.error("--manifest is required unless --deck-manifest is used")
+    manifest_base = Path(args.manifest).expanduser().resolve().parent
+    args.pptx = str(resolve_inside(manifest_base, args.pptx))
+    if args.report:
+        args.report = str(resolve_inside(manifest_base, args.report))
 
     raw_manifest = read_manifest(args.manifest)
     manifest, authoring_violations = normalize_for_validation(raw_manifest)
-    manifest_base = Path(args.manifest).resolve().parent if args.manifest else Path.cwd()
     required = list(args.required_text)
     required.extend(required_texts_from_manifest(manifest))
 
@@ -710,8 +888,11 @@ def main():
                     ext = ".jpg"
                 media_name = f"ppt/media/image{index}{ext}"
                 source_path = Path(image_path)
-                if not source_path.is_absolute():
-                    source_path = manifest_base / source_path
+                try:
+                    source_path = resolve_inside(manifest_base, source_path)
+                except ValueError:
+                    report["missing_manifest_images"].append(str(image_path))
+                    continue
                 if media_name not in names:
                     report["media_hash_mismatches"].append(
                         {"path": image_path, "media": media_name, "reason": "missing media part"}
@@ -802,9 +983,13 @@ def main():
         if not source:
             report["missing_provenance_sources"].append({"path": key, "source": source})
             continue
-        source_path = Path(source)
-        if not source_path.is_absolute():
-            source_path = manifest_base / source_path
+        try:
+            source_path = resolve_inside(manifest_base, source)
+        except ValueError:
+            report["missing_provenance_sources"].append(
+                {"path": key, "source": str(source), "reason": "source is outside manifest directory"}
+            )
+            continue
         if not source_path.exists():
             report["missing_provenance_sources"].append({"path": key, "source": str(source)})
     report["page_contract_violations"] = (
