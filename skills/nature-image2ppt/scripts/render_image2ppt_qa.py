@@ -240,7 +240,7 @@ def main() -> int:
             "error": "existing rendered image is byte-identical to source.png; source reuse cannot prove PPTX rendering",
         }
         write_json(report_path, report)
-        print(json.dumps({"status": "error", "report": str(report_path), "error": report["error"]}, ensure_ascii=False))
+        print(json.dumps({"status": "error", "report": str(report_path), "error": report["error"]}, ensure_ascii=True))
         return 2
     if existing:
         rendered, raw = render_existing(existing, out_dir)
@@ -271,7 +271,7 @@ def main() -> int:
     if source and source.is_file() and stable:
         report["diff_metrics"] = image_diff(source, stable)
     write_json(report_path, report)
-    print(json.dumps({"status": report["status"], "report": str(report_path)}, ensure_ascii=False))
+    print(json.dumps({"status": report["status"], "report": str(report_path)}, ensure_ascii=True))
     return 0 if report["status"] == "rendered" else 2
 
 

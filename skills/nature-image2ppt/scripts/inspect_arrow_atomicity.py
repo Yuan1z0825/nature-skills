@@ -179,7 +179,7 @@ def main() -> int:
             "summary": {"fragmented_or_missing": 1},
         }
     write_json(out, report)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print(json.dumps(report, ensure_ascii=True, indent=2))
     return 0 if report["passed"] else 2
 
 

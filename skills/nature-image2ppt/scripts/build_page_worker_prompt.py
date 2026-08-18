@@ -105,7 +105,7 @@ def main() -> int:
             f"--agent-id <worker-id> --prompt-file {shlex.quote(str(out))}"
         ),
     }
-    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    print(json.dumps(payload, ensure_ascii=True, indent=2))
     return 0
 
 

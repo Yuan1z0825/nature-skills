@@ -140,6 +140,7 @@ jobs:
           tests/test_project_metadata.py
           tests/test_script_inventory.py
           tests/test_formula_renderer.py
+          tests/test_console_portability.py
           tests/test_page_hints.py
           tests/test_pdf_backend.py
           tests/test_quality_contracts.py

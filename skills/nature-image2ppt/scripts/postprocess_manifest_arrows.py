@@ -471,7 +471,7 @@ def main() -> int:
         pptx = resolve_inside(page_dir, args.pptx)
         report_path = resolve_inside(page_dir, args.report) if args.report else None
     report = postprocess_pptx(pptx, manifests, report_path)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print(json.dumps(report, ensure_ascii=True, indent=2))
     return 0 if report["passed"] else 2
 
 

@@ -227,7 +227,9 @@ def main() -> int:
     }
     validation["passed"] = bool(validation.get("passed") is True and passed)
     write_json(paths["source_validation"], validation)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    # stdout may use a legacy code page on Windows CI. JSON escapes preserve
+    # Unicode content while keeping the command-line transport ASCII-safe.
+    print(json.dumps(report, ensure_ascii=True, indent=2))
     return 0 if passed else 2
 
 
