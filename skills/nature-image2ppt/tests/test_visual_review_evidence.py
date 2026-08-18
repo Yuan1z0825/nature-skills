@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from support import SCRIPTS, build_page, filled_arrow_manifest
+from support import SCRIPTS, build_page, complete_visual_review_evidence, filled_arrow_manifest
 
 sys.path.insert(0, str(SCRIPTS))
 from visual_review_evidence import expected_page, validate_evidence, write_template  # noqa: E402
