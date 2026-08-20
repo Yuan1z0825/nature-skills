@@ -178,6 +178,26 @@
       "files": []
     },
     {
+      "id": "multipanel-figure-level-claim-and-role-diversity",
+      "prompt": "My Fig. 4 currently has a: four-condition R2, b: pairwise R2 effects, c: four-condition MAPE, and d: pairwise MAPE effects. Make it more like a Nature multi-panel figure.",
+      "expected_output": "The assistant should first state the Results-level scientific question and one figure-level claim, diagnose that four panels currently provide only about two inferential roles, and propose the smallest sufficient panel chain with complementary roles such as perturbation setup, decisive comparison, residual/full distribution, and decomposition or boundary. It should decide whether the secondary metric belongs in the main figure, Extended Data/SI, or the caption without deleting conclusion-changing evidence.",
+      "assertions": [
+        {
+          "name": "figure_level_claim_precedes_panel_count",
+          "description": "The plan begins from one Results-level question and figure-level claim rather than the available number of metrics or datasets."
+        },
+        {
+          "name": "panel_roles_are_inferentially_distinct",
+          "description": "Panels perform complementary evidence roles rather than mirroring the same experiment under R2 and MAPE."
+        },
+        {
+          "name": "secondary_evidence_is_routed_explicitly",
+          "description": "Redundant or secondary evidence is deliberately merged, moved to Extended Data/SI, or retained only when it changes or bounds the claim."
+        }
+      ],
+      "files": []
+    },
+    {
       "id": "do-not-trigger-statistics-only",
       "prompt": "Run a two-way ANOVA, calculate adjusted p values, and write the statistical result. Do not make a figure.",
       "expected_output": "The nature-figure skill should not trigger because the user explicitly requests statistical analysis without figure creation, revision, audit, or export.",

@@ -30,8 +30,8 @@ Plan figures by scientific claims, not by source tables. Do not turn each table 
 
 ## The five-point contract
 
-1. **Core conclusion**: write the one-sentence claim the figure must defend.
-2. **Evidence chain**: map each planned panel to one unique claim question, and drop or merge panels that only redraw another panel's evidence.
+1. **Core conclusion**: write the one-sentence claim the figure must defend and the Results-level scientific question it answers.
+2. **Evidence chain**: map each planned panel to one distinct inferential role in that claim, and drop, merge, or demote panels that only redraw another panel's evidence or repeat it under a secondary metric.
 3. **Archetype**: classify the figure as `quantitative grid`, `schematic-led composite`, `image plate + quant`, or `asymmetric mixed-modality figure`.
 4. **Backend**: use the explicit or saved Python/R track exclusively for all figure drawing, previewing, exporting, and visual QA. Do not cross-render with the other language.
 5. **Journal/export contract**: set final dimensions, a 5 pt floor for every rendered glyph, editable text, source data, statistics, image-integrity notes, and export formats before styling.
@@ -39,3 +39,7 @@ Plan figures by scientific claims, not by source tables. Do not turn each table 
 The highest-priority rule is: **the chart serves the scientific logic**. Aesthetic polish, template matching, and complex layout are subordinate to making the core conclusion clear, defensible, and reviewable.
 
 For the full method to convert a request into core conclusion, evidence hierarchy, panel map, and review-risk checks, open `references/figure-contract.md`.
+For a labelled multi-panel figure or a manuscript-level figure sequence, also
+open `references/multipanel-evidence-architecture.md`: use one figure-level
+claim as the planning default, give panels complementary evidence roles, and
+align successive figures with the Results claim escalation.

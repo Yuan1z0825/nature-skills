@@ -8,6 +8,7 @@
 
 - Generate Python / R plotting scripts and editable figures from data, legends, or manuscript claims.
 - Redraw existing figures into clearer multi-panel manuscript figures.
+- Plan multi-panel evidence chains around the default that one figure answers one Results-level scientific question, with panels serving different inferential roles such as primary evidence, control, orthogonal validation, perturbation, mechanism, or boundary rather than merely redrawing the same result under new metrics.
 - Plan Figure 1, mechanism diagrams, workflows, graphical abstracts, or supplementary figures.
 - Check panel labels, color hierarchy, panel-by-panel uncertainty, actual PDF glyph sizes, statistical annotations, source data, and export formats.
 - Separate flagship `Nature` initial, final main-figure, and Extended Data file contracts, including the under-250-word legend limit.
@@ -21,6 +22,7 @@ Start with a figure contract rather than a template:
 
 - Core conclusion: what the figure must demonstrate.
 - Evidence hierarchy: which panels are primary evidence and which are explanatory.
+- Multi-panel architecture: write the figure-level claim first, then assign every panel a distinct evidence role and decide whether displaced material belongs in another figure or Extended Data/SI.
 - Figure prototype: scatter, box plot, heatmap, mechanism diagram, workflow, multi-panel composition, and so on.
 - Backend choice: Python or R; the first choice can be reused as the default preference.
 - Data integrity: preserve all observations and requested variables by default, and record every exclusion rule with before/after counts.
@@ -59,6 +61,7 @@ Start with a figure contract rather than a template:
 
 - `references/api.md`: Python palette, style, and plotting-helper conventions.
 - `references/asset-adaptation.md`: semantic matching, field mapping, and data-integrity rules for templates.
+- `references/multipanel-evidence-architecture.md`: planning and audit from Results-level question to panel evidence roles, within-figure closure, cross-figure claim escalation, and main-figure/Extended-Data/SI placement.
 - `references/template-catalog.md`: validated Python CSV templates for volcano, ROC, marker dot plot, marginal, and paired figures.
 - `references/chart-types.md`: chart selection and visual rules.
 - `references/demos.md`: third-party `figures4papers` index, use boundaries, and original adaptation patterns.

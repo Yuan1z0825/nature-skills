@@ -25,6 +25,7 @@ Create a short contract in working notes or in the response:
 
 ```text
 Core conclusion:
+Results-level question:
 Figure archetype:
 Target journal/output:
 Backend: Python or R
@@ -76,6 +77,12 @@ panels. This claim-first pass prevents redundant figures that restate the same r
 | `asymmetric mixed-modality figure` | The figure combines schematic, raster images, heatmaps, and quantitative plots | One panel spans rows/columns | Smaller panels ranked by evidence value |
 
 ## Panel logic
+
+For a labelled multi-panel manuscript figure, load
+`multipanel-evidence-architecture.md`. Use `one figure = one major claim` as a
+strong planning default. Panels should be different necessary sentences in the
+same visual argument, not parallel mini-stories or the same comparison mirrored
+across several metrics.
 
 Use this order unless the manuscript story clearly requires another:
 

@@ -381,7 +381,11 @@ be set before any `savefig` call.
 
 ### Rule: Every panel must answer a unique scientific question
 
-In a multi-panel figure, each panel should be independently informative. Covering one panel must leave a gap that cannot be recovered from the others.
+In a multi-panel figure, each panel should be independently necessary but need
+not tell an independent story. Covering one panel must remove a distinct
+inferential step that cannot be recovered from the others. For figure-level
+claim design, evidence-role selection, placement decisions and manuscript
+figure progression, load `multipanel-evidence-architecture.md`.
 
 **Recommended three-level progression**:
 

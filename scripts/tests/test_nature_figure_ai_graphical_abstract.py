@@ -57,7 +57,7 @@ class NatureFigureAIGraphicalAbstractTests(unittest.TestCase):
         for text in (skill, manifest, provider):
             self.assertIn("ai-graphical-abstract-workflow.md", text)
 
-        self.assertIn("version: 2.5.0", manifest)
+        self.assertIn("version: 2.6.0", manifest)
         self.assertIn("planning or auditing only", skill)
         self.assertIn("internal design use and submission eligibility", provider)
 

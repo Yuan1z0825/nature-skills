@@ -1,5 +1,5 @@
 name: nature-figure
-version: 2.5.0
+version: 2.6.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is
@@ -63,6 +63,8 @@ references:
   on_demand:
     - condition: convert a user request into core conclusion, evidence hierarchy, panel map, and review-risk checks
       path: references/figure-contract.md
+    - condition: plan, restructure, or audit a multi-panel manuscript figure; decide panel roles or main-versus-Extended-Data placement; or align figure order with a Results evidence chain
+      path: references/multipanel-evidence-architecture.md
     - condition: user has not chosen Python/R, asks for a recommendation, or a mixed Python/R workflow is possible
       path: references/backend-selection.md
     - condition: user chooses R or provides R scripts/templates/data
