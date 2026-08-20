@@ -1,19 +1,19 @@
 # Section: Abstract (writing)
 
-The abstract is a mini-paper. Draft it last, when Results and Discussion are stable.
+The abstract is the manuscript's shortest evidence chain, not a compressed
+Introduction. Draft it last, when Results and Discussion are stable.
 
 ## Default Nature pattern
 
-`context / problem -> gap -> approach -> key result -> implication -> boundary`
+`precise problem / gap -> answer-enabling design -> main discovery -> decisive support / boundary -> implication`
 
 ## Paragraph movement (recommended)
 
-1. Field-scale context or problem.
-2. Why current routes do not fully solve it.
-3. What this paper introduces or demonstrates.
-4. The strongest result, with quantitative or comparative support.
-5. The mechanism, workflow, or practical consequence.
-6. Bounded implication.
+1. State the problem and exact unresolved question with minimal background.
+2. Explain only the design logic needed to see how the question is answered.
+3. State one main discovery.
+4. Add one or two decisive supporting findings or boundaries.
+5. End with the bounded conceptual, technical, or field-level implication.
 
 ## Pattern variants for technical / method-heavy papers
 
@@ -29,10 +29,15 @@ Open `references/abstract.md` for templates and examples.
 
 - Beginning with `Here, we` may signal missing context.
 - Ending with a broad promise may need scope control.
-- No number, comparison, or concrete test may feel ungrounded.
+- A result may feel ungrounded when neither a decisive comparison nor the logic
+  of the supporting test is visible. A number is optional unless it defines the
+  central claim.
 
 ## Drafting discipline
 
 - Keep it compact. Cut sentences that re-summarize background the title already implies.
-- Include quantitative or comparative detail when the user provided it. Do not invent numbers.
+- Include a quantitative result only when it defines, supports, or materially
+  bounds the central claim. Do not invent numbers or fill the abstract with an
+  experiment inventory.
+- Keep one main claim and no more than one or two supporting claims.
 - End with what the work enables, not generic importance.

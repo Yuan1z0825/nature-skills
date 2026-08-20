@@ -20,6 +20,9 @@ always_load:
 | `core/terminology-ledger.md` | `nature-polishing`, `nature-writing`, `nature-reader`, `nature-paper2ppt` |
 | `core/consistency-sweep.md` | `nature-polishing`, `nature-reviewer`, `nature-response`, `nature-statistics` |
 | `core/main-text-discipline.md` | `nature-writing`, `nature-polishing`, `nature-response` |
+| `core/nature-results-discussion.md` | Nature / Nature Portfolio Results claim escalation and Discussion synthesis for `nature-writing` and `nature-polishing`, distilled from published NMI and flagship Nature papers (not official policy) |
+| `core/nature-introduction.md` | Nature / Nature Portfolio problem funnels, exact gaps, and Introduction–Results alignment for `nature-writing` and `nature-polishing`, initially distilled from NMI papers (not official policy) |
+| `core/nature-abstract.md` | Nature / Nature Portfolio discovery-centred abstract evidence chains, claim hierarchy, and numeric selection for `nature-writing` and `nature-polishing`, initially distilled from NMI papers (not official policy) |
 | `journal-formats/nat-comms.md` | `nature-polishing`, `nature-writing` |
 | `journal-formats/nature.md` | `nature-writing` and skills needing exact flagship `Nature Article` submission rules |
 | `journal-formats/nature-machine-intelligence.md` | Writing, polishing, figure, data, and statistics workflows for NMI submissions |

@@ -7,6 +7,18 @@ Open
 the exact, stage-aware NMI facts. This fragment controls polishing decisions,
 not the submission numbers themselves.
 
+For Results or Discussion, also open
+`../../../../nature-shared/core/nature-results-discussion.md`. It is
+corpus-derived Nature-style writing guidance, not an official NMI requirement.
+
+For Introduction polishing, also open
+`../../../../nature-shared/core/nature-introduction.md`. It is corpus-derived
+Nature-style writing guidance, not an official NMI requirement.
+
+For abstract polishing, also open
+`../../../../nature-shared/core/nature-abstract.md`. It is corpus-derived
+Nature-style writing guidance, not an official NMI requirement.
+
 ## Audience and stance
 
 Polish for readers across AI, robotics, machine learning and the scientific or
@@ -42,6 +54,39 @@ the prose fit.
   into causal, clinical or societal effectiveness.
 - Define specialist abbreviations and remove jargon that is not needed for
   technical accuracy.
+
+## Results–Discussion calibration
+
+- Preserve a claim-escalating Results sequence rather than flattening related
+  subsections into parallel experiment reports.
+- Keep a bounded local inference in Results when it directly resolves the
+  current experiment; move cross-result synthesis and broader implications to
+  Discussion.
+- Keep conclusion-changing robustness and failure boundaries visible in the
+  main text; move reassurance-only variants to SI.
+- Permit a brief finding anchor in Discussion, but remove repeated evidence,
+  effect sizes, and tests that merely re-demonstrate the Results claim.
+
+## Introduction calibration
+
+- Compress broad context until the specific unresolved problem appears early.
+- Replace vague limitation language with the exact unknown, condition,
+  mechanism, boundary, or literature tension.
+- Reorganize citation catalogues into a known–unknown argument.
+- Replace novelty adjectives with the research question and the design that can
+  answer it.
+- Check that each Introduction question maps to a Results answer and that the
+  closing paragraph previews this route without replaying the paper.
+
+## Abstract calibration
+
+- Rebuild the abstract around one main discovery rather than a list of
+  datasets, models, metrics, and completed analyses.
+- Keep only enough method information to show why the design answers the gap.
+- Retain no more than one or two decisive supporting claims or boundaries.
+- Keep a number only when it defines, supports, or bounds the main discovery.
+- Make the final sentence state the bounded conceptual or field-level payoff,
+  not merely superior performance.
 
 ## Submission-sensitive checks
 

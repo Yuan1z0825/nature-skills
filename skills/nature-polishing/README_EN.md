@@ -10,6 +10,9 @@
 - Shorten long sentences and improve argument order and paragraph movement.
 - Adjust abstracts, introductions, results, discussions, or titles using Nature / Nature Communications / Nature Machine Intelligence article patterns.
 - Route NMI separately to check its 3,500-word main text, 150-word abstract, six-display budget, code-review duties, and substantial conference-paper extension without importing flagship Nature numbers.
+- For flagship Nature, Nature Communications, NMI, and other Nature Portfolio titles, preserve claim escalation, evidence-bound local interpretation, and cross-Results synthesis, distinguishing a necessary recap from redundant re-demonstration.
+- For every Nature / Nature Portfolio target, apply a fast problem funnel, exact gap, literature tension, question-first novelty, and Introduction–Results alignment.
+- For every Nature / Nature Portfolio target, keep one main discovery, one or two decisive supports or boundaries, only necessary core numbers, and a bounded payoff in the abstract. These three defaults were initially distilled from published NMI papers, with the Results–Discussion guidance further reinforced by flagship Nature comparisons, and generalized as Nature-style guidance; they are not official policy.
 - Distinguish research-paper and methods-paper writing priorities.
 - Check AI-like phrasing, exaggerated claims, excessive causal language, and unnatural collocations.
 - Sweep full or repeatedly revised manuscripts for terminology, unit, numeric-precision, and internal-claim drift.

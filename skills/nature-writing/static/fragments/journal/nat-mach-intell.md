@@ -10,6 +10,20 @@ rules.
 
 The notes below are the **drafting action layer** on top of those facts.
 
+For Results or Discussion drafting, also open
+`../../../../nature-shared/core/nature-results-discussion.md`. It records
+corpus-derived Nature-style writing patterns, not official submission
+requirements.
+
+For Introduction drafting, also open
+`../../../../nature-shared/core/nature-introduction.md`. It records
+corpus-derived Nature-style writing patterns, not official submission
+requirements.
+
+For abstract drafting, also open
+`../../../../nature-shared/core/nature-abstract.md`. It records corpus-derived
+Nature-style writing patterns, not official submission requirements.
+
 ## Audience and fit
 
 Write for readers across machine learning, robotics, AI applications and the
@@ -60,6 +74,42 @@ Before strong novelty, generality or deployment language, ask for:
 New code central to the conclusions requires a separate Code availability
 section, reviewer access and the Software Submission Checklist. Plan these
 artifacts while drafting Methods rather than after acceptance.
+
+## Results–Discussion action
+
+- Build Results as claim escalation: each subsection should answer a new
+  scientific question and add an independent inference.
+- Allow a bounded local explanation in Results when it directly resolves the
+  experiment just reported; reserve cross-result, literature, and broader
+  implications for Discussion.
+- Keep robustness in the main text when it establishes or materially bounds a
+  claim; route reassurance-only checks to SI.
+- Let Discussion briefly anchor the central finding, then synthesize rather
+  than replay the Results evidence and statistics.
+
+## Introduction action
+
+- Narrow quickly from the important problem to a specific unresolved
+  phenomenon, condition, mechanism, or contradiction.
+- State the gap as an exact unknown; do not define it as the absence of the
+  author's method.
+- Organize literature to construct the known–unknown transition, not to display
+  coverage.
+- Let the study's answer emerge only after the question is motivated, and use
+  the closing paragraph as a compact roadmap of how the study answers it.
+- Require every central Introduction question to map to a Results answer and
+  every central Results claim to have a motivated question.
+
+## Abstract action
+
+- Treat the abstract as the manuscript's shortest evidence chain, not a
+  compressed Introduction or experiment inventory.
+- State one sharp gap, the minimum design logic needed to answer it, one main
+  discovery, and no more than one or two decisive supports or boundaries.
+- Include a number only when it defines, supports, or materially bounds the
+  central claim; a decorative numeric result is not required.
+- End with what the finding changes or enables within the tested scope, not
+  with a claim that the method performs well.
 
 ## Submission-package actions
 

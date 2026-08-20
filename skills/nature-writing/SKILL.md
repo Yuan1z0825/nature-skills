@@ -64,6 +64,22 @@ text, captions, Methods/source data, and SI, then draft the shortest sufficient
 evidence chain. Do not equate a complete analysis record with a complete main
 text.
 
+When the target is flagship Nature, Nature Communications, Nature Machine
+Intelligence, or another Nature Portfolio title, load the matching shared
+Nature-style corpus guidance for the section being drafted:
+
+- Results or Discussion →
+  `../nature-shared/core/nature-results-discussion.md`
+- Introduction or whole-manuscript narrative →
+  `../nature-shared/core/nature-introduction.md`
+- Abstract → `../nature-shared/core/nature-abstract.md`
+
+Use these files for claim escalation, question-chain alignment,
+discovery-centred compression, and synthesis. They were initially distilled
+from published NMI papers and generalized as Nature-style defaults; do not
+present them as official policy, and let the target journal's current rules
+override them.
+
 For `task=submission-package`, follow `static/fragments/task/submission-package.md` and `references/submission-package.md` instead. Build the deliverable matrix and readiness audit; do not force manuscript paragraph architecture onto administrative submission materials.
 
 If essential evidence or boundary is missing, write a placeholder and list it under `Assumptions or missing inputs:` instead of inventing content.
@@ -86,6 +102,15 @@ The files under `references/` are deep references and the example library, not d
 - The target is Nature Machine Intelligence and exact content-type, submission,
   data/code or production requirements matter →
   `../nature-shared/journal-formats/nature-machine-intelligence.md`.
+- Any Nature / Nature Portfolio target needs Results claim progression,
+  evidence-bound interpretation, robustness placement, or Discussion synthesis
+  → `../nature-shared/core/nature-results-discussion.md`.
+- Any Nature / Nature Portfolio target needs an Introduction funnel, exact gap,
+  literature logic, question-first novelty, study roadmap, or alignment with
+  Results → `../nature-shared/core/nature-introduction.md`.
+- Any Nature / Nature Portfolio target needs abstract evidence-chain,
+  main/supporting-claim, numeric-result, or final-payoff decisions →
+  `../nature-shared/core/nature-abstract.md`.
 - The work involves regulated or specialist research compliance →
   `../nature-shared/core/research-compliance.md`.
 

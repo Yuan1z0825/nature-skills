@@ -1,6 +1,12 @@
 # Section: Results
 
-Results are a summary of the data collected to address the problem stated in the Introduction.
+Results are the evidence chain that establishes and advances the paper's
+scientific claims.
+
+Load `../../../../nature-shared/core/nature-results-discussion.md` when the
+target is Nature / Nature Portfolio. Rebuild the section around a discovery
+loop, a core-capability validation envelope, or a capability ladder rather than
+an experiment inventory.
 
 Results writing should:
 
@@ -15,7 +21,10 @@ Results writing should:
 - report the main descriptive quantity and primary inferential support once;
   avoid duplicating the full report in both Results and captions
 
-Results should answer `what happened`, not `what it ultimately means`.
+End each coherent evidence unit with the bounded inference it supports. Keep
+local interpretation when it directly answers the current experiment and the
+supporting evidence is visible there; move cross-result synthesis, extensive
+literature comparison, and broad implications to Discussion.
 
 ## Sentence syntax (Results vs Discussion)
 
@@ -27,11 +36,13 @@ Results sentences usually report:
 - `enabled`
 - `achieved`
 
-Do not let a Results paragraph drift into Discussion syntax (`may reflect`, `suggests that`, `is likely due to`) unless the transition is intentional.
+Use interpretive syntax (`may reflect`, `suggests that`, `is likely due to`)
+only when the transition is intentional, evidence-bound, and calibrated.
 
 ## Common failure modes
 
-- Interpreting findings inline instead of in Discussion.
+- Adding an inline interpretation that is unsupported by the current evidence,
+  or expanding a bounded inference into broad Discussion.
 - Citing supplementary data when the result should stand in the main text.
 - Treating every completed analysis as main-text material.
 - Appending reviewer-defense sentences without checking what they replace.
@@ -40,6 +51,9 @@ Do not let a Results paragraph drift into Discussion syntax (`may reflect`, `sug
 - Restating the same claim in a heading, transition, caption, Results paragraph,
   and closing sentence without adding a new function.
 - Vague comparisons (`higher than control`) without effect size or test.
+- Replaying an earlier baseline or control and drawing the same conclusion in a
+  later subsection, instead of centring the new perturbation, falsification,
+  stronger comparator, or boundary that creates the deeper inference.
 
 After restructuring, apply the paragraph necessity test to every Results
 paragraph and record whether text was retained, compressed, relocated, or

@@ -60,6 +60,22 @@ before sentence polishing. Classify each result, retain the shortest sufficient
 evidence chain, and require every addition to trigger a deletion or replacement
 check across the affected paragraph.
 
+For flagship Nature, Nature Communications, Nature Machine Intelligence, or
+another Nature Portfolio title, load the matching shared Nature-style corpus
+guidance:
+
+- Results or Discussion →
+  `../nature-shared/core/nature-results-discussion.md`
+- Introduction or whole-manuscript narrative →
+  `../nature-shared/core/nature-introduction.md`
+- Abstract → `../nature-shared/core/nature-abstract.md`
+
+Preserve claim escalation, the fast question funnel, Introduction–Results
+alignment, discovery-centred abstract compression, evidence-bound local
+interpretation, and cross-Results synthesis. These defaults were initially
+distilled from published NMI papers; treat them as corpus-derived guidance, not
+official policy, and obey the target journal's current rules when they differ.
+
 ### 5. Reach for references only when needed
 
 The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest, for example when the user explicitly asks for phrasebank-style alternatives or a stricter style audit.

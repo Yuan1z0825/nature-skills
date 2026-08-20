@@ -2,7 +2,7 @@
 
 ## Default funnel
 
-`field scale -> bottleneck -> prior attempts -> unresolved gap -> present study`
+`important problem -> specific phenomenon or difficulty -> what prior work establishes -> exact unresolved gap -> research question or hypothesis -> present study`
 
 For a broad-audience `Nature` summary paragraph, strengthen this into (See `references/nature-summary-paragraph.md`.):
 
@@ -11,9 +11,10 @@ For a broad-audience `Nature` summary paragraph, strengthen this into (See `refe
 ## Paragraph jobs (typical 4-paragraph intro)
 
 1. Establish the field stake. Make it land for a non-specialist if the target is broad (Nature, Science).
-2. Identify the bottleneck in existing practice.
-3. Summarize what prior work has and has not solved. Synthesize, do not list.
-4. State what this paper does and how it addresses the gap. Preview the contribution, not the results in detail.
+2. Narrow quickly to the specific phenomenon, tension, or bottleneck.
+3. Summarize what prior work has and has not resolved. Synthesize, do not list.
+4. State the exact unknown and research question, then explain how this paper
+   addresses it. Preview the study route, not the Results in detail.
 
 ## Pipeline variants — pick one based on the material
 
@@ -34,3 +35,10 @@ Tell the user which variant you picked and why.
 - Do not summarize results in detail. The final paragraph states the contribution and approach, not the numbers.
 - Cite prior work to position, not to demonstrate breadth. Each citation should earn its place.
 - The transition from "what is known" to "what this paper does" must be explicit, not implied.
+- Define the gap as an unknown, disputed condition, mechanism, or boundary; do
+  not define it as the absence of the author's method.
+- Make each background paragraph narrow toward the research question. Delete or
+  compress field history that does not prepare a question answered in Results.
+- Draft backward from the Results claims: every central Introduction question
+  needs a Results answer, and every central Results claim needs a motivated
+  question.

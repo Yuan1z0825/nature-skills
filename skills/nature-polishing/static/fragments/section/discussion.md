@@ -9,10 +9,15 @@ Discussion should answer:
 - how the findings are interpreted
 - when that interpretation may fail
 
+Begin with a brief central-finding anchor when needed, then synthesize across
+Results claims. Do not replay the comparison, effect size, statistical test,
+and inference used to demonstrate each claim.
+
 Short rule:
 
-- `Results = what we observed`
-- `Discussion = how we understand it, and when it may fail`
+- `Results = the evidence chain that establishes and advances claims`
+- `Discussion = what those claims mean together, how they relate to the field,
+  and when the synthesis may fail`
 
 ## Sentence syntax
 

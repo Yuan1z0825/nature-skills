@@ -6,7 +6,8 @@
 
 ## Drafting rules
 
-- Discussion **interprets**, it does not repeat Results figure by figure.
+- Discussion **synthesizes across established Results claims**; it does not
+  repeat the evidence figure by figure.
 - Address rival explanations before generalizing. Reviewers look for this.
 - Hedging strength must match evidence strength. Do not promote a "consistent with" finding to "demonstrates" wording.
 - Limitations come from inside the paper, not from generic disclaimers. Name the specific condition or dataset where the result stops holding.
@@ -30,5 +31,6 @@ Discussion sentences interpret:
 
 ## Short rule to memorize
 
-- Results = what we observed
-- Discussion = how we understand it, and when it may fail
+- Results = the evidence chain that establishes and advances claims
+- Discussion = what those claims mean together, how they relate to the field,
+  and when the synthesis may fail

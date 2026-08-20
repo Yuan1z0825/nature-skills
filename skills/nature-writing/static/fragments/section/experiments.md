@@ -2,9 +2,14 @@
 
 ## Default evidence ladder
 
-`system / workflow validation -> main result -> baseline comparison -> ablation / mechanism analysis -> application or generalization -> stress tests / failure modes`
+`establish the phenomenon -> stress-test it -> rule out alternatives -> broaden it -> interpret it -> bound it`
 
 Each subsection has a claim-first opening, then data support.
+
+Depending on the paper, instantiate this as a discovery loop, a core-capability
+plus validation envelope, or a capability ladder. Load
+`../../../../nature-shared/core/nature-results-discussion.md` for the three
+archetypes and the same-level-repetition test.
 
 ## Drafting rules
 
@@ -31,17 +36,26 @@ Results sentences usually report:
 
 - `was detected` / `increased` / `showed` / `enabled` / `achieved`
 
-Do not drift into Discussion syntax (`may reflect`, `suggests`, `is likely due to`) unless the transition is intentional.
+Close each coherent evidence unit with the bounded inference it supports.
+Calibrated interpretation (`suggests`, `indicates`, `likely because`) may remain
+in Results when it directly answers the current experiment and the supporting
+evidence is visible there. Move literature synthesis, broad implications, and
+extended mechanistic reconciliation to Discussion.
 
 ## Common failure modes when drafting
 
-- Mixing observation and interpretation in the same paragraph.
+- Mixing observation with an interpretation that is not supported by the
+  current experiment, or allowing local interpretation to expand into a broad
+  Discussion.
 - Citing supplementary data when the result should be in the main text.
 - Appending robustness or reviewer-defense prose until the central evidence chain
   disappears.
 - Repeating the same effects, intervals, and P values in Results and captions.
 - Vague comparisons (`higher than control`) without effect size, sample size, or test.
 - Per-paragraph claims without per-paragraph evidence.
+- Reusing an earlier baseline or control as the centre of a later subsection
+  and restating the same claim, instead of making the new perturbation,
+  falsification, stronger comparator, or boundary the decisive evidence.
 
 ## Deeper reference
 

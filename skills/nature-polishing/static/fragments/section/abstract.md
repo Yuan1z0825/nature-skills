@@ -1,8 +1,9 @@
 # Section: Abstract
 
-The abstract is a mini-paper:
+The abstract is the manuscript's shortest evidence chain, not a compressed
+Introduction:
 
-`context/problem -> gap/objective -> approach -> key results -> implication`
+`precise problem/gap -> answer-enabling design -> main discovery -> decisive support/boundary -> implication`
 
 It should answer:
 
@@ -17,4 +18,9 @@ Some journals require a strict abstract format. Follow the journal if it conflic
 
 - Cut sentences that summarize background that the title already implies.
 - Make the gap and the contribution one short, locatable sentence each.
+- Organize the abstract around one main claim and at most one or two decisive
+  supporting claims or boundaries; do not inventory every Results subsection.
+- Keep method detail only when it explains why the question is answerable.
+- Keep a number only when it defines, supports, or materially bounds the main
+  discovery; numeric reporting is not mandatory by itself.
 - The last sentence should state significance, not repeat the result.
