@@ -7,8 +7,13 @@
 # Apply at https://aistudio.baidu.com/account/accessToken
 PADDLE_OCR_TOKEN: ""
 
-# Optional image-generation API fallback. Leave empty when using the agent image
-# tool or Codex OAuth.
+# Optional image-generation transport. The API path is protocol-based rather than
+# provider-name based: any model is accepted when the endpoint implements the
+# OpenAI Images-compatible /images/generations and/or /images/edits contract.
+# auto uses Codex OAuth only for GPT Image model ids; other model ids use the API.
 # OPENAI_API_KEY: ""
 # OPENAI_BASE_URL: "https://api.openai.com/v1"
+# IMAGE2PPT_IMAGE_BACKEND: "auto"  # auto | codex-oauth | openai-compatible-api
 # IMAGE2PPT_IMAGE_MODEL: "gpt-image-2"
+# Optional compatibility override for relays that filter the default SDK client.
+# IMAGE2PPT_IMAGE_USER_AGENT: ""

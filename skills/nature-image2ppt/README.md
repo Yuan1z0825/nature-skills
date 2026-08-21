@@ -23,6 +23,7 @@
 - 幻灯片图片、扫描 PDF 或图片型 PPT/PPTX 文件。
 - 希望保留的页面范围、语言、尺寸或字体要求；没有特殊要求时可省略。
 - 是否允许复杂插图作为独立图片资产保留，以及材料是否必须离线处理。
+- 如需在线生成或编辑图片资产，需明确允许上传当前任务的提示词和必要页面图片，并提供 Codex OAuth 或兼容 OpenAI Images API 的服务配置。
 
 ## 工作方式
 
@@ -43,6 +44,7 @@
 - 使用 Python 3.10 或更高版本，并安装 `requirements.txt`。
 - 复制或同步技能文件不会自动安装 Python 包；必须在实际运行 CLI 的同一 Python 环境中安装依赖，并以 `doctor --json` 成功为准。
 - 使用 Microsoft PowerPoint（Windows）或 LibreOffice 完成渲染检查；以 `python cli/image2ppt/cli.py doctor --json` 的结果为准。
+- 图片生成和编辑可使用 Codex OAuth，或通过 `openai-compatible-api` 配置任意兼容 OpenAI Images API 的 Base URL、API Key 和模型 ID；第三方端点不会收到 Codex OAuth 凭证。
 - 在线文字识别使用百度 AI Studio `PADDLE_OCR_TOKEN`。将 `config.example.yaml` 复制为同目录的 `config.yaml` 后填写 Token；真实配置已被 Git 忽略，不能提交。
 - 完整实现同步自 [Paul-Jeo/Image2PPT](https://github.com/Paul-Jeo/Image2PPT)，并在本技能目录中保留 MIT License。
 
@@ -51,6 +53,7 @@
 - 只还原已有页面；根据论文、提纲或笔记创作新 deck 时使用 `nature-paper2ppt`。
 - 照片、复杂插画、密集知识图谱和难以稳定测量的视觉可能部分保留为图片资产。
 - 低分辨率输入、缺失字体和复杂曲线会限制还原精度，需要根据渲染对照复核。
+- 在线图片生成或编辑会把当前任务的提示词和必要页面图片发送到所选图片服务；敏感材料应选择离线模式或经批准的服务。
 - 在线 OCR 会把当前任务页面发送到百度服务；敏感材料应选择离线模式。
 
 ## 相关技能

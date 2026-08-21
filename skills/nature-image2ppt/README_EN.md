@@ -23,6 +23,7 @@
 - Slide images, a scanned PDF, or an image-only PPT/PPTX file.
 - Any required page range, language, slide size, or font constraints; omit them when there are no special requirements.
 - Whether complex illustrations may remain as separate image assets and whether processing must stay offline.
+- For online image generation or editing, explicit permission to upload the task prompt and required page images, plus either Codex OAuth or an OpenAI Images-compatible service configuration.
 
 ## Workflow
 
@@ -43,6 +44,7 @@
 - Use Python 3.10 or later and install `requirements.txt`.
 - Copying or synchronizing the skill does not install Python packages; install them in the same Python environment that runs the CLI and require `doctor --json` to pass.
 - Use Microsoft PowerPoint on Windows or LibreOffice for rendered checks; follow the result of `python cli/image2ppt/cli.py doctor --json`.
+- Image generation and editing can use Codex OAuth or an `openai-compatible-api` Base URL, API key, and arbitrary provider model ID; third-party endpoints never receive Codex OAuth credentials.
 - Online text recognition uses a Baidu AI Studio `PADDLE_OCR_TOKEN`. Copy `config.example.yaml` to the adjacent `config.yaml` and fill the Token there; Git ignores the real configuration and it must never be committed.
 - The complete implementation is synchronized from [Paul-Jeo/Image2PPT](https://github.com/Paul-Jeo/Image2PPT), with its MIT License retained in this skill directory.
 
@@ -51,6 +53,7 @@
 - The skill only reconstructs existing pages; use `nature-paper2ppt` to author a new deck from a paper, outline, or notes.
 - Photos, complex illustrations, dense knowledge graphs, and visuals that cannot be measured reliably may remain partially image-based.
 - Low-resolution inputs, missing fonts, and complex curves limit reconstruction accuracy and require rendered comparison.
+- Online image generation or editing sends the current task prompt and required page images to the selected image service; use offline mode or an approved service for sensitive material.
 - Online OCR sends the current task pages to Baidu services; use offline mode for sensitive material.
 
 ## Related Skills

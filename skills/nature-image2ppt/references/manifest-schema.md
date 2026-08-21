@@ -46,6 +46,7 @@ Key fields:
     "save_path_policy": "use only an explicit valid local result/output_hint path, then image2ppt image import; never scan for a newest file",
     "fallback_command": "image2ppt image generate/edit",
     "fallback_order": ["codex-oauth", "openai-compatible-api"],
+    "fallback_selection_policy": "auto uses codex-oauth only for GPT Image model ids with compatible auth; all other model ids use openai-compatible-api",
     "fallback_policy": {
       "on": [
         "tool-unavailable",
@@ -71,7 +72,8 @@ For `backend_id: "builtin-imagegen"`, these fields are required and have fixed m
 - `input_context_policy`: requires `view_image` on every edit input before the built-in call; generation has no image input.
 - `save_path_policy`: permits only an explicit valid local result path, including `output_hint`, followed by `image2ppt image import`; newest-file directory scanning is forbidden.
 - `fallback_command`: the CLI surface used only after the fallback policy matches.
-- `fallback_order`: the CLI's internal order, Codex OAuth before a configured OpenAI-compatible API.
+- `fallback_order`: the two permitted CLI producers, retained for provenance compatibility.
+- `fallback_selection_policy`: model-aware routing inside the CLI: `auto` uses Codex OAuth only for compatible GPT Image ids and otherwise selects the configured OpenAI Images-compatible API. An explicit CLI `--backend` overrides `auto`.
 - `fallback_policy.on`: the only events that permit leaving the built-in tool: it is unavailable/not callable, its call errors, an edit input is unreadable, or it returns no valid local image.
 - `fallback_policy.missing_optional_parameters`: always `false`; absent optional controls never authorize fallback.
 
@@ -438,13 +440,14 @@ Each imported job records at least the selected output and the backend that actu
       "output": "assets/icon-sheet.png",
       "output_sha256": "...",
       "backend": "builtin-imagegen",
+      "model": null,
       "fallback_reason": null
     }
   ]
 }
 ```
 
-`backend` is the actual producer: `builtin-imagegen`, `codex-oauth`, or `openai-compatible-api`; `unknown` is reserved for legacy page directories that have no `image_backend` contract. `image2ppt image import` requires an explicit producer, rejects files that are not readable images, and checks `backend`/`fallback_reason` against the page contract. `fallback_reason` is `null` when the preferred backend succeeded or the run selected a CLI contract directly; when a built-in contract enters its CLI fallback, it records the matching event from `image_backend.fallback_policy.on`.
+`backend` is the actual producer: `builtin-imagegen`, `codex-oauth`, or `openai-compatible-api`; `unknown` is reserved for legacy page directories that have no `image_backend` contract. `model` is the optional exact provider model id requested or reported for that output. `image2ppt image import` requires an explicit producer, rejects files that are not readable images, and checks `backend`/`fallback_reason` against the page contract. `fallback_reason` is `null` when the preferred backend succeeded or the run selected a CLI contract directly; when a built-in contract enters its CLI fallback, it records the matching event from `image_backend.fallback_policy.on`.
 
 State and provenance record rules are described under "Preserve the single source
 of truth" in `SKILL.md` and in the asset processing examples in `cli-helper.md`.

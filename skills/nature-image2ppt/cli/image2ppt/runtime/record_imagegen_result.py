@@ -31,6 +31,10 @@ def main():
         help="Actual image backend that produced the selected image.",
     )
     parser.add_argument(
+        "--model",
+        help="Optional exact image model id reported or requested for this output.",
+    )
+    parser.add_argument(
         "--fallback-reason",
         choices=["tool-unavailable", "tool-error", "input-unreadable", "no-valid-local-output"],
         help="Optional fallback event explaining why the preferred image backend was not used.",
@@ -104,6 +108,7 @@ def main():
             "output_sha256": sha256_file(dest),
             "prompt_file": args.prompt_file,
             "backend": args.backend,
+            "model": args.model,
             "fallback_reason": args.fallback_reason,
             "note": args.note,
             "recorded_at": now_iso(),
