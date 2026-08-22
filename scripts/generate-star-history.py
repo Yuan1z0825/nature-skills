@@ -23,6 +23,10 @@ import urllib.request
 GITHUB_API = "https://api.github.com"
 
 
+class StarHistoryUnavailable(RuntimeError):
+    """Raised when the API response cannot support a trustworthy chart."""
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -117,13 +121,17 @@ def github_json(url: str, token: str | None, retries: int) -> object:
     raise RuntimeError(f"GitHub request failed after retries: {last_error}")
 
 
-def fetch_stargazers(repo: str, token: str | None, workers: int, retries: int) -> list[dict]:
+def fetch_stargazers(repo: str, token: str | None, workers: int, retries: int) -> tuple[int, list[dict]]:
     repo_url = f"{GITHUB_API}/repos/{repo}"
     repo_info = github_json(repo_url, token, retries)
     if not isinstance(repo_info, dict) or "stargazers_count" not in repo_info:
         raise RuntimeError(f"Could not read repository metadata for {repo}")
 
     total_stars = int(repo_info["stargazers_count"])
+    if total_stars == 0:
+        print(f"No stars found for {repo}; writing an empty history.")
+        return total_stars, []
+
     pages = max(1, math.ceil(total_stars / 100))
     print(f"Fetching {total_stars:,} stars from {repo} across {pages} pages")
 
@@ -153,21 +161,35 @@ def fetch_stargazers(repo: str, token: str | None, workers: int, retries: int) -
     else:
         executor.shutdown(wait=True)
 
-    return items
+    return total_stars, items
 
 
-def build_daily_points(items: list[dict]) -> list[tuple[dt.date, int]]:
+def build_daily_points(items: list[dict], expected_total: int) -> list[tuple[dt.date, int]]:
     dates = []
+    missing_timestamps = 0
+    invalid_timestamps = 0
     for item in items:
+        if not isinstance(item, dict):
+            invalid_timestamps += 1
+            continue
         starred_at = item.get("starred_at")
         if not starred_at:
+            missing_timestamps += 1
             continue
-        dates.append(dt.datetime.fromisoformat(starred_at.replace("Z", "+00:00")).date())
+        try:
+            dates.append(dt.datetime.fromisoformat(starred_at.replace("Z", "+00:00")).date())
+        except (AttributeError, TypeError, ValueError):
+            invalid_timestamps += 1
 
-    if not dates:
-        raise RuntimeError(
-            "GitHub did not return starred_at timestamps. "
-            "Make sure the request uses Accept: application/vnd.github.star+json and a token with access."
+    if expected_total == 0:
+        return []
+
+    skipped = missing_timestamps + invalid_timestamps
+    if skipped or not dates:
+        raise StarHistoryUnavailable(
+            f"GitHub returned {len(dates)} usable starred_at timestamp(s) from "
+            f"{len(items)} record(s); leaving the existing chart unchanged. "
+            "Check the API Accept header and token permissions."
         )
 
     dates.sort()
@@ -184,6 +206,29 @@ def build_daily_points(items: list[dict]) -> list[tuple[dt.date, int]]:
     return points
 
 
+def generate_empty_svg(repo: str) -> str:
+    """Generate a valid chart placeholder when no star dates are available."""
+    width, height = 960, 560
+    left, right, top, bottom = 82, 34, 72, 76
+    font = "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+    escaped_repo = html.escape(repo, quote=True)
+    plot_bottom = height - bottom
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
+  <title id="title">Star history for {escaped_repo}</title>
+  <desc id="desc">No star history is available for this repository yet.</desc>
+  <rect width="100%" height="100%" rx="18" fill="#ffffff"/>
+  <text x="{left}" y="34" font-family="{font}" font-size="24" font-weight="700" fill="#111827">Star History</text>
+  <text x="{left}" y="58" font-family="{font}" font-size="13" fill="#6b7280">{escaped_repo} · no stars yet</text>
+  <g font-family="{font}">
+    <line x1="{left}" y1="{top}" x2="{left}" y2="{plot_bottom}" stroke="#d1d5db" stroke-width="1.2"/>
+    <line x1="{left}" y1="{plot_bottom}" x2="{width - right}" y2="{plot_bottom}" stroke="#d1d5db" stroke-width="1.2"/>
+    <text x="{(left + width - right) / 2:.1f}" y="{top + (plot_bottom - top) / 2:.1f}" text-anchor="middle" font-size="18" fill="#6b7280">No stars yet</text>
+    <text x="{left}" y="{height - 16}" font-size="12" fill="#9ca3af">Source: GitHub stargazers API · Static snapshot</text>
+  </g>
+</svg>
+'''
+
+
 def nice_y_ticks(max_y: int) -> list[int]:
     rough_step = max_y / 5
     power = 10 ** math.floor(math.log10(rough_step)) if rough_step > 0 else 1
@@ -192,7 +237,8 @@ def nice_y_ticks(max_y: int) -> list[int]:
         step = multiplier * power
         if rough_step <= step:
             break
-    ticks = list(range(0, int(math.ceil(max_y / step) * step) + 1, int(step)))
+    step = max(1, int(math.ceil(step)))
+    ticks = list(range(0, int(math.ceil(max_y / step) * step) + 1, step))
     if ticks[-1] < max_y:
         ticks.append(max_y)
     return ticks
@@ -378,12 +424,20 @@ def main() -> int:
     if "/" not in args.repo:
         raise SystemExit("--repo must be in owner/name form")
 
-    items = fetch_stargazers(args.repo, args.token, args.workers, args.retries)
-    points = build_daily_points(items)
+    total_stars, items = fetch_stargazers(args.repo, args.token, args.workers, args.retries)
+    try:
+        points = build_daily_points(items, total_stars)
+    except StarHistoryUnavailable as exc:
+        print(f"Warning: {exc}", file=sys.stderr)
+        return 0
     output = pathlib.Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     generated_at = dt.datetime.now(dt.timezone.utc)
-    svg = generate_svg(args.repo, points, generated_at)
+    svg = generate_svg(args.repo, points, generated_at) if points else generate_empty_svg(args.repo)
+    previous_svg = output.read_text(encoding="utf-8") if output.exists() else None
+    if previous_svg == svg:
+        print(f"{output} is already up to date")
+        return 0
     output.write_text(svg, encoding="utf-8")
     cache_token = generated_at.strftime("%Y%m%dT%H%M%SZ")
     versioned_output = versioned_output_path(output, cache_token)
@@ -397,9 +451,10 @@ def main() -> int:
             output_ref,
             versioned_ref,
         )
+    total = points[-1][1] if points else 0
     print(
         f"Wrote {output} and {versioned_output} with "
-        f"{points[-1][1]:,} stars and {len(points):,} daily points"
+        f"{total:,} stars and {len(points):,} daily points"
     )
     return 0
 
