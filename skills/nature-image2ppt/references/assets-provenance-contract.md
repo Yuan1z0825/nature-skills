@@ -28,7 +28,10 @@ inputs remain page-confined and may not use `..` traversal.
 
 Valid producer identifiers are `builtin-imagegen`, `codex-oauth`, and
 `openai-compatible-api`. A fallback reason is allowed only when it matches the
-run/page image-backend contract.
+run/page image-backend contract. Record the exact provider model id with
+`image2ppt image import --model` when it is known; provider-specific model ids do
+not create new producer identifiers because the producer boundary is the transport
+backend plus the recorded model.
 
 ## `manifest.json.asset_provenance`
 

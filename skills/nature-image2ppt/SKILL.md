@@ -84,6 +84,14 @@ missing optional argument such as model, mask, size, quality, or output path nev
 authorizes fallback. Record the actual producer and permitted fallback reason in
 `imagegen-jobs.json`.
 
+The CLI image contract is provider-neutral at the transport boundary. Select
+`codex-oauth` only for GPT Image model ids. Select `openai-compatible-api` for any
+provider-specific model whose endpoint implements the OpenAI Images-compatible
+`/images/generations` and/or `/images/edits` schema. Do not infer the image backend
+from the task's language model. Use an explicit backend when provenance matters;
+`auto` uses Codex OAuth only for compatible GPT Image ids and otherwise selects the
+configured API without sending Codex OAuth credentials to third parties.
+
 ### 1. Preflight and OCR choice
 
 ```bash
@@ -101,6 +109,11 @@ not recognize characters; offer the configuration path in
 python <image2ppt-root>/cli/image2ppt/cli.py prepare <input...> \
   --out-root output/image2ppt --image-backend builtin-imagegen
 ```
+
+To pin a configured third-party provider/model for auditable provenance, prepare
+with `--image-backend openai-compatible-api`. The run contract records the exact
+`IMAGE2PPT_IMAGE_MODEL` from the active project config or environment; it does not
+substitute a GPT Image default merely because no `--model` flag was passed.
 
 Use `--no-text-hints` only when OCR processing is intentionally disabled. Regenerate
 hints without creating a new run when needed:

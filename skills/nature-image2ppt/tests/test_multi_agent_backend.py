@@ -1,3 +1,4 @@
+import base64
 import io
 import json
 import os
@@ -27,7 +28,7 @@ CLI_ENV["PYTHONPATH"] = (
 )
 os.environ["PYTHONPATH"] = CLI_ENV["PYTHONPATH"]
 
-from image2ppt.runtime import image_gen
+from image2ppt.runtime import image_gen, runtime_env
 
 
 def write_json(path, data):
@@ -312,8 +313,8 @@ class MultiAgentBackendTest(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("Backend selection:", result.stdout)
-        self.assertIn("Codex OAuth uses", result.stdout)
-        self.assertIn("API fallback uses", result.stdout)
+        self.assertIn("auto uses Codex OAuth", result.stdout)
+        self.assertIn("openai-compatible-api", result.stdout)
         self.assertIn("image2ppt image edit --image pages/page_001/source.png", result.stdout)
         self.assertNotIn("batch", result.stdout)
 
@@ -326,6 +327,7 @@ class MultiAgentBackendTest(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stderr)
         for expected in (
+            "--backend",
             "--model",
             "--prompt",
             "--prompt-file",
@@ -372,7 +374,7 @@ class MultiAgentBackendTest(unittest.TestCase):
         self.assertIn("usage: image2ppt image edit", result.stdout)
         self.assertIn("Background cleanup", result.stdout)
         self.assertIn("strict visual reference", result.stdout)
-        for expected in ("--model", "--size", "--quality", "--image", "--mask", "--out", "--dry-run"):
+        for expected in ("--backend", "--model", "--size", "--quality", "--image", "--mask", "--out", "--dry-run"):
             self.assertIn(expected, result.stdout)
         self.assertNotIn("--input-fidelity", result.stdout)
         for removed in (
@@ -533,7 +535,7 @@ class MultiAgentBackendTest(unittest.TestCase):
             self.assertFalse((page_dir / "imagegen_asset_sheet_alpha.png").exists())
             self.assertFalse((page_dir / "split_assets.json").exists())
 
-    def test_process_sheet_preserves_explicit_source_contract(self):
+    def test_process_sheet_uses_imported_output_by_job_id(self):
         with tempfile.TemporaryDirectory() as tmp:
             page_dir = Path(tmp) / "pages/page_001"
             assets_dir = page_dir / "assets"
@@ -568,9 +570,9 @@ class MultiAgentBackendTest(unittest.TestCase):
             )
 
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            self.assertFalse((assets_dir / "icon-sheet.asset-sheet-alpha.png").is_file())
-            self.assertFalse((assets_dir / "icon-sheet.split-report.json").is_file())
-            self.assertFalse((assets_dir / "icon.png").is_file())
+            self.assertTrue((assets_dir / "icon-sheet.asset-sheet-alpha.png").is_file())
+            self.assertTrue((assets_dir / "icon-sheet.split-report.json").is_file())
+            self.assertTrue((assets_dir / "icon.png").is_file())
             self.assertEqual(read_json(page_dir / "imagegen-jobs.json")["jobs"][0]["status"], "processed")
 
     def test_process_sheet_checks_existing_alpha_before_copying_source(self):
@@ -655,6 +657,198 @@ class MultiAgentBackendTest(unittest.TestCase):
             payload = json.loads(result.stdout)
             self.assertEqual([str(source)], payload["image"])
             self.assertEqual("test", payload["prompt"])
+
+    def test_provider_specific_model_routes_to_api_even_when_codex_auth_exists(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "out.png"
+            auth = Path(tmp) / "auth.json"
+            write_json(auth, {"tokens": {"access_token": "test-token"}})
+            env = os.environ.copy()
+            env.update(
+                {
+                    "CODEX_AUTH_FILE": str(auth),
+                    "OPENAI_API_KEY": "test-api-key",
+                    "OPENAI_BASE_URL": "https://images.example.test/v1",
+                    "IMAGE2PPT_IMAGE_BACKEND": "auto",
+                    "IMAGE2PPT_IMAGE_MODEL": "provider/imagine-image-v2",
+                }
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "image2ppt.cli",
+                    "image",
+                    "generate",
+                    "--prompt",
+                    "test",
+                    "--out",
+                    str(out),
+                    "--dry-run",
+                ],
+                cwd=ROOT,
+                env=env,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            payload = json.loads(result.stdout)
+            self.assertEqual("openai-compatible-api", payload["backend"])
+            self.assertEqual("/v1/images/generations", payload["endpoint"])
+            self.assertEqual("provider/imagine-image-v2", payload["model"])
+            self.assertNotIn("size", payload)
+            self.assertNotIn("quality", payload)
+
+    def test_explicit_api_backend_overrides_codex_for_gpt_image_model(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "out.png"
+            auth = Path(tmp) / "auth.json"
+            write_json(auth, {"tokens": {"access_token": "test-token"}})
+            env = os.environ.copy()
+            env.update(
+                {
+                    "CODEX_AUTH_FILE": str(auth),
+                    "OPENAI_API_KEY": "test-api-key",
+                    "OPENAI_BASE_URL": "https://images.example.test/v1",
+                }
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "image2ppt.cli",
+                    "image",
+                    "generate",
+                    "--backend",
+                    "openai-compatible-api",
+                    "--model",
+                    "gpt-image-1.5",
+                    "--prompt",
+                    "test",
+                    "--out",
+                    str(out),
+                    "--dry-run",
+                ],
+                cwd=ROOT,
+                env=env,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            payload = json.loads(result.stdout)
+            self.assertEqual("openai-compatible-api", payload["backend"])
+
+    def test_explicit_codex_backend_rejects_provider_specific_model(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            auth = Path(tmp) / "auth.json"
+            write_json(auth, {"tokens": {"access_token": "test-token"}})
+            env = os.environ.copy()
+            env["CODEX_AUTH_FILE"] = str(auth)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "image2ppt.cli",
+                    "image",
+                    "generate",
+                    "--backend",
+                    "codex-oauth",
+                    "--model",
+                    "provider/imagine-image-v2",
+                    "--prompt",
+                    "test",
+                    "--dry-run",
+                ],
+                cwd=ROOT,
+                env=env,
+                text=True,
+                capture_output=True,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("supports GPT Image model ids only", result.stderr)
+
+    def test_api_result_supports_base64_and_url_shapes(self):
+        encoded = base64.b64encode(b"base64-image").decode("ascii")
+        self.assertEqual(b"base64-image", image_gen._api_result_bytes({"b64_json": encoded}, 10))
+        with mock.patch.object(
+            image_gen,
+            "_download_image_result",
+            return_value=b"url-image",
+        ) as download:
+            self.assertEqual(
+                b"url-image",
+                image_gen._api_result_bytes({"url": "https://cdn.example.test/image.png"}, 10),
+            )
+        download.assert_called_once_with("https://cdn.example.test/image.png", 10)
+
+    def test_api_client_applies_configured_user_agent_only_to_api_client(self):
+        with mock.patch.dict(
+            os.environ,
+            {
+                "OPENAI_API_KEY": "test-key",
+                "OPENAI_BASE_URL": "https://images.example.test/v1",
+                "IMAGE2PPT_IMAGE_USER_AGENT": "image2ppt-test-client/1.0",
+            },
+            clear=False,
+        ), mock.patch("openai.OpenAI") as openai_client:
+            image_gen._create_client()
+        self.assertEqual(
+            {"User-Agent": "image2ppt-test-client/1.0"},
+            openai_client.call_args.kwargs["default_headers"],
+        )
+
+    def test_runtime_backend_selection_is_model_aware_and_explicitly_overridable(self):
+        values = {
+            "IMAGE2PPT_IMAGE_BACKEND": "auto",
+            "IMAGE2PPT_IMAGE_MODEL": "provider/imagine-image-v2",
+        }
+        self.assertEqual(
+            ("openai-compatible-api", True),
+            runtime_env.select_image_backend(values, codex_ready=True, api_ready=True),
+        )
+        values.update(
+            {
+                "IMAGE2PPT_IMAGE_BACKEND": "openai-compatible-api",
+                "IMAGE2PPT_IMAGE_MODEL": "gpt-image-2",
+            }
+        )
+        self.assertEqual(
+            ("openai-compatible-api", True),
+            runtime_env.select_image_backend(values, codex_ready=True, api_ready=True),
+        )
+
+    def test_config_persists_generic_backend_model_and_user_agent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env = os.environ.copy()
+            env["IMAGE2PPT_CONFIG_HOME"] = tmp
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "image2ppt.cli",
+                    "config",
+                    "--api-key",
+                    "test-api-key",
+                    "--base-url",
+                    "https://images.example.test/v1",
+                    "--image-backend",
+                    "openai-compatible-api",
+                    "--model",
+                    "provider/imagine-image-v2",
+                    "--image-user-agent",
+                    "image2ppt-test-client/1.0",
+                ],
+                cwd=ROOT,
+                env=env,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            config = runtime_env.read_config_file(Path(tmp) / "config.yaml")
+            self.assertEqual("openai-compatible-api", config["IMAGE2PPT_IMAGE_BACKEND"])
+            self.assertEqual("provider/imagine-image-v2", config["IMAGE2PPT_IMAGE_MODEL"])
+            self.assertEqual("image2ppt-test-client/1.0", config["IMAGE2PPT_IMAGE_USER_AGENT"])
+            self.assertNotIn("test-api-key", result.stdout)
 
     def test_image_edit_dry_run_prefers_codex_oauth_when_auth_exists(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1248,6 +1442,42 @@ class MultiAgentBackendTest(unittest.TestCase):
             self.assertEqual("image2ppt-image-cli", deck["image_backend"]["backend_id"])
             request = read_json(run_dir / "pages/page_002/page_request.json")
             self.assertEqual(deck["image_backend"], request["image_backend"])
+
+    def test_configure_image_backend_uses_configured_provider_model_by_default(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = make_minimal_run(tmp)
+            config_home = Path(tmp) / "config-home"
+            config_home.mkdir()
+            (config_home / "config.yaml").write_text(
+                "IMAGE2PPT_IMAGE_MODEL: provider/imagine-image-v2\n",
+                encoding="utf-8",
+            )
+            env = os.environ.copy()
+            env["IMAGE2PPT_CONFIG_HOME"] = str(config_home)
+            env.pop("IMAGE2PPT_IMAGE_MODEL", None)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    RUNTIME_DIR / "configure_image_backend.py",
+                    run_dir,
+                    "--backend-id",
+                    "openai-compatible-api",
+                ],
+                env=env,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            deck = read_json(run_dir / "deck_manifest.json")
+            self.assertEqual("provider/imagine-image-v2", deck["image_backend"]["model"])
+            self.assertEqual(str(config_home), deck["image_backend"]["runtime_home"])
+            request = read_json(run_dir / "pages/page_002/page_request.json")
+            self.assertEqual("provider/imagine-image-v2", request["image_backend"]["model"])
+
+    def test_prepare_help_accepts_explicit_openai_compatible_backend(self):
+        result = run_cli("prepare", "--help")
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("openai-compatible-api", result.stdout)
 
     def test_builtin_image_backend_rejects_fixed_contract_overrides(self):
         with tempfile.TemporaryDirectory() as tmp:

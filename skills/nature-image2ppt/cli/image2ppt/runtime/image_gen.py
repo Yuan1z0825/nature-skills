@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
+import ipaddress
 import json
 import mimetypes
 import os
@@ -21,6 +23,7 @@ import sys
 import time
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib import error, request
+from urllib.parse import urljoin, urlparse
 
 DEFAULT_MODEL = "gpt-image-2"
 DEFAULT_SIZE = "auto"
@@ -33,8 +36,10 @@ DEFAULT_CODEX_MAX_RETRIES = 4
 DEFAULT_CODEX_RETRY_BASE_DELAY_SECONDS = 0.2
 GPT_IMAGE_MODEL_PREFIX = "gpt-image-"
 
-ALLOWED_LEGACY_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
-ALLOWED_QUALITIES = {"low", "medium", "high", "auto"}
+BACKEND_AUTO = "auto"
+BACKEND_CODEX_OAUTH = "codex-oauth"
+BACKEND_OPENAI_COMPATIBLE = "openai-compatible-api"
+ALLOWED_BACKENDS = {BACKEND_AUTO, BACKEND_CODEX_OAUTH, BACKEND_OPENAI_COMPATIBLE}
 
 GPT_IMAGE_2_MODEL = "gpt-image-2"
 GPT_IMAGE_2_MIN_PIXELS = 655_360
@@ -45,22 +50,32 @@ GPT_IMAGE_2_MAX_RATIO = 3.0
 MAX_IMAGE_BYTES = 50 * 1024 * 1024
 DEFAULT_CODEX_AUTH_FILE = "~/.codex/auth.json"
 DEFAULT_CODEX_IMAGES_BASE_URL = "https://chatgpt.com/backend-api/codex"
-ENV_FIELDS = ("OPENAI_API_KEY", "OPENAI_BASE_URL", "IMAGE2PPT_IMAGE_MODEL")
+ENV_FIELDS = (
+    "OPENAI_API_KEY",
+    "OPENAI_BASE_URL",
+    "IMAGE2PPT_IMAGE_MODEL",
+    "IMAGE2PPT_IMAGE_BACKEND",
+    "IMAGE2PPT_IMAGE_USER_AGENT",
+)
 MAX_CODEX_RESPONSE_BYTES = 64 * 1024 * 1024
 MAX_CODEX_BASE64_CHARS = 64 * 1024 * 1024
+MAX_MODEL_ID_CHARS = 256
+MAX_REMOTE_REDIRECTS = 5
 CHATGPT_AUTH_CLAIM = "https://api.openai.com/auth"
 CHATGPT_ACCOUNT_ID_CLAIM = "chatgpt_account_id"
 
 IMAGE_HELP_EPILOG = """\
 Backend selection:
-  Codex OAuth: uses ~/.codex/auth.json or CODEX_AUTH_FILE.
-  API fallback: uses OPENAI_API_KEY, OPENAI_BASE_URL, and
-  IMAGE2PPT_IMAGE_MODEL from the environment or the active config.yaml.
+  auto: uses Codex OAuth only for GPT Image model ids when compatible auth is
+  available; every other model uses the configured OpenAI Images-compatible API.
+  codex-oauth: explicitly uses ~/.codex/auth.json or CODEX_AUTH_FILE.
+  openai-compatible-api: explicitly uses OPENAI_API_KEY, OPENAI_BASE_URL, and
+  an arbitrary provider image model id. It never receives Codex OAuth credentials.
 
 Setup:
   codex login
-  image2ppt config --api-key "your-api-key" --model gpt-image-2
-  image2ppt config --api-key "your-api-key" --base-url https://example.test/v1 --model openai/gpt-image-2
+  image2ppt config --api-key "your-api-key" --image-backend openai-compatible-api \
+    --base-url https://example.test/v1 --model provider-image-model
 
 Input image rules:
   generate creates a new image from prompt only.
@@ -89,8 +104,8 @@ Output:
 
 GENERATE_HELP_EPILOG = """\
 Backend:
-  Uses Codex OAuth when available, otherwise API fallback from the active
-  Image2PPT config.yaml or environment variables.
+  Uses --backend or IMAGE2PPT_IMAGE_BACKEND. In auto mode, Codex OAuth is used
+  only for GPT Image model ids; other model ids use the OpenAI-compatible API.
 
 Use for:
   New supporting images that do not need to preserve an existing slide object.
@@ -102,8 +117,8 @@ Examples:
 
 EDIT_HELP_EPILOG = """\
 Backend:
-  Uses Codex OAuth when available, otherwise API fallback from the active
-  Image2PPT config.yaml or environment variables.
+  Uses --backend or IMAGE2PPT_IMAGE_BACKEND. In auto mode, Codex OAuth is used
+  only for GPT Image model ids; other model ids use the OpenAI-compatible API.
 
 Use for:
   Background cleanup, clean base creation, foreground icon extraction, and
@@ -169,6 +184,17 @@ def _default_model() -> str:
     return os.getenv("IMAGE2PPT_IMAGE_MODEL", DEFAULT_MODEL)
 
 
+def _default_backend() -> str:
+    return os.getenv("IMAGE2PPT_IMAGE_BACKEND", BACKEND_AUTO).strip().lower() or BACKEND_AUTO
+
+
+def _image_user_agent() -> Optional[str]:
+    value = os.getenv("IMAGE2PPT_IMAGE_USER_AGENT", "").strip()
+    if len(value) > 512 or any(ord(ch) < 32 for ch in value):
+        _die("IMAGE2PPT_IMAGE_USER_AGENT must be at most 512 characters with no control characters.")
+    return value or None
+
+
 def _api_base_url() -> Optional[str]:
     return os.getenv("OPENAI_BASE_URL") or None
 
@@ -178,6 +204,35 @@ def _api_target_label() -> str:
     if base_url:
         return f"OpenAI-compatible proxy (OPENAI_BASE_URL={base_url})"
     return "official OpenAI API (OPENAI_BASE_URL unset)"
+
+
+def _is_codex_compatible_model(model: str) -> bool:
+    return GPT_IMAGE_MODEL_PREFIX in model.lower()
+
+
+def _validate_backend(backend: str) -> None:
+    if backend not in ALLOWED_BACKENDS:
+        _die(
+            "backend must be one of auto, codex-oauth, or openai-compatible-api."
+        )
+
+
+def _select_backend(backend: str, model: str) -> str:
+    _validate_backend(backend)
+    if backend == BACKEND_CODEX_OAUTH:
+        if not _is_codex_compatible_model(model):
+            _die(
+                "codex-oauth supports GPT Image model ids only. Use "
+                "--backend openai-compatible-api for provider-specific image models."
+            )
+        if not _codex_available():
+            _die(f"Codex OAuth auth is missing. Expected {_codex_auth_file()}.")
+        return BACKEND_CODEX_OAUTH
+    if backend == BACKEND_OPENAI_COMPATIBLE:
+        return BACKEND_OPENAI_COMPATIBLE
+    if _is_codex_compatible_model(model) and _codex_available():
+        return BACKEND_CODEX_OAUTH
+    return BACKEND_OPENAI_COMPATIBLE
 
 
 def _codex_auth_file() -> Path:
@@ -465,12 +520,11 @@ def _ensure_api_key(dry_run: bool) -> None:
         command = f'image2ppt config --api-key "your-api-key" --model {model}'
         target_hint = "Detected official OpenAI API mode because OPENAI_BASE_URL is not set."
     _die(
-        "Neither Codex OAuth nor OPENAI_API_KEY is available for image2ppt image generation.\n"
+        "The selected openai-compatible-api backend requires OPENAI_API_KEY.\n"
         f"{target_hint}\n"
-        f"To use Codex OAuth, run `codex login` so {_codex_auth_file()} exists.\n"
-        "To use a third-party OpenAI-compatible image API, configure the active Image2PPT config.yaml once:\n"
+        "Configure the active Image2PPT config.yaml once:\n"
         f"  {command}\n"
-        "To use a third-party proxy, set OPENAI_BASE_URL and the provider's model name."
+        "For a third-party endpoint, also set OPENAI_BASE_URL and the provider's model id."
     )
 
 
@@ -538,24 +592,21 @@ def _validate_size(size: str, model: str) -> None:
     if _is_gpt_image_2_model(model):
         _validate_gpt_image_2_size(size)
         return
-
-    if size not in ALLOWED_LEGACY_SIZES:
-        _die(
-            "size must be one of 1024x1024, 1536x1024, 1024x1536, or auto for this GPT Image model."
-        )
+    if not isinstance(size, str) or not size.strip() or any(ord(ch) < 32 for ch in size):
+        _die("size must be a non-empty provider value without control characters.")
 
 
 def _validate_quality(quality: str) -> None:
-    if quality not in ALLOWED_QUALITIES:
-        _die("quality must be one of low, medium, high, or auto.")
+    if not isinstance(quality, str) or not quality.strip() or any(ord(ch) < 32 for ch in quality):
+        _die("quality must be a non-empty provider value without control characters.")
 
 
 def _validate_model(model: str) -> None:
-    if GPT_IMAGE_MODEL_PREFIX not in model:
+    if not isinstance(model, str) or not model.strip():
+        _die("model must be a non-empty image model id.")
+    if len(model) > MAX_MODEL_ID_CHARS or any(ord(ch) < 32 for ch in model):
         _die(
-            "model must be a GPT Image model name containing 'gpt-image-' "
-            "(for example gpt-image-2, openai/gpt-image-2, gpt-image-1.5, "
-            "gpt-image-1, or gpt-image-1-mini)."
+            f"model must be at most {MAX_MODEL_ID_CHARS} characters and contain no control characters."
         )
 
 
@@ -591,6 +642,104 @@ def _decode_and_write(images: List[str], outputs: List[Path], force: bool) -> No
         print(f"Wrote {out_path}")
 
 
+def _result_field(item: object, field: str) -> Optional[str]:
+    value = item.get(field) if isinstance(item, dict) else getattr(item, field, None)
+    return value if isinstance(value, str) and value.strip() else None
+
+
+def _validate_remote_image_url(raw_url: str) -> str:
+    parsed = urlparse(raw_url)
+    if parsed.scheme.lower() != "https" or not parsed.hostname:
+        raise RuntimeError("Image result URL must be an absolute HTTPS URL.")
+    hostname = parsed.hostname.rstrip(".").lower()
+    if hostname == "localhost" or hostname.endswith(".localhost") or hostname.endswith(".local"):
+        raise RuntimeError("Image result URL may not target localhost or a local hostname.")
+    try:
+        addresses = {
+            info[4][0]
+            for info in socket.getaddrinfo(
+                hostname,
+                parsed.port or 443,
+                type=socket.SOCK_STREAM,
+            )
+        }
+    except socket.gaierror as exc:
+        raise RuntimeError(f"Could not resolve image result URL host: {hostname}") from exc
+    if not addresses:
+        raise RuntimeError(f"Image result URL host resolved to no addresses: {hostname}")
+    for address in addresses:
+        ip = ipaddress.ip_address(address.split("%", 1)[0])
+        if not ip.is_global:
+            raise RuntimeError("Image result URL may not resolve to a private or reserved address.")
+    return raw_url
+
+
+class _SafeImageRedirectHandler(request.HTTPRedirectHandler):
+    max_redirections = MAX_REMOTE_REDIRECTS
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        _validate_remote_image_url(urljoin(req.full_url, newurl))
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_IMAGE_DOWNLOAD_OPENER = request.build_opener(_SafeImageRedirectHandler())
+
+
+def _download_image_result(raw_url: str, timeout: int) -> bytes:
+    url = _validate_remote_image_url(raw_url)
+    headers = {"Accept": "image/*"}
+    if _image_user_agent():
+        headers["User-Agent"] = _image_user_agent()
+    req = request.Request(url, headers=headers, method="GET")
+    try:
+        with _IMAGE_DOWNLOAD_OPENER.open(req, timeout=timeout) as response:
+            final_url = response.geturl()
+            _validate_remote_image_url(final_url)
+            payload = response.read(MAX_IMAGE_BYTES + 1)
+    except (error.HTTPError, error.URLError, TimeoutError, socket.timeout) as exc:
+        raise RuntimeError(f"Failed to download image result URL: {exc}") from exc
+    if not payload:
+        raise RuntimeError("Downloaded image result was empty.")
+    if len(payload) > MAX_IMAGE_BYTES:
+        raise RuntimeError("Downloaded image result exceeded 50MB limit.")
+    return payload
+
+
+def _api_result_bytes(item: object, timeout: int) -> bytes:
+    image_b64 = _result_field(item, "b64_json")
+    if image_b64:
+        if len(image_b64) > MAX_CODEX_BASE64_CHARS:
+            raise RuntimeError("Image payload exceeded size limit.")
+        try:
+            payload = base64.b64decode(image_b64, validate=True)
+        except (binascii.Error, ValueError) as exc:
+            raise RuntimeError("Image API returned invalid base64 image data.") from exc
+        if not payload:
+            raise RuntimeError("Image API returned an empty base64 image payload.")
+        return payload
+    image_url = _result_field(item, "url")
+    if image_url:
+        return _download_image_result(image_url, timeout)
+    raise RuntimeError("Image API result included neither b64_json nor url.")
+
+
+def _write_api_results(items: Iterable[object], outputs: List[Path], force: bool, timeout: int) -> None:
+    wrote = 0
+    for idx, item in enumerate(items):
+        if idx >= len(outputs):
+            break
+        out_path = outputs[idx]
+        if out_path.exists() and not force:
+            _die(f"Output already exists: {out_path} (use --force to overwrite)")
+        payload = _api_result_bytes(item, timeout)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_bytes(payload)
+        print(f"Wrote {out_path}")
+        wrote += 1
+    if wrote == 0:
+        raise RuntimeError("Image API response did not include a usable image result.")
+
+
 def _run_codex_image(
     *,
     prompt: str,
@@ -600,7 +749,7 @@ def _run_codex_image(
     output_paths: List[Path],
     endpoint_label: str,
 ) -> bool:
-    if not _codex_available():
+    if getattr(args, "selected_backend", None) != BACKEND_CODEX_OAUTH:
         return False
     operation = "edit" if image_paths else "generate"
     body = _codex_image_body(
@@ -648,10 +797,24 @@ def _create_client():
         from openai import OpenAI
     except ImportError:
         _die(f"openai SDK not installed in the active environment. {_dependency_hint('openai')}")
-    return OpenAI(
+    kwargs = dict(
         api_key=os.getenv("OPENAI_API_KEY"),
         base_url=os.getenv("OPENAI_BASE_URL") or None,
     )
+    if _image_user_agent():
+        kwargs["default_headers"] = {"User-Agent": _image_user_agent()}
+    return OpenAI(**kwargs)
+
+
+def _api_payload(model: str, prompt: str, size: str, quality: str) -> Dict[str, Any]:
+    payload: Dict[str, Any] = {"model": model, "prompt": prompt}
+    # For a provider-neutral API, auto means "let the provider choose" and is
+    # omitted. Explicit provider values are forwarded unchanged.
+    if size != DEFAULT_SIZE:
+        payload["size"] = size
+    if quality != DEFAULT_QUALITY:
+        payload["quality"] = quality
+    return payload
 
 
 def _check_mask_path(mask: Optional[str]) -> Optional[Path]:
@@ -670,12 +833,7 @@ def _check_mask_path(mask: Optional[str]) -> Optional[Path]:
 def _generate(args: argparse.Namespace) -> None:
     prompt = _read_prompt(args.prompt, args.prompt_file)
 
-    payload = {
-        "model": args.model,
-        "prompt": prompt,
-        "size": args.size,
-        "quality": args.quality,
-    }
+    payload = _api_payload(args.model, prompt, args.size, args.quality)
     output_paths = _build_output_paths(args.out)
 
     if args.dry_run:
@@ -718,8 +876,7 @@ def _generate(args: argparse.Namespace) -> None:
     elapsed = time.time() - started
     print(f"Generation completed in {elapsed:.1f}s.", file=sys.stderr)
 
-    images = [item.b64_json for item in result.data]
-    _decode_and_write(images, output_paths, force=args.force)
+    _write_api_results(result.data, output_paths, force=args.force, timeout=args.timeout)
 
 
 def _edit(args: argparse.Namespace) -> None:
@@ -728,12 +885,7 @@ def _edit(args: argparse.Namespace) -> None:
     image_paths = _check_image_paths(args.image)
     mask_path = _check_mask_path(args.mask)
 
-    payload = {
-        "model": args.model,
-        "prompt": prompt,
-        "size": args.size,
-        "quality": args.quality,
-    }
+    payload = _api_payload(args.model, prompt, args.size, args.quality)
     output_paths = _build_output_paths(args.out)
 
     if args.dry_run:
@@ -786,8 +938,7 @@ def _edit(args: argparse.Namespace) -> None:
 
     elapsed = time.time() - started
     print(f"Edit completed in {elapsed:.1f}s.", file=sys.stderr)
-    images = [item.b64_json for item in result.data]
-    _decode_and_write(images, output_paths, force=args.force)
+    _write_api_results(result.data, output_paths, force=args.force, timeout=args.timeout)
 
 
 def _open_files(paths: List[Path]):
@@ -850,17 +1001,38 @@ def _add_shared_args(
     include_prompt: bool = True,
     include_out: bool = True,
 ) -> None:
-    parser.add_argument("--model", default=_default_model(), help="Image model. Defaults to IMAGE2PPT_IMAGE_MODEL or gpt-image-2.")
+    parser.add_argument(
+        "--backend",
+        choices=sorted(ALLOWED_BACKENDS),
+        default=_default_backend(),
+        help=(
+            "Image transport backend. Defaults to IMAGE2PPT_IMAGE_BACKEND or auto. "
+            "Use openai-compatible-api for provider-specific models."
+        ),
+    )
+    parser.add_argument(
+        "--model",
+        default=_default_model(),
+        help="Provider image model id. Defaults to IMAGE2PPT_IMAGE_MODEL or gpt-image-2.",
+    )
     if include_prompt:
         parser.add_argument("--prompt", help="Prompt text. Use this or --prompt-file.")
         parser.add_argument("--prompt-file", help="Read prompt text from a file, or '-' for stdin.")
-    parser.add_argument("--size", default=DEFAULT_SIZE, help="Output size such as auto or 2560x1440.")
-    parser.add_argument("--quality", default=DEFAULT_QUALITY, help="Image quality: low, medium, high, or auto.")
+    parser.add_argument(
+        "--size",
+        default=DEFAULT_SIZE,
+        help="Provider output-size value. auto omits the API field; explicit values pass through.",
+    )
+    parser.add_argument(
+        "--quality",
+        default=DEFAULT_QUALITY,
+        help="Provider quality value. auto omits the API field; explicit values pass through.",
+    )
     if include_out:
         parser.add_argument("--out", default=DEFAULT_OUTPUT_PATH, help="Output file for one image.")
     parser.add_argument("--force", action="store_true", help="Overwrite existing output files.")
     parser.add_argument("--dry-run", action="store_true", help="Validate arguments and show the selected backend without calling it.")
-    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT, help="Network timeout in seconds for Codex OAuth requests.")
+    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT, help="Network timeout in seconds.")
 
 
 def main() -> int:
@@ -898,10 +1070,14 @@ asset sheets in image2ppt runs.
     edit_parser.set_defaults(func=_edit)
 
     args = parser.parse_args()
+    args.model = args.model.strip()
+    args.size = args.size.strip()
+    args.quality = args.quality.strip()
     _validate_model(args.model)
     _validate_size(args.size, args.model)
     _validate_quality(args.quality)
-    if not _codex_available():
+    args.selected_backend = _select_backend(args.backend, args.model)
+    if args.selected_backend == BACKEND_OPENAI_COMPATIBLE:
         _ensure_api_key(args.dry_run)
 
     args.func(args)

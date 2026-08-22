@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import os
 
 from deck_run_state import load_deck, load_jobs, read_json, run_dir_from_target, save_deck, write_json
+from runtime_env import DEFAULT_IMAGE_MODEL, config_path, read_config_file
+
+
+def configured_model() -> str:
+    """Resolve the provider model without assuming any vendor-specific id."""
+    values = read_config_file(config_path())
+    return str(os.getenv("IMAGE2PPT_IMAGE_MODEL") or values.get("IMAGE2PPT_IMAGE_MODEL") or DEFAULT_IMAGE_MODEL).strip()
 
 
 def backend_contract(args):
@@ -29,13 +37,17 @@ def backend_contract(args):
             "call image_gen.imagegen serially, then import the selected local output; "
             "use image2ppt image generate/edit only when the built-in tool fallback policy applies"
             if is_builtin
-            else "call image2ppt image generate/edit serially; the CLI selects Codex OAuth first and OpenAI-compatible API fallback second"
+            else "call image2ppt image generate/edit serially; --backend or IMAGE2PPT_IMAGE_BACKEND selects Codex OAuth versus an OpenAI Images-compatible API"
         ),
     }
     if is_builtin:
         contract.update(
             {
                 "fallback_order": ["codex-oauth", "openai-compatible-api"],
+                "fallback_selection_policy": (
+                    "auto uses codex-oauth only for GPT Image model ids with compatible auth; "
+                    "all other model ids use openai-compatible-api"
+                ),
                 "required_parameters": {
                     "generate": ["prompt"],
                     "edit": ["prompt", "referenced_image_paths"],
@@ -64,11 +76,22 @@ def main():
     )
     parser.add_argument("--tool-name")
     parser.add_argument("--tool-call")
-    parser.add_argument("--model", default="gpt-image-2")
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Exact provider model id. Defaults to IMAGE2PPT_IMAGE_MODEL from the active config/environment.",
+    )
     parser.add_argument("--fallback-command")
-    parser.add_argument("--runtime-home", default="~/.image2ppt")
+    parser.add_argument("--runtime-home", default=None)
     parser.add_argument("--input-context-policy")
     args = parser.parse_args()
+
+    if args.model is None:
+        args.model = configured_model()
+    if not args.model:
+        parser.error("--model or IMAGE2PPT_IMAGE_MODEL must be a non-empty provider model id")
+    if args.runtime_home is None:
+        args.runtime_home = str(config_path().parent)
 
     if args.backend_id == "builtin-imagegen":
         fixed_field_overrides = [

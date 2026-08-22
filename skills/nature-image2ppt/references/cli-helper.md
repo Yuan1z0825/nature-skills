@@ -65,9 +65,15 @@ image2ppt image edit --help
 image2ppt formula render-latex --help
 ```
 
-`image2ppt image` is the CLI fallback layer. Within that layer it automatically chooses Codex OAuth first, then OpenAI-compatible API credentials from the active `config.yaml` or environment variables if OAuth is unavailable. See `manifest-schema.md` for the run/page backend field contract. `image2ppt doctor` checks CLI backend readiness; it cannot discover whether an agent runtime exposes the built-in tool.
+`image2ppt image` is the CLI fallback layer. `--backend` (or `IMAGE2PPT_IMAGE_BACKEND`) selects `auto`, `codex-oauth`, or `openai-compatible-api`. `auto` uses Codex OAuth only for compatible GPT Image model ids; provider-specific model ids use the configured OpenAI Images-compatible API even when local Codex auth exists. See `manifest-schema.md` for the run/page backend field contract. `image2ppt doctor` checks CLI backend readiness; it cannot discover whether an agent runtime exposes the built-in tool.
 
-Public `image2ppt image generate/edit` parameters are intentionally narrow. Required request inputs are `--prompt` or `--prompt-file`, plus at least one `--image` for `edit`. CLI fallback calls should pass an explicit `--out`. Retained useful controls are `--model` (default `gpt-image-2`), `--size` (default `auto`), `--quality` (default `auto`), `--force`, `--dry-run`, `--timeout`, and edit-only `--mask`. The CLI does not pass any other image API options.
+Public `image2ppt image generate/edit` parameters are intentionally narrow. Required request inputs are `--prompt` or `--prompt-file`, plus at least one `--image` for `edit`. CLI fallback calls should pass an explicit `--out`. Retained useful controls are `--backend`, `--model` (default `gpt-image-2`), `--size` (default `auto`), `--quality` (default `auto`), `--force`, `--dry-run`, `--timeout`, and edit-only `--mask`. `auto` size/quality values are omitted on the API path so the provider chooses its defaults; explicit values pass through. The CLI does not pass any other image API options.
+
+`prepare --image-backend openai-compatible-api` is the provider-neutral pinned
+run contract. Its model metadata is resolved from the active
+`IMAGE2PPT_IMAGE_MODEL` configuration/environment unless `run backend --model`
+explicitly overrides it; preparing a third-party run must not silently record a
+GPT Image model id.
 
 ## Skill Script Commands
 
@@ -111,7 +117,7 @@ After the CLI is available, run local runtime checks:
 ```bash
 image2ppt setup
 image2ppt doctor
-image2ppt config --api-key "<key>" --base-url "<openai-compatible-base-url>" --model "<image-model>"
+image2ppt config --api-key "<key>" --image-backend openai-compatible-api --base-url "<openai-images-compatible-base-url>" --model "<provider-image-model>"
 ```
 
 Write `image2ppt config` only when API fallback is needed or when the user explicitly provides a third-party image API. Do not write API keys into the project directory, run directory, prompts, or manifests.
@@ -244,7 +250,7 @@ image2ppt image edit \
 
 When multiple fallback image outputs are required, run `image2ppt image generate` or `image2ppt image edit` calls serially. For foreground icons and small visual objects, prefer one sparse asset sheet with generous spacing; create a second sheet only when one sheet cannot fit the required objects cleanly.
 
-These commands select Codex OAuth first, then a configured OpenAI-compatible API fallback. In a network-restricted runtime, request approval before the call and state that only task-local prompts plus required page images/masks/references are uploaded for the current conversion.
+These commands follow the explicit/configured backend. In `auto`, they use Codex OAuth only for compatible GPT Image ids and otherwise use the configured OpenAI Images-compatible API. The API path accepts arbitrary provider model ids; compatibility is defined by the `/images/generations` and `/images/edits` request/response protocol, not by a provider-name allowlist. In a network-restricted runtime, request approval before the call and state that only task-local prompts plus required page images/masks/references are uploaded for the current conversion.
 
 ## Asset Processing Commands
 
@@ -256,10 +262,11 @@ image2ppt image import pages/page_001 \
   --source-image /tmp/generated.png \
   --dest assets/icon-sheet.png \
   --role asset_sheet \
-  --backend builtin-imagegen
+  --backend openai-compatible-api \
+  --model provider-image-model
 ```
 
-`--source-image` must be an existing, readable local image. `--backend` records the actual producer and is required; `--fallback-reason` is accepted only when it is consistent with the page's backend contract. Field values and provenance rules live in `manifest-schema.md`.
+`--source-image` must be an existing, readable local image. `--backend` records the actual producer and is required; pass `--model` whenever the provider model id is known. `--fallback-reason` is accepted only when it is consistent with the page's backend contract. Field values and provenance rules live in `manifest-schema.md`.
 
 Process a chroma-key asset sheet:
 

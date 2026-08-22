@@ -28,6 +28,17 @@ def configure_default_paths(args):
         args.split_manifest = args.split_manifest or "split_assets.json"
 
 
+def use_recorded_job_output(page_dir, args):
+    """Use the imported page-local output promised by the public CLI help."""
+    if args.asset_sheet_source or not args.job_id:
+        return
+    jobs = read_json(page_dir / "imagegen-jobs.json", default={})
+    for item in jobs.get("jobs", []):
+        if item.get("job_id") == args.job_id and item.get("output"):
+            args.asset_sheet_source = item["output"]
+            return
+
+
 def mark_processed(page_dir, args):
     if not args.job_id:
         return
@@ -95,6 +106,7 @@ def main():
     page_dir = Path(args.page_dir).resolve()
     if not page_dir.exists():
         raise SystemExit(f"Page folder does not exist: {page_dir}")
+    use_recorded_job_output(page_dir, args)
     process_sheet(args, page_dir)
     mark_processed(page_dir, args)
 
