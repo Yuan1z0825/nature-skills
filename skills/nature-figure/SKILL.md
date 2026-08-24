@@ -75,7 +75,30 @@ Apply the loaded material in this order:
 3. Default stance (`core/stance.md`) — archetype-first composition, hero panel, restrained palette, statistics/integrity as part of the figure.
 4. Backend fragment — the exclusive Python or R quick-start and execution rule.
 5. Template adaptation — when reusing built-in original examples, licensed external material, or user-provided plotting code, load `references/asset-adaptation.md` before mapping data or changing the script.
-6. Delivery preflight — before final delivery, load `references/qa-contract.md`, run `scripts/validate_figure.py` on the plotting source, run `scripts/audit_pdf_text.py` on the exported PDF, then inspect every panel and the complete figure at final physical size. Automated checks do not replace the panel-by-panel uncertainty, salience, spacing, and collision audit.
+6. Rendered QA and delivery preflight — load `references/qa-contract.md`, run `scripts/validate_figure.py` on the plotting source, `scripts/audit_pdf_text.py` on the exported PDF, and `scripts/audit_figure_collisions.py` on the same final PDF. Then inspect every panel and the complete figure at final physical size. Automated checks do not replace the panel-by-panel uncertainty, salience, spacing, and ambiguity audit.
+
+After every generated or revised Python/R scientific figure, export the final
+PDF and run the collision audit again; this is mandatory after any change to
+data geometry, text, fonts, legends, annotations, axes, error bars, panel size
+or layout, not only at final submission. Use:
+
+```bash
+python skills/nature-figure/scripts/audit_figure_collisions.py figure.pdf \
+  --json-out figure.collision-audit.json \
+  --overlay-pdf figure.collision-audit.pdf
+```
+
+- `FIX BEFORE DELIVERY` or exit code `1`: repair the figure, re-export with the
+  selected plotting backend, and rerun all rendered QA.
+- `REVIEW REQUIRED`: inspect every WARN at final physical size; record why an
+  intentional overlay is acceptable. Use `--strict` when WARN must block.
+- `NOT AUDITABLE` or exit code `2`: report the dependency/PDF blocker and do not
+  claim collision validation. Install `requirements.txt` when PyMuPDF is absent.
+
+The audit reads PDF geometry for both Python and R output. It does not redraw
+the scientific figure or authorize cross-backend plotting. Its optional marked
+PDF is a QA-only diagnostic artifact and must never replace the selected
+backend's source or submission files.
 
 When the target is the flagship journal Nature, also load
 `references/nature-article-requirements.md`. It separates initial-review files

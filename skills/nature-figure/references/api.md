@@ -407,6 +407,9 @@ For compact mathematical labels, prefer supported Unicode glyphs such as `R²` o
 
 ```bash
 python skills/nature-figure/scripts/audit_pdf_text.py figure.pdf --min-pt 5
+python skills/nature-figure/scripts/audit_figure_collisions.py figure.pdf \
+  --json-out figure.collision-audit.json \
+  --overlay-pdf figure.collision-audit.pdf
 ```
 
 ---

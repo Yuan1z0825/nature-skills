@@ -134,6 +134,7 @@ Before approval:
 
 - run `scripts/validate_figure.py` on plotting source
 - run `scripts/audit_pdf_text.py` on exported PDF text
+- run `scripts/audit_figure_collisions.py` after every generated or layout-affecting revision and resolve every rendered collision FAIL
 - inspect every panel and the assembled figure at final physical size
 - verify that preview/export bundles are not mislabeled as the journal's final
   accepted upload formats

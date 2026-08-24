@@ -10,7 +10,7 @@
 - Redraw existing figures into clearer multi-panel manuscript figures.
 - Plan multi-panel evidence chains around the default that one figure answers one Results-level scientific question, with panels serving different inferential roles such as primary evidence, control, orthogonal validation, perturbation, mechanism, or boundary rather than merely redrawing the same result under new metrics.
 - Plan Figure 1, mechanism diagrams, workflows, graphical abstracts, or supplementary figures.
-- Check panel labels, color hierarchy, panel-by-panel uncertainty, actual PDF glyph sizes, statistical annotations, source data, and export formats.
+- Check panel labels, color hierarchy, panel-by-panel uncertainty, actual PDF glyph sizes, statistical annotations, source data, and export formats; after every generation or layout revision, automatically detect text-text, text-stroke/curve, page-clipping, and suspicious fill/image-edge overlaps.
 - Separate flagship `Nature` initial, final main-figure, and Extended Data file contracts, including the under-250-word legend limit.
 - Apply `Nature Machine Intelligence` (NMI)'s separate six-main-display, up-to-ten Extended Data, initial/final, 300-dpi/180-mm, and source-data requirements; the current pages give no standalone legend number, so retain the official 2018 `<300`-English-word rule only as a historical advisory, count the whole legend rather than each panel, and aim for 150–250 words.
 - When explicitly requested, call `openai/gpt-image-2` through the OpenRouter Images API to draft AI concept schematics.
@@ -28,6 +28,7 @@ Start with a figure contract rather than a template:
 - Data integrity: preserve all observations and requested variables by default, and record every exclusion rule with before/after counts.
 - Template compatibility: compare scientific meaning, data shape, and transform constraints before exact reuse, structural adaptation, or style-only inheritance.
 - Submission constraints: size, typography, color, resolution, vector format, and source-data traceability.
+- Rendered collision gate: regenerate a collision JSON after every final-PDF render; reliable collisions must be fixed and ambiguous overlays reviewed individually.
 
 ## Typical Requests
 
@@ -54,7 +55,7 @@ Start with a figure contract rather than a template:
 
 - Runnable Python or R plotting script.
 - SVG/PDF/TIFF/PNG figure files, with editable vector output preferred.
-- Panel notes, source-data mapping, exclusion counts, a panel-by-panel visual audit, and a pre-submission QA record.
+- Panel notes, source-data mapping, exclusion counts, a panel-by-panel visual audit, collision JSON/diagnostic PDF, and a pre-submission QA record.
 - For AI-schematic tasks, a concept draft and a list of elements that need human redrawing or verification.
 
 ## Built-In References
@@ -70,6 +71,7 @@ Start with a figure contract rather than a template:
 - `references/openrouter-image-generation.md`: provider-specific OpenRouter / GPT Image 2 generation and QA.
 - `scripts/validate_figure.py`: reproducible static QA for Python and R plotting source.
 - `scripts/audit_pdf_text.py`: scan exported PDF `Tf` operators for real glyph runs below the 5 pt floor, including reduced mathtext scripts.
+- `scripts/audit_figure_collisions.py`: automatic geometry audit for final Python/R PDFs, with blocking FAIL findings, review-required WARN findings, JSON output, and an optional marked diagnostic PDF.
 - `scripts/figure_safety.py`: strict monotone interpolation and data/uncertainty-driven label positioning helpers.
 - `assets/figures4papers/`: retained third-party scripts and previews; the repository MIT License does not automatically apply, so read `THIRD_PARTY_NOTICES.md` before use.
 
@@ -82,6 +84,12 @@ Start with a figure contract rather than a template:
 - Passing automated checks is not treated as visual acceptance; uncertainty, label collisions, spacing, and salience still require panel-by-panel inspection.
 - Private templates can be used locally, but user-facing outputs should not expose private paths, filenames, or sources.
 - Third-party reference materials remain subject to their source terms and `THIRD_PARTY_NOTICES.md`; this repository grants no additional rights to those files.
+
+The automatic collision audit requires PyMuPDF:
+
+```bash
+python -m pip install -r skills/nature-figure/requirements.txt
+```
 
 ## Related Skills
 

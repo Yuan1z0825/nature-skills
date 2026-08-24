@@ -7,6 +7,7 @@
 - [Statistics legend minimum](#statistics-legend-minimum)
 - [Image-integrity minimum](#image-integrity-minimum)
 - [Automated source preflight](#automated-source-preflight)
+- [Automatic rendered collision audit](#automatic-rendered-collision-audit)
 - [Rendered panel-by-panel audit](#rendered-panel-by-panel-audit)
 - [Typography and PDF glyph floor](#typography-and-pdf-glyph-floor)
 - [Uncertainty consistency](#uncertainty-consistency)
@@ -51,7 +52,7 @@ its stage-specific main-figure, Extended Data and legend contracts.
 | Display terminology | Legend labels use display-style initial capitalization and preserve canonical model names |
 | Statistics | `n`, biological/technical repeat definition, center, spread, test, correction, and exact comparison are documented |
 | Comparable uncertainty | Every comparable seed/fold/split aggregate panel shows the same variability definition or documents an exemption |
-| Annotation clearance | Labels clear points, curves, bars, and uncertainty extents at final size without opaque masking |
+| Annotation clearance | Automatic PDF collision audit has no FAIL findings; every WARN is reviewed at final size and justified or fixed |
 | Visual hierarchy | Hero evidence remains more salient than neutral baselines after rendering |
 | Numerical transforms | Interpolation/normalization direction and monotonicity assumptions are asserted in code |
 | Source data | Quantitative panels can be traced to a clean CSV/TSV/XLSX or script output |
@@ -124,11 +125,51 @@ python skills/nature-figure/scripts/validate_figure.py path/to/figure.py --stric
 # Exported-PDF glyph-size audit
 python skills/nature-figure/scripts/audit_pdf_text.py path/to/figure.pdf --min-pt 5
 python skills/nature-figure/scripts/audit_pdf_text.py path/to/figure.pdf --min-pt 5 --json
+
+# Mandatory rendered collision audit for Python and R figures
+python skills/nature-figure/scripts/audit_figure_collisions.py path/to/figure.pdf \
+  --json-out path/to/figure.collision-audit.json \
+  --overlay-pdf path/to/figure.collision-audit.pdf
+
+# Optional: make ambiguous WARN findings blocking
+python skills/nature-figure/scripts/audit_figure_collisions.py path/to/figure.pdf --strict
 ```
 
-The source preflight checks syntax, font configuration and size floor, mathtext shrinkage risk, literal legend-label capitalization, unsafe color maps, editable-text settings, vector/raster exports, DPI, common journal widths, potential sampling or unreported missing-data exclusion, simulated-data leakage, log guards, interpolation monotonicity, stochastic uncertainty encoding, rotated-text anchoring, risky annotation workarounds, and obvious cross-backend plotting references. The PDF audit scans supported content streams for actual `Tf` font-size operators and catches reduced script glyphs that source-level `fontsize` checks miss.
+The source preflight checks syntax, font configuration and size floor, mathtext shrinkage risk, literal legend-label capitalization, unsafe color maps, editable-text settings, vector/raster exports, DPI, common journal widths, potential sampling or unreported missing-data exclusion, simulated-data leakage, log guards, interpolation monotonicity, stochastic uncertainty encoding, rotated-text anchoring, risky annotation workarounds, and obvious cross-backend plotting references. The PDF text audit scans supported content streams for actual `Tf` font-size operators and catches reduced script glyphs that source-level `fontsize` checks miss. The rendered collision audit uses PyMuPDF geometry from the final PDF and therefore applies equally to Python- and R-generated figures.
 
 Treat the result as a deterministic source audit, not as evidence that the analysis or rendered figure is correct. Resolve all `FAIL` findings before delivery. Review every `WARN`, then run the selected backend and inspect the actual SVG/PDF/TIFF/PNG outputs at final size. A warning may be acceptable only when the QA notes state the reason.
+
+## Automatic rendered collision audit
+
+Run `audit_figure_collisions.py` after **every generated figure and every
+revision that can change layout**, including edits to text, fonts, legend,
+annotations, axes, data, uncertainty, panel size or arrangement. Do not reuse a
+report from an earlier render. Preserve the JSON report with the delivery QA;
+the marked PDF is diagnostic only.
+
+| Result | Meaning | Required action |
+|---|---|---|
+| `text-text` FAIL | Two rendered text boxes materially overlap | Separate, shorten, rotate or resize the labels and rerun |
+| `text-stroke` FAIL | A line, curve, marker edge, error bar or other stroked path crosses the interior of text | Move the text or alter the layout; do not hide the path with an opaque white box |
+| `text-page-clipping` FAIL | A rendered text trace extends beyond the final PDF page | Expand/reposition the layout and re-export |
+| `text-fill-edge` WARN | Text only partly overlaps a bar, heatmap cell or other fill | Inspect at final size; fix unless the edge overlap is intentional and legible |
+| `text-image-edge` WARN | Text only partly overlaps a raster image boundary | Inspect panel labels, scale bars and image annotations at final size |
+| contained overlay count | Text is fully inside a fill or image | Informational because in-bar labels, heatmap values and image annotations can be intentional |
+
+Exit code `1` and verdict `FIX BEFORE DELIVERY` block delivery. Exit code `2`
+or `NOT AUDITABLE` means the PDF/dependency could not be checked and must not be
+reported as a pass. `REVIEW REQUIRED` does not silently pass: inspect each WARN
+and record the reason, or use `--strict` to make WARN blocking. PyMuPDF is
+declared in `requirements.txt`; install it with:
+
+```bash
+python -m pip install -r skills/nature-figure/requirements.txt
+```
+
+The detector deliberately separates reliable geometry failures from ambiguous
+fill/image overlays. It does not prove visual quality, semantic correctness,
+adequate contrast or accessibility, so the final-size panel audit remains
+mandatory.
 
 ## Rendered panel-by-panel audit
 
@@ -136,7 +177,7 @@ Do not approve a figure from a whole-page glance. Inspect each panel at final ph
 
 | Panel | Unique claim | Center/summary | Spread/interval | Replicate unit | Labels/legend | Collision check | Pass |
 |---|---|---|---|---|---|---|---|
-| a | What question only this panel answers | mean/median/raw | SD/SE/CI/none + reason | seeds/folds/subjects/etc. | exact display labels | data + error extent + text bbox | yes/no |
+| a | What question only this panel answers | mean/median/raw | SD/SE/CI/none + reason | seeds/folds/subjects/etc. | exact display labels | collision report findings + data/error extent + text bbox | yes/no |
 
 Cover each panel mentally. If the figure's argument remains complete, merge or remove that panel. Compare repeated panels side by side for consistent terminology, uncertainty, axes, and color mapping. After adding error bars or uncertainty bands, remove arrows, brackets, or fills that encode the same gap and occupy the same geometry.
 

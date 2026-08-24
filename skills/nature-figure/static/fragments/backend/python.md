@@ -38,4 +38,5 @@ Use `text.usetex = True` only when LaTeX is installed and math-rich labels are r
 - `references/demos.md` — third-party figures4papers demo map, copyright boundary, and original Python reimplementation guidance.
 - `scripts/validate_figure.py` — dependency-free source preflight before rendering and visual QA.
 - `scripts/audit_pdf_text.py` — dependency-free `Tf` scan of exported PDF text runs; use it to enforce the 5 pt glyph floor after rendering.
+- `scripts/audit_figure_collisions.py` — mandatory PyMuPDF geometry audit after every generated or layout-affecting revision; fix text-text, text-stroke and clipping FAIL findings before delivery.
 - `scripts/figure_safety.py` — strict monotone interpolation and annotation placement above uncertainty extents.

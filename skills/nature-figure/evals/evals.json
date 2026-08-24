@@ -116,7 +116,7 @@
     {
       "id": "delivery-runs-static-and-visual-qa",
       "prompt": "The Python plotting script is finished. Deliver the journal-ready figure package now.",
-      "expected_output": "Before delivery, the assistant runs scripts/validate_figure.py on the Python source, resolves FAIL findings, reviews WARN findings, renders only with Python, and inspects the actual SVG/PDF/TIFF or PNG outputs at final physical size. It must not treat static validation as proof of statistical or visual correctness.",
+      "expected_output": "Before delivery, the assistant runs scripts/validate_figure.py on the Python source, scripts/audit_pdf_text.py and scripts/audit_figure_collisions.py on the final Python-generated PDF, resolves every collision FAIL, reviews and documents every WARN, and inspects the actual SVG/PDF/TIFF or PNG outputs at final physical size. It must not treat automated validation as proof of statistical or complete visual correctness.",
       "assertions": [
         {
           "name": "validator_run_before_delivery",
@@ -125,6 +125,30 @@
         {
           "name": "rendered_outputs_inspected",
           "description": "Editable text, clipping, overlaps, resolution, and final-size readability are checked on rendered files."
+        },
+        {
+          "name": "rendered_collision_gate_run",
+          "description": "The final PDF receives the automatic collision audit and blocking findings are fixed before delivery."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "rendered-collision-audit-is-mandatory",
+      "prompt": "I changed the legend font and moved two annotations in this R-generated Nature figure. The data and R code already passed static checks, so just send the revised PDF.",
+      "expected_output": "Because text and layout changed, the assistant must rerun audit_figure_collisions.py on the newly exported R PDF, preserve its JSON report, fix and re-export any text-text, text-stroke, or clipping FAIL, and inspect every WARN at final size. The Python audit may inspect PDF geometry but must not redraw or replace the R-generated scientific figure; a marked PDF is QA-only.",
+      "assertions": [
+        {
+          "name": "rerun_after_layout_change",
+          "description": "A prior report is not reused after any font, legend, annotation, axis, uncertainty, panel-size, or layout change."
+        },
+        {
+          "name": "blocking_collisions_are_repaired",
+          "description": "Reliable rendered collisions and clipping block delivery until the selected backend re-exports a corrected figure."
+        },
+        {
+          "name": "backend_exclusivity_is_preserved",
+          "description": "The backend-neutral audit inspects the R PDF but does not use Python plotting to redraw or substitute the figure."
         }
       ],
       "files": []

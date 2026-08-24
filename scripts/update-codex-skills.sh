@@ -233,6 +233,11 @@ verify_install() {
 
 print_dependency_notes() {
   notes=0
+  if [ -f "$SRC/nature-figure/requirements.txt" ]; then
+    notes=1
+    echo "    # required for automatic rendered collision QA in nature-figure"
+    echo "    python -m pip install -r $SRC/nature-figure/requirements.txt"
+  fi
   if [ -f "$SRC/nature-image2ppt/requirements.txt" ]; then
     notes=1
     echo "    # required before using nature-image2ppt (Python 3.10+)"

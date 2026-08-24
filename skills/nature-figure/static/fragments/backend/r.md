@@ -43,3 +43,5 @@ save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 120, dpi = 60
 - `references/design-theory.md` — typography, color theory, layout rationale, export policy (backend-agnostic).
 - `references/nature-2026-observations.md` — real Nature page archetypes to match before choosing layout.
 - `scripts/validate_figure.py` — dependency-free static R source preflight before running R and inspecting the rendered outputs.
+- `scripts/audit_pdf_text.py` — inspect the final R-generated PDF's rendered glyph floor without redrawing it.
+- `scripts/audit_figure_collisions.py` — mandatory backend-neutral geometry audit after every generated or layout-affecting revision; its optional marked PDF is QA-only and does not replace the R export.

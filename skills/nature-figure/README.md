@@ -10,7 +10,7 @@
 - 将已有图件重画为更清楚的多面板论文 figure。
 - 按“一张 Figure 回答一个 Results 级科学问题”的默认逻辑规划多面板证据链，让各 panel 分别承担主证据、control、正交验证、扰动、机制或边界等不同推理角色，而不是只把同一结果换指标重画。
 - 规划 Figure 1、机制图、workflow、graphical abstract 或补充图。
-- 检查面板标签、配色与视觉层级、逐面板误差线、最终 PDF 实际字号、统计标注、source data 和导出格式。
+- 检查面板标签、配色与视觉层级、逐面板误差线、最终 PDF 实际字号、统计标注、source data 和导出格式；每次生成或修改布局后，自动检测文字—文字、文字—线条/曲线、页面裁切及可疑色块/图片边缘重合。
 - 区分旗舰 `Nature` 初投稿、主图终稿和 Extended Data 的文件契约，并执行 `<250` 词图注上限。
 - 对 `Nature Machine Intelligence` 单独执行 6 个主 display、最多 10 个 Extended Data、初投稿/终稿边界、300 dpi/180 mm 和 source data 要求；当前官网未给独立图注数字，保留 2018 官方 `<300` 英文词为历史建议线，整张图注建议 150–250 词且不是每个 panel 分别计算。
 - 在用户明确要求时，通过 OpenRouter Images API 调用 `openai/gpt-image-2` 生成 AI 概念示意图草稿。
@@ -28,6 +28,7 @@
 - 数据完整性：默认保留全部观测和指定变量，任何排除都记录规则与前后计数。
 - 模板兼容性：先核对科学含义、数据结构和变换条件，再决定精确复用、结构适配或只继承样式。
 - 投稿约束：尺寸、字体、色彩、分辨率、矢量格式和 source-data 可追溯性。
+- 渲染碰撞门：最终 PDF 每次重绘后都生成 collision JSON；可靠碰撞必须修复，可疑 overlay 必须逐项复核。
 
 ## 典型请求
 
@@ -54,7 +55,7 @@
 
 - 可运行的 Python 或 R 绘图脚本。
 - SVG/PDF/TIFF/PNG 等图件文件，优先保留可编辑矢量版本。
-- 面板说明、source data 映射、排除计数、逐面板视觉审查表和投稿前 QA 记录。
+- 面板说明、source data 映射、排除计数、逐面板视觉审查表、碰撞 JSON/诊断 PDF 和投稿前 QA 记录。
 - AI 示意图任务中，输出概念草稿和需要人工重画/核实的元素列表。
 
 ## 内置参考
@@ -70,6 +71,7 @@
 - `references/openrouter-image-generation.md`：OpenRouter / GPT Image 2 的 provider-specific 生成与 QA 路径。
 - `scripts/validate_figure.py`：Python/R 绘图源码的可复现静态 QA。
 - `scripts/audit_pdf_text.py`：扫描导出 PDF 的 `Tf` 操作符，发现 mathtext 上下标等低于 5 pt 的实际字形。
+- `scripts/audit_figure_collisions.py`：对 Python/R 最终 PDF 执行自动几何碰撞审计，输出阻断性 FAIL、需复核 WARN、JSON 报告和可选带框诊断 PDF。
 - `scripts/figure_safety.py`：严格单调插值和基于数据/误差范围的标签高度 helper。
 - `assets/figures4papers/`：保留的第三方参考脚本与预览图；不自动适用本仓库 MIT License，使用前阅读 `THIRD_PARTY_NOTICES.md`。
 
@@ -82,6 +84,12 @@
 - 不会把自动校验通过当作视觉验收；最终交付仍需逐面板检查不确定性、标签碰撞、间距和显著性层级。
 - 私有模板可以在本机使用，但不应在面向用户输出中暴露私有路径、文件名或来源。
 - 第三方参考材料的版权和再使用条件以其来源及 `THIRD_PARTY_NOTICES.md` 为准；本仓库不额外授予这些文件的使用权。
+
+自动碰撞审计需要 PyMuPDF：
+
+```bash
+python -m pip install -r skills/nature-figure/requirements.txt
+```
 
 ## 相关技能
 

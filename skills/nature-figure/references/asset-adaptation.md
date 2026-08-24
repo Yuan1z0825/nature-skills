@@ -66,6 +66,7 @@ Record the reuse level and source category in internal QA notes. The adaptation 
 
 1. Run the adapted script with representative real input using the selected backend.
 2. Run `python scripts/validate_figure.py path/to/script.py` or the corresponding `.R` file.
-3. Treat static validation as preflight only; it cannot confirm statistical correctness or visual quality.
-4. Inspect SVG/PDF text editability, raster resolution, clipping, overlaps, color accessibility, and readability at final physical size.
-5. Include the field mapping, exclusions, transform changes, and remaining caveats in the QA notes.
+3. Run `python scripts/audit_pdf_text.py path/to/figure.pdf --min-pt 5` and `python scripts/audit_figure_collisions.py path/to/figure.pdf --json-out path/to/figure.collision-audit.json` on the final export.
+4. Treat static and geometry validation as preflight only; fix collision FAIL findings and review every WARN, but do not infer statistical correctness or complete visual quality from a pass.
+5. Inspect SVG/PDF text editability, raster resolution, clipping, ambiguous overlays, color accessibility, and readability at final physical size.
+6. Include the field mapping, exclusions, transform changes, collision report, and remaining caveats in the QA notes.
