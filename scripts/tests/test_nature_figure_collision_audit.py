@@ -22,7 +22,10 @@ def load_module(name: str, path: Path):
 
 
 AUDIT = load_module("nature_figure_collision_audit_test", SCRIPT)
-PYMUPDF_AVAILABLE = importlib.util.find_spec("fitz") is not None
+PYMUPDF_AVAILABLE = any(
+    importlib.util.find_spec(module_name) is not None
+    for module_name in ("pymupdf", "fitz")
+)
 
 
 def read(relative: str) -> str:
@@ -133,7 +136,10 @@ class CollisionGeometryTests(unittest.TestCase):
 @unittest.skipUnless(PYMUPDF_AVAILABLE, "PyMuPDF is not installed in this test runtime")
 class CollisionPdfEndToEndTests(unittest.TestCase):
     def test_real_pdf_detects_crossed_text_and_writes_overlay(self) -> None:
-        import fitz
+        try:
+            import pymupdf as fitz
+        except ImportError:
+            import fitz
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -194,7 +200,7 @@ class CollisionWorkflowIntegrationTests(unittest.TestCase):
         evals = json.loads(read("skills/nature-figure/evals/evals.json"))
         installer = read("scripts/update-codex-skills.sh")
 
-        self.assertIn("version: 2.7.0", manifest)
+        self.assertIn("version: 2.7.1", manifest)
         self.assertIn("PyMuPDF", requirements)
         for text in (readme_zh, readme_en):
             self.assertIn("audit_figure_collisions.py", text)

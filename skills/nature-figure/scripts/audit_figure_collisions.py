@@ -244,12 +244,15 @@ def _text_from_chars(chars: Sequence[Sequence[Any]]) -> str:
 
 def extract_pdf_geometry(path: Path) -> list[PageGeometry]:
     try:
-        import fitz  # type: ignore
-    except ImportError as exc:
-        raise RuntimeError(
-            "PyMuPDF is required for rendered collision QA. Install it with: "
-            "python -m pip install -r skills/nature-figure/requirements.txt"
-        ) from exc
+        import pymupdf as fitz  # type: ignore
+    except ImportError:
+        try:
+            import fitz  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError(
+                "PyMuPDF is required for rendered collision QA. Install it with: "
+                "python -m pip install -r skills/nature-figure/requirements.txt"
+            ) from exc
 
     document = fitz.open(path)
     pages: list[PageGeometry] = []
@@ -561,9 +564,12 @@ def audit_pdf(
 
 def write_overlay_pdf(source: Path, destination: Path, findings: Sequence[dict[str, Any]]) -> None:
     try:
-        import fitz  # type: ignore
-    except ImportError as exc:
-        raise RuntimeError("PyMuPDF is required to write the diagnostic overlay PDF") from exc
+        import pymupdf as fitz  # type: ignore
+    except ImportError:
+        try:
+            import fitz  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError("PyMuPDF is required to write the diagnostic overlay PDF") from exc
     if source.resolve() == destination.resolve():
         raise ValueError("overlay PDF must not overwrite the source PDF")
     destination.parent.mkdir(parents=True, exist_ok=True)
