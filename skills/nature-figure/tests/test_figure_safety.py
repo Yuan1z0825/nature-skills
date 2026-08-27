@@ -126,6 +126,70 @@ ax.text(0.5, 0.6, "B", rotation=90)
         self.assertEqual(rows["ROTATION-ANCHOR"].level, "WARN")
         self.assertEqual(rows["ROTATION-ANCHOR"].evidence, ["line 3: rotation=..."])
 
+    def test_python_multipanel_source_requires_alignment_gate(self):
+        missing = self.findings("fig, axes = plt.subplots(2, 2)")
+        self.assertEqual(missing["PANEL-ALIGNMENT-GATE"].level, "FAIL")
+
+        import_only = self.findings(
+            "from audit_panel_alignment import require_matplotlib_panel_alignment\n"
+            "fig, axes = plt.subplots(2, 2)"
+        )
+        self.assertEqual(import_only["PANEL-ALIGNMENT-GATE"].level, "FAIL")
+
+        manual_axes = self.findings(
+            "fig = plt.figure()\n"
+            "ax_a = fig.add_axes([0.1, 0.1, 0.3, 0.8])\n"
+            "ax_b = fig.add_axes([0.6, 0.1, 0.3, 0.8])"
+        )
+        self.assertEqual(manual_axes["PANEL-ALIGNMENT-GATE"].level, "FAIL")
+
+        mosaic = self.findings("fig, axes = plt.subplot_mosaic([['a', 'b']])")
+        self.assertEqual(mosaic["PANEL-ALIGNMENT-GATE"].level, "FAIL")
+
+        wired = self.findings(
+            '''
+fig, axes = plt.subplots(2, 2)
+require_matplotlib_panel_alignment(fig, strict=True)
+'''
+        )
+        self.assertEqual(wired["PANEL-ALIGNMENT-GATE"].level, "PASS")
+
+    def test_r_patchwork_source_requires_alignment_gate(self):
+        missing = {
+            row.check_id: row
+            for row in VALIDATOR.validate_source(
+                "fig <- (p_a | p_b) + plot_layout(guides = 'collect')",
+                "r",
+            )
+        }
+        self.assertEqual(missing["PANEL-ALIGNMENT-GATE"].level, "FAIL")
+
+        manifest_only = {
+            row.check_id: row
+            for row in VALIDATOR.validate_source(
+                "fig <- p_a | p_b\nwrite_patchwork_panel_layout(fig, manifest_path='a.json')",
+                "r",
+            )
+        }
+        self.assertEqual(manifest_only["PANEL-ALIGNMENT-GATE"].level, "FAIL")
+
+        wired = {
+            row.check_id: row
+            for row in VALIDATOR.validate_source(
+                "fig <- p_a | p_b\nrequire_patchwork_panel_alignment(fig, manifest_path='a.json')",
+                "r",
+            )
+        }
+        self.assertEqual(wired["PANEL-ALIGNMENT-GATE"].level, "PASS")
+
+    def test_r_delimiter_check_ignores_comments(self):
+        finding = VALIDATOR.check_syntax(
+            "# patchwork's final panel cells { are measured\nfig <- (p_a | p_b)",
+            "r",
+        )
+        self.assertEqual(finding.level, "WARN")
+        self.assertIn("delimiter check passed", finding.message)
+
 
 class NumericalSafetyTests(unittest.TestCase):
     def test_interp_monotone_handles_decreasing_grid(self):

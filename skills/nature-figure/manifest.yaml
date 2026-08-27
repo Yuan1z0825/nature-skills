@@ -1,5 +1,5 @@
 name: nature-figure
-version: 2.7.1
+version: 2.8.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is
@@ -73,7 +73,7 @@ references:
       path: references/r-template-index.md
     - condition: reuse or adapt a bundled example, plotting script, preview image, or user-provided template against new data
       path: references/asset-adaptation.md
-    - condition: every generated or revised Python/R scientific figure, rendered PDF collision audit, final delivery, revision package, rendered PDF text audit, panel-by-panel visual QA, microscopy/blot figure, or journal-specific audit
+    - condition: every generated or revised Python/R scientific figure, multi-panel alignment gate, rendered PDF collision audit, final delivery, revision package, rendered PDF text audit, panel-by-panel visual QA, microscopy/blot figure, or journal-specific audit
       path: references/qa-contract.md
     - condition: target is the flagship journal Nature, or exact initial-versus-production main/Extended Data figure and legend requirements are needed
       path: references/nature-article-requirements.md
@@ -81,7 +81,7 @@ references:
       path: ../nature-shared/journal-formats/nature-machine-intelligence.md
     - condition: typography, color theory, layout rationale, export policy
       path: references/design-theory.md
-    - condition: Python PALETTE, helper function signatures, validation rules
+    - condition: Python PALETTE, helper function signatures, Matplotlib panel-alignment integration, validation rules
       path: references/api.md
     - condition: "Python layout patterns: hero panels, legend-only axes, dark image plates, asymmetric layouts"
       path: references/common-patterns.md

@@ -116,7 +116,7 @@
     {
       "id": "delivery-runs-static-and-visual-qa",
       "prompt": "The Python plotting script is finished. Deliver the journal-ready figure package now.",
-      "expected_output": "Before delivery, the assistant runs scripts/validate_figure.py on the Python source, scripts/audit_pdf_text.py and scripts/audit_figure_collisions.py on the final Python-generated PDF, resolves every collision FAIL, reviews and documents every WARN, and inspects the actual SVG/PDF/TIFF or PNG outputs at final physical size. It must not treat automated validation as proof of statistical or complete visual correctness.",
+      "expected_output": "Before delivery, the assistant runs the render-time panel-alignment gate on the final Matplotlib axes, scripts/validate_figure.py on the Python source, scripts/audit_pdf_text.py and scripts/audit_figure_collisions.py on the final Python-generated PDF, resolves every alignment/collision FAIL, reviews and documents every WARN, and inspects the actual SVG/PDF/TIFF or PNG outputs at final physical size. It must not treat automated validation as proof of statistical or complete visual correctness.",
       "assertions": [
         {
           "name": "validator_run_before_delivery",
@@ -129,6 +129,10 @@
         {
           "name": "rendered_collision_gate_run",
           "description": "The final PDF receives the automatic collision audit and blocking findings are fixed before delivery."
+        },
+        {
+          "name": "render_time_alignment_gate_run",
+          "description": "The final multi-panel axes geometry receives the alignment audit and blocking findings are fixed before export."
         }
       ],
       "files": []
@@ -149,6 +153,66 @@
         {
           "name": "backend_exclusivity_is_preserved",
           "description": "The backend-neutral audit inspects the R PDF but does not use Python plotting to redraw or substitute the figure."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "multipanel-render-time-alignment-gate",
+      "prompt": "My four-panel Nature figure looks almost aligned, but panel b sits about 2 mm lower and one horizontal gutter is wider. The PDF collision checker reports no overlaps, so deliver it as-is.",
+      "expected_output": "The assistant must not treat collision-free output as aligned. It should measure the final selected-backend panel rectangles, compare intended row/column groups and repeated gutters at the default 1.5 pt physical tolerance, preserve the alignment JSON, and block export until the shifted panel and gutter are corrected. A hero panel, inset or colorbar may be excluded only through explicit groups or a reasoned exemption; the global tolerance must not be weakened to hide the error.",
+      "assertions": [
+        {
+          "name": "collision_and_alignment_are_separate_gates",
+          "description": "A collision PASS is not accepted as evidence that axes rectangles, panel labels or gutters are aligned."
+        },
+        {
+          "name": "physical_alignment_tolerance_blocks_delivery",
+          "description": "Comparable row/column edges, dimensions and repeated gutters are measured in final-size points and reliable deviations block export."
+        },
+        {
+          "name": "asymmetry_requires_explicit_reason",
+          "description": "Structured unequal-span grids are inferred automatically; free-positioned hero panels, insets, colorbars and other intentional exceptions use explicit groups or recorded exemptions rather than a weakened global tolerance."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "asymmetric-two-plus-one-panel-alignment",
+      "prompt": "Build two Nature figure layouts: first column panels a and b stacked with panel c spanning both rows on the right, then the mirrored layout with the spanning panel on the left. Make sure the panels are automatically checked for alignment.",
+      "expected_output": "The assistant should use final selected-backend grid/gtable geometry to infer both unequal-span layouts without requiring manual row groups. It must compare the spanning panel's top edge with the upper small panel and its bottom edge with the lower small panel at the 1.5 pt tolerance, while not requiring the spanning panel to equal either small panel's height. A shifted or shortened spanning panel must block export.",
+      "assertions": [
+        {
+          "name": "both_mirrored_two_plus_one_layouts_are_inferred",
+          "description": "Left-two/right-one and left-one/right-two grid layouts are recognized from row start/stop metadata in Python GridSpec and R patchwork manifests."
+        },
+        {
+          "name": "shared_outer_edges_are_checked",
+          "description": "The spanning panel shares and is compared at the upper and lower outer boundaries with the correct small panels."
+        },
+        {
+          "name": "unequal_heights_are_not_false_failures",
+          "description": "The spanning panel is not incorrectly required to have the height of either individual stacked panel, but a real outer-edge shift remains blocking."
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "horizontal-three-four-panel-equal-width",
+      "prompt": "Make one Nature figure with three panels in a single horizontal row and another with four panels in a single horizontal row. Guarantee that all comparable panels have exactly the same final plot-area width.",
+      "expected_output": "The assistant should measure final selected-backend axes/gtable rectangles and require same-row panels with equal grid spans to have equal physical widths within the 1.5 pt tolerance. Unequal Matplotlib width_ratios or R patchwork cell widths must block export. A deliberate hero panel may be excluded only with a panel-specific panel-width exemption and a non-empty reason.",
+      "assertions": [
+        {
+          "name": "three_and_four_panel_rows_check_final_widths",
+          "description": "Both 1 x 3 and 1 x 4 layouts compare final rendered plot-area widths rather than trusting source-level grid declarations."
+        },
+        {
+          "name": "unequal_equal_span_panels_block_export",
+          "description": "A reliable width spread above 1.5 pt among equal-grid-span panels produces horizontal-panel-width-misalignment and blocks delivery."
+        },
+        {
+          "name": "intentional_width_asymmetry_is_narrowly_exempted",
+          "description": "An intentional hero width uses a panel-width exemption with a reason; different column spans are not falsely required to be equal."
         }
       ],
       "files": []

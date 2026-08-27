@@ -16,11 +16,13 @@ Only recommend a backend when the user explicitly asks you to choose or recommen
 
 Once Python or R is selected, every plotting script, preview image, SVG/PDF/TIFF/PNG export, QA render, and visual workaround must be produced by that same backend. Do not use Python to draw a preview for an R figure, and do not use R to draw a preview for a Python figure, even if the selected runtime or packages are missing locally. The non-selected language may only be used for non-visual file inspection or data conversion when it does not open a graphics device, import plotting libraries, create image/vector files, or change the final visual appearance.
 
-The backend-neutral `audit_pdf_text.py` and `audit_figure_collisions.py` tools
-may inspect a final PDF from either backend. They do not open a plotting device
-or redraw the scientific content. A marked collision PDF is a QA-only overlay,
-not a preview, substitute export or submission asset; keep the original
-selected-backend PDF authoritative.
+The backend-neutral `audit_panel_alignment.py`, `audit_pdf_text.py` and
+`audit_figure_collisions.py` tools may inspect a layout manifest or final PDF
+from either backend. They do not redraw the scientific content. The selected
+backend must measure its own final axes/grob geometry before the alignment JSON
+is audited. Alignment and collision overlays are QA-only, not previews,
+substitute exports or submission assets; keep the original selected-backend
+figure authoritative.
 
 ## Missing runtime/package rule
 
@@ -40,7 +42,7 @@ Plan figures by scientific claims, not by source tables. Do not turn each table 
 2. **Evidence chain**: map each planned panel to one distinct inferential role in that claim, and drop, merge, or demote panels that only redraw another panel's evidence or repeat it under a secondary metric.
 3. **Archetype**: classify the figure as `quantitative grid`, `schematic-led composite`, `image plate + quant`, or `asymmetric mixed-modality figure`.
 4. **Backend**: use the explicit or saved Python/R track exclusively for all figure drawing, previewing, exporting, and visual QA. Do not cross-render with the other language.
-5. **Journal/export contract**: set final dimensions, a 5 pt floor for every rendered glyph, editable text, source data, statistics, image-integrity notes, export formats, and automatic rendered collision QA before styling.
+5. **Journal/export contract**: set final dimensions, a 5 pt floor for every rendered glyph, editable text, source data, statistics, image-integrity notes, export formats, a blocking multi-panel alignment gate, and automatic rendered collision QA before styling.
 
 The highest-priority rule is: **the chart serves the scientific logic**. Aesthetic polish, template matching, and complex layout are subordinate to making the core conclusion clear, defensible, and reviewable.
 

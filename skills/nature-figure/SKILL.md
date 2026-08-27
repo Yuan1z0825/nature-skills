@@ -75,7 +75,26 @@ Apply the loaded material in this order:
 3. Default stance (`core/stance.md`) — archetype-first composition, hero panel, restrained palette, statistics/integrity as part of the figure.
 4. Backend fragment — the exclusive Python or R quick-start and execution rule.
 5. Template adaptation — when reusing built-in original examples, licensed external material, or user-provided plotting code, load `references/asset-adaptation.md` before mapping data or changing the script.
-6. Rendered QA and delivery preflight — load `references/qa-contract.md`, run `scripts/validate_figure.py` on the plotting source, `scripts/audit_pdf_text.py` on the exported PDF, and `scripts/audit_figure_collisions.py` on the same final PDF. Then inspect every panel and the complete figure at final physical size. Automated checks do not replace the panel-by-panel uncertainty, salience, spacing, and ambiguity audit.
+6. Rendered QA and delivery preflight — load `references/qa-contract.md`, run the render-time panel-alignment gate for every multi-panel figure, `scripts/validate_figure.py` on the plotting source, `scripts/audit_pdf_text.py` on the exported PDF, and `scripts/audit_figure_collisions.py` on the same final PDF. Then inspect every panel and the complete figure at final physical size. Automated checks do not replace the panel-by-panel uncertainty, salience, spacing, and ambiguity audit.
+
+For every figure containing two or more comparable panels, measure the **final
+rendered plot-area rectangles** before export and preserve the alignment JSON.
+Python figures must call `require_matplotlib_panel_alignment()` from
+`scripts/audit_panel_alignment.py` after the final layout draw. R/patchwork
+figures must source `scripts/panel_alignment.R`, write the patchwork layout
+manifest at the final export dimensions, and run the same backend-neutral JSON
+auditor. Use a default physical tolerance of `1.5 pt` for shared edges, widths,
+heights, panel-label anchors and repeated gutters. `FIX BEFORE DELIVERY` or exit
+code `1` blocks export; `NOT AUDITABLE` or exit code `2` blocks any claim that
+alignment passed. A horizontal row of three or four equal-grid-span panels must
+have equal final plot-area widths as well as equal heights and gutters; an
+intentional unequal-width design requires a recorded `panel-width` exemption.
+Structured unequal-span grids—including two stacked panels
+beside one panel spanning both rows, in either column—must be inferred from
+shared grid start/stop boundaries and checked automatically. Nested grids,
+free-positioned hero panels, insets and colorbars may be excluded only through
+explicit comparable groups or a recorded exemption with a reason. Do not
+weaken the global tolerance to hide one intentional exception.
 
 After every generated or revised Python/R scientific figure, export the final
 PDF and run the collision audit again; this is mandatory after any change to
@@ -95,7 +114,7 @@ python skills/nature-figure/scripts/audit_figure_collisions.py figure.pdf \
 - `NOT AUDITABLE` or exit code `2`: report the dependency/PDF blocker and do not
   claim collision validation. Install `requirements.txt` when PyMuPDF is absent.
 
-The audit reads PDF geometry for both Python and R output. It does not redraw
+The collision audit reads PDF geometry for both Python and R output. It does not redraw
 the scientific figure or authorize cross-backend plotting. Its optional marked
 PDF is a QA-only diagnostic artifact and must never replace the selected
 backend's source or submission files.

@@ -10,7 +10,7 @@
 - 将已有图件重画为更清楚的多面板论文 figure。
 - 按“一张 Figure 回答一个 Results 级科学问题”的默认逻辑规划多面板证据链，让各 panel 分别承担主证据、control、正交验证、扰动、机制或边界等不同推理角色，而不是只把同一结果换指标重画。
 - 规划 Figure 1、机制图、workflow、graphical abstract 或补充图。
-- 检查面板标签、配色与视觉层级、逐面板误差线、最终 PDF 实际字号、统计标注、source data 和导出格式；每次生成或修改布局后，自动检测文字—文字、文字—线条/曲线、页面裁切及可疑色块/图片边缘重合。
+- 检查面板标签、配色与视觉层级、逐面板误差线、最终 PDF 实际字号、统计标注、source data 和导出格式；多面板图在渲染时自动检查同行/同列轴框、宽高、panel 标签锚点和重复间距是否在 1.5 pt 容差内，每次生成或修改布局后再检测文字—文字、文字—线条/曲线、页面裁切及可疑色块/图片边缘重合。
 - 区分旗舰 `Nature` 初投稿、主图终稿和 Extended Data 的文件契约，并执行 `<250` 词图注上限。
 - 对 `Nature Machine Intelligence` 单独执行 6 个主 display、最多 10 个 Extended Data、初投稿/终稿边界、300 dpi/180 mm 和 source data 要求；当前官网未给独立图注数字，保留 2018 官方 `<300` 英文词为历史建议线，整张图注建议 150–250 词且不是每个 panel 分别计算。
 - 在用户明确要求时，通过 OpenRouter Images API 调用 `openai/gpt-image-2` 生成 AI 概念示意图草稿。
@@ -28,6 +28,7 @@
 - 数据完整性：默认保留全部观测和指定变量，任何排除都记录规则与前后计数。
 - 模板兼容性：先核对科学含义、数据结构和变换条件，再决定精确复用、结构适配或只继承样式。
 - 投稿约束：尺寸、字体、色彩、分辨率、矢量格式和 source-data 可追溯性。
+- 子图对齐门：由 Python axes 或 R patchwork/gtable 在最终尺寸下测量真实 panel 矩形；横排 3/4 张等跨度 panel 自动保证等宽，普通网格及“左二右一 / 左一右二”等跨行布局自动推断，可靠错位阻断导出，free-positioned hero panel、inset 和 colorbar 只能带理由豁免。
 - 渲染碰撞门：最终 PDF 每次重绘后都生成 collision JSON；可靠碰撞必须修复，可疑 overlay 必须逐项复核。
 
 ## 典型请求
@@ -55,7 +56,7 @@
 
 - 可运行的 Python 或 R 绘图脚本。
 - SVG/PDF/TIFF/PNG 等图件文件，优先保留可编辑矢量版本。
-- 面板说明、source data 映射、排除计数、逐面板视觉审查表、碰撞 JSON/诊断 PDF 和投稿前 QA 记录。
+- 面板说明、source data 映射、排除计数、逐面板视觉审查表、alignment JSON/诊断 SVG、碰撞 JSON/诊断 PDF 和投稿前 QA 记录。
 - AI 示意图任务中，输出概念草稿和需要人工重画/核实的元素列表。
 
 ## 内置参考
@@ -71,6 +72,7 @@
 - `references/openrouter-image-generation.md`：OpenRouter / GPT Image 2 的 provider-specific 生成与 QA 路径。
 - `scripts/validate_figure.py`：Python/R 绘图源码的可复现静态 QA。
 - `scripts/audit_pdf_text.py`：扫描导出 PDF 的 `Tf` 操作符，发现 mathtext 上下标等低于 5 pt 的实际字形。
+- `scripts/audit_panel_alignment.py` 与 `scripts/panel_alignment.R`：在最终物理尺寸下测量 Matplotlib axes 或 R patchwork/gtable，对同行 3/4 panel 等宽、同行/同列边界、跨行面板共享外边界、panel 标签和重复间距执行阻断式自动审计。
 - `scripts/audit_figure_collisions.py`：对 Python/R 最终 PDF 执行自动几何碰撞审计，输出阻断性 FAIL、需复核 WARN、JSON 报告和可选带框诊断 PDF。
 - `scripts/figure_safety.py`：严格单调插值和基于数据/误差范围的标签高度 helper。
 - `assets/figures4papers/`：保留的第三方参考脚本与预览图；不自动适用本仓库 MIT License，使用前阅读 `THIRD_PARTY_NOTICES.md`。
@@ -81,7 +83,7 @@
 - 不会把内部可用的 AI 草稿自动称为可投稿终稿；两者分别判定。
 - 不会凭空补统计检验、样本量、误差线含义或实验条件。
 - 不会为了渲染方便静默抽样、忽略变量或删除不完整观测。
-- 不会把自动校验通过当作视觉验收；最终交付仍需逐面板检查不确定性、标签碰撞、间距和显著性层级。
+- 不会把自动校验通过当作视觉验收；对齐门只保证已声明的几何关系在容差内，最终交付仍需逐面板检查不确定性、标签碰撞、间距和显著性层级。
 - 私有模板可以在本机使用，但不应在面向用户输出中暴露私有路径、文件名或来源。
 - 第三方参考材料的版权和再使用条件以其来源及 `THIRD_PARTY_NOTICES.md` 为准；本仓库不额外授予这些文件的使用权。
 

@@ -77,7 +77,12 @@ def check_syntax(source: str, backend: str) -> Finding:
     stack: list[str] = []
     quote: str | None = None
     escaped = False
+    comment = False
     for char in source:
+        if comment:
+            if char == "\n":
+                comment = False
+            continue
         if escaped:
             escaped = False
             continue
@@ -88,7 +93,9 @@ def check_syntax(source: str, backend: str) -> Finding:
             if char == quote:
                 quote = None
             continue
-        if char in {'"', "'"}:
+        if char == "#":
+            comment = True
+        elif char in {'"', "'"}:
             quote = char
         elif char in pairs:
             stack.append(char)
@@ -558,6 +565,81 @@ def check_log_guards(source: str, _backend: str) -> Finding:
     return finding("LOG-GUARD", "WARN", "Logarithmic operation found without an obvious positivity/pseudocount guard", log_hits)
 
 
+def _python_multipanel_signals(source: str) -> list[str]:
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return []
+    signals: list[str] = []
+    repeated_axis_calls = {name: 0 for name in ("add_subplot", "add_axes", "subplot", "subplot2grid")}
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if isinstance(node.func, ast.Attribute):
+            name = node.func.attr
+        elif isinstance(node.func, ast.Name):
+            name = node.func.id
+        else:
+            name = ""
+        if name in repeated_axis_calls:
+            repeated_axis_calls[name] += 1
+        if name == "subplot_mosaic":
+            signals.append("subplot_mosaic(...)")
+        if name not in {"subplots", "GridSpec", "add_gridspec"}:
+            continue
+        values: dict[str, int] = {}
+        for index, argument in enumerate(node.args[:2]):
+            if isinstance(argument, ast.Constant) and isinstance(argument.value, int):
+                values["nrows" if index == 0 else "ncols"] = int(argument.value)
+        for keyword in node.keywords:
+            if keyword.arg in {"nrows", "ncols"} and isinstance(keyword.value, ast.Constant) and isinstance(keyword.value.value, int):
+                values[keyword.arg] = int(keyword.value.value)
+        if values.get("nrows", 1) * values.get("ncols", 1) >= 2:
+            signals.append(f"{name}({values.get('nrows', 1)}, {values.get('ncols', 1)})")
+    for name, count in repeated_axis_calls.items():
+        if count >= 2:
+            signals.append(f"{count} {name} calls")
+    return signals
+
+
+def check_panel_alignment_gate(source: str, backend: str) -> Finding:
+    if backend == "python":
+        signals = _python_multipanel_signals(source)
+        gate = regex_hits(
+            [r"require_matplotlib_panel_alignment\s*\(", r"audit_layout_manifest\s*\("],
+            source,
+        )
+    else:
+        signals = regex_hits(
+            [
+                r"plot_layout\s*\(",
+                r"wrap_plots\s*\(",
+                r"patchworkGrob\s*\(",
+                r"[A-Za-z][A-Za-z0-9_.]*\s*\|\s*[A-Za-z][A-Za-z0-9_.]*",
+            ],
+            source,
+        )
+        gate = regex_hits(
+            [r"require_patchwork_panel_alignment\s*\(", r"audit_panel_alignment\.py"],
+            source,
+        )
+    if signals and not gate:
+        return finding(
+            "PANEL-ALIGNMENT-GATE",
+            "FAIL",
+            "Multi-panel layout detected without the mandatory render-time panel-alignment gate",
+            signals,
+        )
+    if gate:
+        return finding(
+            "PANEL-ALIGNMENT-GATE",
+            "PASS",
+            "Render-time panel-alignment gate is wired into the plotting source",
+            gate,
+        )
+    return finding("PANEL-ALIGNMENT-GATE", "PASS", "No statically auditable multi-panel construct detected")
+
+
 def check_backend_exclusivity(source: str, backend: str) -> Finding:
     if backend == "python":
         hits = regex_hits([r"\bRscript\b", r"\brpy2\b", r"ggplot2|ComplexHeatmap|patchwork"], source)
@@ -588,6 +670,7 @@ CHECKS: tuple[Callable[[str, str], Finding], ...] = (
     check_uncertainty_encoding,
     check_rotation_anchor,
     check_annotation_workarounds,
+    check_panel_alignment_gate,
     check_backend_exclusivity,
 )
 

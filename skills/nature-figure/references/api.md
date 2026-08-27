@@ -13,6 +13,7 @@
 - [make_forest_plot(ax, labels, estimates, ci_low, ci_high, ...)](#make_forest_plotax-labels-estimates-ci_low-ci_high)
 - [make_heatmap(ax, matrix, ...)](#make_heatmapax-matrix)
 - [Numerical and annotation safety helpers](#numerical-and-annotation-safety-helpers)
+- [require_matplotlib_panel_alignment(fig, ...)](#require_matplotlib_panel_alignmentfig-)
 - [finalize_figure(fig, out_path, ...)](#finalize_figurefig-out_path)
 - [Validation Rules](#validation-rules)
 - [Conventions](#conventions)
@@ -187,22 +188,31 @@ def is_dark(hex_color, threshold=128):
 ## add_panel_label(ax, label, ...)
 
 ```python
-def add_panel_label(ax, label, x=-0.06, y=1.02, fontsize=14,
-                    color='black', fontweight='bold'):
-    """Place a Nature-style panel label near the top-left edge."""
+def add_panel_label(ax, label, x=0, y=1, x_offset_pt=-4, y_offset_pt=3,
+                    fontsize=8, color='black', fontweight='bold', va='bottom'):
+    """Place a panel label with a fixed physical offset from an axes anchor."""
+    from matplotlib.transforms import ScaledTranslation
+    offset = ScaledTranslation(
+        x_offset_pt / 72,
+        y_offset_pt / 72,
+        ax.figure.dpi_scale_trans,
+    )
     ax.text(
         x, y, label,
-        transform=ax.transAxes,
+        transform=ax.transAxes + offset,
         fontsize=fontsize,
         fontweight=fontweight,
         color=color,
         ha='left',
-        va='bottom',
+        va=va,
     )
 ```
 
-For dark image plates, move the label inside the panel and switch to white:
-`add_panel_label(ax, 'a', x=0.01, y=0.98, color='white')`
+The point offset keeps labels aligned when one panel spans two rows and its
+neighbouring axes are shorter; a shared axes-fraction offset such as `y=1.02`
+would produce different physical displacements. For dark image plates, move
+the label inside the panel and switch to white:
+`add_panel_label(ax, 'a', x=0.01, y=0.98, x_offset_pt=0, y_offset_pt=0, color='white', va='top')`
 
 ---
 
@@ -414,13 +424,93 @@ python skills/nature-figure/scripts/audit_figure_collisions.py figure.pdf \
 
 ---
 
+## require_matplotlib_panel_alignment(fig, ...)
+
+For every multi-panel figure, measure the final Matplotlib axes positions after
+the last `tight_layout`, constrained-layout draw, legend, colorbar or manual
+position change and before saving. Copy `scripts/audit_panel_alignment.py`
+beside the plotting source or add the skill's scripts directory to
+`PYTHONPATH`, then use the blocking helper:
+
+```python
+from audit_panel_alignment import require_matplotlib_panel_alignment
+
+alignment = require_matplotlib_panel_alignment(
+    fig,
+    json_out="figures/figure.alignment.json",
+    overlay_svg="figures/figure.alignment.svg",
+    tolerance_pt=1.5,
+    gutter_tolerance_pt=1.5,
+    require_panel_labels=True,
+    strict=True,
+)
+```
+
+The helper calls `fig.canvas.draw()` and converts final axes positions to
+physical points. Ordinary `plt.subplots()` and `GridSpec` layouts infer row and
+column groups from `SubplotSpec`, then check:
+
+- common top/bottom edges and equal heights within each row;
+- equal final widths for three or four same-row panels with equal grid spans;
+- common left/right edges and equal widths within each column;
+- shared top/bottom or left/right grid boundaries when adjacent panels have
+  unequal spans, including `left two + right one` and `left one + right two`;
+- repeated horizontal/vertical gutters;
+- bold lowercase top-left panel-label anchors when detectable;
+- plot-area rectangle overlap.
+
+Ordinary unequal-span `GridSpec` layouts are inferred automatically: a two-row
+spanning panel is compared with the appropriate upper and lower small panels at
+the shared outer edges, without imposing an invalid equal-height comparison.
+For ordinary horizontal `1 × 3` and `1 × 4` grids, equal column spans must also
+produce equal final plot-area widths. An intentional unequal `width_ratios`
+layout needs a panel-specific `panel-width` exemption with a reason.
+For nested or separately created grids, declare intended comparisons instead
+of asking the auditor to guess them:
+
+```python
+require_matplotlib_panel_alignment(
+    fig,
+    axes=[ax_a, ax_b, ax_c, ax_d],
+    panel_ids=["a", "b", "c", "d"],
+    row_groups=[["a", "b"], ["c", "d"]],
+    column_groups=[["a", "c"], ["b", "d"]],
+    exclude_axes=[colorbar.ax, inset_ax],
+    exemptions=[
+        {
+            "panels": ["a"],
+            "checks": ["column", "panel-width"],
+            "reason": "hero panel intentionally spans two grid columns",
+        }
+    ],
+    json_out="figures/figure.alignment.json",
+    strict=True,
+)
+```
+
+Every exemption needs panel ids, exact checks and a reason. Prefer omitting a
+hero panel, inset, legend-only axis or colorbar from unrelated comparison groups
+over globally increasing the `1.5 pt` tolerance. Exit-equivalent failures raise
+`PanelAlignmentError`; do not catch and ignore it in a delivery script. A
+single-panel figure is outside this gate, while a multi-panel figure without
+valid comparable groups is `NOT AUDITABLE`, not a pass.
+
+The optional SVG contains measured rectangles only and is QA-only. Preserve
+the JSON with the figure bundle, then run PDF glyph and collision QA on the
+exported figure.
+
+---
+
 ## finalize_figure(fig, out_path, ...)
 
 ```python
 def finalize_figure(fig, out_path, formats=None, dpi=300,
-                    pad=2, bbox_inches=None, close=True):
+                    pad=2, bbox_inches=None, close=True,
+                    alignment_options=None):
     """
-    Apply tight_layout and save figure.
+    Apply tight_layout and save figure. For multi-panel figures, run
+    require_matplotlib_panel_alignment() after this layout operation and before
+    the save loop; do not close the figure before alignment QA.
 
     Parameters
     ----------
@@ -428,15 +518,24 @@ def finalize_figure(fig, out_path, formats=None, dpi=300,
     formats  : list  — e.g. ['png', 'pdf']. If None, uses extension of out_path.
     dpi      : int   — 300 standard, 600 for dense bar panels
     pad      : float — tight_layout pad (2 default, 1 for compact multi-panel)
+    alignment_options : dict | None — explicit groups/exemptions for unusual layouts
     """
     import os
     from pathlib import Path
-    fig.tight_layout(pad=pad)
     base = Path(out_path)
-    os.makedirs(base.parent, exist_ok=True)
     if formats is None:
         formats = [base.suffix.lstrip('.') or 'png']
         base = base.with_suffix('')
+    os.makedirs(base.parent, exist_ok=True)
+    fig.tight_layout(pad=pad)
+    options = {} if alignment_options is None else dict(alignment_options)
+    require_matplotlib_panel_alignment(
+        fig,
+        json_out=str(base) + ".alignment.json",
+        overlay_svg=str(base) + ".alignment.svg",
+        strict=True,
+        **options,
+    )
     saved = []
     for fmt in formats:
         p = str(base) + f'.{fmt}'

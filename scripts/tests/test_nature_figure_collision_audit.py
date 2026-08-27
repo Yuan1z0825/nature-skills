@@ -200,7 +200,7 @@ class CollisionWorkflowIntegrationTests(unittest.TestCase):
         evals = json.loads(read("skills/nature-figure/evals/evals.json"))
         installer = read("scripts/update-codex-skills.sh")
 
-        self.assertIn("version: 2.7.1", manifest)
+        self.assertIn("version: 2.8.0", manifest)
         self.assertIn("PyMuPDF", requirements)
         for text in (readme_zh, readme_en):
             self.assertIn("audit_figure_collisions.py", text)

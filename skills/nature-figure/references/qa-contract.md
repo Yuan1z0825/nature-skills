@@ -7,6 +7,7 @@
 - [Statistics legend minimum](#statistics-legend-minimum)
 - [Image-integrity minimum](#image-integrity-minimum)
 - [Automated source preflight](#automated-source-preflight)
+- [Automatic multi-panel alignment gate](#automatic-multi-panel-alignment-gate)
 - [Automatic rendered collision audit](#automatic-rendered-collision-audit)
 - [Rendered panel-by-panel audit](#rendered-panel-by-panel-audit)
 - [Typography and PDF glyph floor](#typography-and-pdf-glyph-floor)
@@ -53,6 +54,7 @@ its stage-specific main-figure, Extended Data and legend contracts.
 | Statistics | `n`, biological/technical repeat definition, center, spread, test, correction, and exact comparison are documented |
 | Comparable uncertainty | Every comparable seed/fold/split aggregate panel shows the same variability definition or documents an exemption |
 | Annotation clearance | Automatic PDF collision audit has no FAIL findings; every WARN is reviewed at final size and justified or fixed |
+| Panel alignment | Every multi-panel figure has a fresh alignment JSON; comparable row/column edges, dimensions, labels and repeated gutters are within 1.5 pt or carry a reasoned exemption |
 | Visual hierarchy | Hero evidence remains more salient than neutral baselines after rendering |
 | Numerical transforms | Interpolation/normalization direction and monotonicity assumptions are asserted in code |
 | Source data | Quantitative panels can be traced to a clean CSV/TSV/XLSX or script output |
@@ -126,6 +128,12 @@ python skills/nature-figure/scripts/validate_figure.py path/to/figure.py --stric
 python skills/nature-figure/scripts/audit_pdf_text.py path/to/figure.pdf --min-pt 5
 python skills/nature-figure/scripts/audit_pdf_text.py path/to/figure.pdf --min-pt 5 --json
 
+# Backend-neutral audit of the render-time Python/R panel-layout manifest
+python skills/nature-figure/scripts/audit_panel_alignment.py path/to/figure.alignment-layout.json \
+  --json-out path/to/figure.alignment.json \
+  --overlay-svg path/to/figure.alignment.svg \
+  --strict
+
 # Mandatory rendered collision audit for Python and R figures
 python skills/nature-figure/scripts/audit_figure_collisions.py path/to/figure.pdf \
   --json-out path/to/figure.collision-audit.json \
@@ -135,9 +143,91 @@ python skills/nature-figure/scripts/audit_figure_collisions.py path/to/figure.pd
 python skills/nature-figure/scripts/audit_figure_collisions.py path/to/figure.pdf --strict
 ```
 
-The source preflight checks syntax, font configuration and size floor, mathtext shrinkage risk, literal legend-label capitalization, unsafe color maps, editable-text settings, vector/raster exports, DPI, common journal widths, potential sampling or unreported missing-data exclusion, simulated-data leakage, log guards, interpolation monotonicity, stochastic uncertainty encoding, rotated-text anchoring, risky annotation workarounds, and obvious cross-backend plotting references. The PDF text audit scans supported content streams for actual `Tf` font-size operators and catches reduced script glyphs that source-level `fontsize` checks miss. The rendered collision audit uses PyMuPDF geometry from the final PDF and therefore applies equally to Python- and R-generated figures.
+The source preflight checks syntax, font configuration and size floor, mathtext shrinkage risk, literal legend-label capitalization, unsafe color maps, editable-text settings, vector/raster exports, DPI, common journal widths, potential sampling or unreported missing-data exclusion, simulated-data leakage, log guards, interpolation monotonicity, stochastic uncertainty encoding, rotated-text anchoring, risky annotation workarounds, and obvious cross-backend plotting references. The panel-alignment gate reads final axes/grob rectangles measured by the selected backend and applies one physical-point contract to Python and R. The PDF text audit scans supported content streams for actual `Tf` font-size operators and catches reduced script glyphs that source-level `fontsize` checks miss. The rendered collision audit uses PyMuPDF geometry from the final PDF and therefore applies equally to Python- and R-generated figures.
 
 Treat the result as a deterministic source audit, not as evidence that the analysis or rendered figure is correct. Resolve all `FAIL` findings before delivery. Review every `WARN`, then run the selected backend and inspect the actual SVG/PDF/TIFF/PNG outputs at final size. A warning may be acceptable only when the QA notes state the reason.
+
+## Automatic multi-panel alignment gate
+
+Run the gate for every figure with at least two comparable panels, after the
+final layout engine has drawn fonts, legends, colorbars and constrained/tight
+layout, and before exporting submission files. Rerun it after any change that
+can affect panel geometry. A single-panel figure is `not applicable`; a
+multi-panel figure with no declared or inferable comparison groups is `NOT
+AUDITABLE`, not a pass.
+
+The default tolerance is `1.5 pt` (about `0.53 mm`) at final physical size. The
+auditor checks:
+
+- panels in one row: common top and bottom edges plus equal plot-area height;
+- three or four same-row panels with equal grid spans: equal final plot-area
+  widths within `1.5 pt`;
+- panels in one column: common left and right edges plus equal plot-area width;
+- unequal-span grid panels: shared outer start/stop edges, including automatic
+  `left two + right one` and `left one + right two` arrangements;
+- three or more comparable panels: uniform repeated horizontal/vertical gutters;
+- detectable bold lowercase top-left panel labels: common y anchors within rows
+  and common x anchors within columns;
+- plot-area rectangles do not overlap.
+
+For Matplotlib, copy `audit_panel_alignment.py` beside the plotting script or
+add the skill scripts directory to `PYTHONPATH`, then call this after the last
+layout change:
+
+```python
+from audit_panel_alignment import require_matplotlib_panel_alignment
+
+require_matplotlib_panel_alignment(
+    fig,
+    json_out="figure.alignment.json",
+    overlay_svg="figure.alignment.svg",
+    tolerance_pt=1.5,
+    gutter_tolerance_pt=1.5,
+    require_panel_labels=True,
+    strict=True,
+)
+```
+
+Ordinary `subplots`/`GridSpec` row and column groups are inferred from
+`SubplotSpec`. A panel spanning both grid rows is automatically compared with
+the upper small panel at their shared top boundary and the lower small panel at
+their shared bottom boundary; this works whether the spanning panel is in the
+left or right column. The spanning panel is not incorrectly required to equal
+either small panel's height. Position outside panel letters with a fixed point
+offset from the axes corner rather than a shared axes-fraction offset, because
+`y=1.02` produces different physical displacements for tall and short panels.
+For a horizontal row of three or four panels, equal column spans imply equal
+final widths. Intentional unequal `width_ratios` must use a narrow exemption
+such as `{"panels": ["b"], "checks": ["panel-width"], "reason": "middle hero panel"}`;
+do not exempt the entire row or increase the tolerance.
+Pass explicit `row_groups` and `column_groups` when axes come from nested grids
+or separately created containers. Exclude a
+colorbar or inset with `exclude_axes=[...]`, or add an exemption containing the
+affected panel, the exact checks and a non-empty scientific/layout reason.
+
+For R/patchwork, source `panel_alignment.R` and call
+`require_patchwork_panel_alignment()` with the same width/height used for final
+export. Common patchwork groups and structured unequal-span designs are inferred
+from gtable cells, including two stacked panels beside a two-row spanning panel
+in either column. Same-row groups of three or four equal gtable spans must also
+have equal final widths. Nested or manually positioned designs must provide explicit
+`row_groups` / `column_groups`. The R helper requires `patchwork`, `grid` and
+`jsonlite`; it measures in R and invokes the Python CLI only to audit the
+resulting JSON, so it does not redraw or replace the R figure.
+
+| Result | Required action |
+|---|---|
+| `NOT APPLICABLE`, exit `0` | Single rendered plot-area only; preserve the JSON and continue |
+| `PASS`, exit `0` | Preserve the alignment JSON and continue to export/PDF QA |
+| `FIX BEFORE DELIVERY`, exit `1` | Correct the selected-backend layout and rerun; do not export the delivery bundle |
+| `REVIEW REQUIRED` | Resolve WARN or document it; `--strict` makes WARN blocking |
+| `NOT AUDITABLE`, exit `2` | Supply valid measured geometry and comparison groups; do not claim alignment passed |
+
+The QA-only alignment SVG shows measured panel rectangles, not scientific
+content. It must not replace the selected backend's figure. Do not weaken the
+global tolerance to hide one exception. Structured grid spanning is audited
+automatically; a free-positioned hero panel, inset, legend-only axis or colorbar
+should be omitted from unrelated groups or carry a specific exemption reason.
 
 ## Automatic rendered collision audit
 
@@ -175,9 +265,9 @@ mandatory.
 
 Do not approve a figure from a whole-page glance. Inspect each panel at final physical size, then inspect the assembled figure. Record one row per panel:
 
-| Panel | Unique claim | Center/summary | Spread/interval | Replicate unit | Labels/legend | Collision check | Pass |
-|---|---|---|---|---|---|---|---|
-| a | What question only this panel answers | mean/median/raw | SD/SE/CI/none + reason | seeds/folds/subjects/etc. | exact display labels | collision report findings + data/error extent + text bbox | yes/no |
+| Panel | Unique claim | Center/summary | Spread/interval | Replicate unit | Labels/legend | Alignment group/result | Collision check | Pass |
+|---|---|---|---|---|---|---|---|---|
+| a | What question only this panel answers | mean/median/raw | SD/SE/CI/none + reason | seeds/folds/subjects/etc. | exact display labels | row/column group, deviation or exemption | collision report findings + data/error extent + text bbox | yes/no |
 
 Cover each panel mentally. If the figure's argument remains complete, merge or remove that panel. Compare repeated panels side by side for consistent terminology, uncertainty, axes, and color mapping. After adding error bars or uncertainty bands, remove arrows, brackets, or fills that encode the same gap and occupy the same geometry.
 
@@ -198,6 +288,7 @@ Cover each panel mentally. If the figure's argument remains complete, merge or r
 ## Geometry and annotation placement
 
 - Measure spacing between the actual objects being compared. Use rendered/tight bounding boxes for panel-to-legend or legend-row gaps; scanning an entire raster row can mix unrelated objects at different horizontal positions.
+- Use plot-area rectangles for axes alignment and tight bounding boxes for outer-content clearance; do not confuse unequal tick-label widths with a shifted data rectangle.
 - Derive label positions from data and uncertainty bounds, for example `max(center + spread) + margin`, rather than a fixed `LABEL_Y`.
 - For rotated Matplotlib text, use `rotation_mode="anchor"` and verify the final bounding box.
 - If a curve crosses a label, reposition the label beyond the local data envelope. Avoid opaque white `bbox` masks that cut a conspicuous hole in a line.
