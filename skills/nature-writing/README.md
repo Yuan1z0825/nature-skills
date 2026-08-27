@@ -17,6 +17,7 @@
 - 对旗舰 `Nature Article` 执行分阶段官网清单：初投稿文件、标题/字数/display 限制、Extended Data、SI、Reporting Summary、伦理和专项材料。
 - 对 `Nature Machine Intelligence` 执行独立的分阶段投稿合同：Article/Analysis 字数与 6 个 display 上限、必需 cover letter、最多 10 个 Extended Data、会议论文实质扩展、数据与中心代码审查要求。
 - 对旗舰 Nature、Nature Communications、NMI 及其他 Nature Portfolio 期刊的 Results，按“每节推进一个 claim”组织证据链，允许直接服务于当前实验的局部解释，并将 Discussion 收束为跨结果综合而非重复论证。
+- 对任何期刊的 Discussion，按“中心发现锚点 → 跨结果综合 → 文献定位 → 解释与贡献 → 声称边界 → 下一项判别性问题”组织功能链，并逐句检查情态强度、局限后果和未来工作的必要性。
 - 对所有 Nature / Nature Portfolio 目标的 Introduction，快速从具体问题收敛到精确 unknown，用文献建立 known–unknown 张力，以问题和可回答它的设计体现 novelty，并逐项对齐 Introduction 问题链与 Results 答案链。
 - 对所有 Nature / Nature Portfolio 目标的 Abstract，按“精确 gap → 可回答的设计 → 主发现 → 1–2 个决定性支撑/边界 → 意义”压缩为最短证据链，数字仅在定义或实质支撑核心 claim 时保留。这三组默认最初来自 NMI 已发表论文语料归纳，其中 Results–Discussion 又经旗舰 Nature 论文对照加强；它们适用于 Nature 风格写作，但都不是官方投稿规则。
 

@@ -20,6 +20,9 @@ Use this package only as a dependency of another installed Nature skill.
 - Use `core/nature-results-discussion.md` for corpus-derived Nature-style
   Results claim escalation, evidence-bound local interpretation, and Discussion
   synthesis; do not present it as official journal policy.
+- Use `core/discussion-argument-language.md` for journal-general Discussion
+  function sequencing, reverse-funnel control, evidence-calibrated modality,
+  claim-specific limitations, and uncertainty-driven future work.
 - Use `core/nature-introduction.md` for corpus-derived Nature-style problem
   funnels, exact knowledge gaps, literature tension, question-first novelty,
   and Introduction–Results alignment; do not present it as official journal

@@ -1,5 +1,5 @@
 name: nature-shared
-version: 1.5.0
+version: 1.6.0
 description: >
   Declarative manifest for shared Nature reference modules. This package is not
   a standalone workflow; installed Nature skills use it to load exact shared
@@ -29,6 +29,8 @@ core:
       path: core/main-text-discipline.md
     - condition: drafting, restructuring, or polishing Results or Discussion for flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title; auditing claim escalation, evidence-bound local interpretation, diagnostic perturbation, necessary recap versus redundant re-demonstration, or cross-Results synthesis
       path: core/nature-results-discussion.md
+    - condition: drafting, restructuring, or polishing any scientific Discussion; sequencing anchor, positioning, interpretation, contribution, limitations, and future work; calibrating modal verbs or hedging to evidence strength; or auditing whether Discussion repeats Results
+      path: core/discussion-argument-language.md
     - condition: drafting, restructuring, or polishing an Introduction for flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title; building a fast problem funnel, exact knowledge gap, literature tension, question-first novelty, compact study roadmap, or Introduction–Results alignment audit
       path: core/nature-introduction.md
     - condition: drafting, restructuring, or polishing an abstract for flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title; compressing the manuscript into a discovery-centred evidence chain; selecting one main claim, one or two decisive supports, optional core numbers, and a bounded field-level payoff

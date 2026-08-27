@@ -11,6 +11,7 @@
 - 按 Nature / Nature Communications / Nature Machine Intelligence 论文范式调整摘要、引言、结果、讨论或标题。
 - 对 NMI 识别独立路由，检查 3,500 词正文、150 词摘要、6 个 display、代码审查与会议论文实质扩展，不再误用旗舰 Nature 数字。
 - 对旗舰 Nature、Nature Communications、NMI 及其他 Nature Portfolio 期刊的 Results–Discussion，保留 claim 递进、证据绑定的局部解释和跨结果综合，区分必要回顾与重复论证。
+- 对任何期刊的 Discussion，检查从具体发现到有边界意义的反向漏斗、四类功能是否完整、情态动词是否匹配证据强度，以及局限和未来工作是否指向明确的 claim 与未决问题。
 - 对所有 Nature / Nature Portfolio 目标的 Introduction，执行快速问题漏斗、精确 gap、文献张力、问题先行的 novelty 与 Introduction–Results 对齐检查。
 - 对所有 Nature / Nature Portfolio 目标的 Abstract，保留一个主发现、1–2 个决定性支撑或边界，只在数字定义或实质支撑核心 claim 时保留，并用有边界的意义句收尾。这三组默认最初来自 NMI 语料归纳，其中 Results–Discussion 又经旗舰 Nature 论文对照加强；它们均非官方规则。
 - 区分 research paper 与 methods paper 的写作重点。

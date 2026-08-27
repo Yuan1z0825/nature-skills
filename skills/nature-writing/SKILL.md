@@ -80,6 +80,13 @@ from published NMI papers and generalized as Nature-style defaults; do not
 present them as official policy, and let the target journal's current rules
 override them.
 
+For any Discussion drafting, restructuring, or section audit, also load
+`../nature-shared/core/discussion-argument-language.md`. Use it to select the
+opening anchor, control the reverse-funnel expansion, distinguish literature
+positioning from citation decoration, calibrate modal strength to evidence,
+and turn limitations and future work into claim-specific reasoning. This is
+general writing guidance rather than an official journal rule.
+
 For `task=submission-package`, follow `static/fragments/task/submission-package.md` and `references/submission-package.md` instead. Build the deliverable matrix and readiness audit; do not force manuscript paragraph architecture onto administrative submission materials.
 
 If essential evidence or boundary is missing, write a placeholder and list it under `Assumptions or missing inputs:` instead of inventing content.
@@ -105,6 +112,10 @@ The files under `references/` are deep references and the example library, not d
 - Any Nature / Nature Portfolio target needs Results claim progression,
   evidence-bound interpretation, robustness placement, or Discussion synthesis
   → `../nature-shared/core/nature-results-discussion.md`.
+- Any target needs a Discussion function chain, evidence-calibrated modal
+  language, claim-specific limitations, non-redundant literature positioning,
+  or uncertainty-driven future work →
+  `../nature-shared/core/discussion-argument-language.md`.
 - Any Nature / Nature Portfolio target needs an Introduction funnel, exact gap,
   literature logic, question-first novelty, study roadmap, or alignment with
   Results → `../nature-shared/core/nature-introduction.md`.

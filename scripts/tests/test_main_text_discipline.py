@@ -77,8 +77,8 @@ class MainTextDisciplineTests(unittest.TestCase):
         for relative in files:
             self.assertIn("main-text-discipline.md", read(relative), relative)
 
-        self.assertIn("version: 1.4.0", read("skills/nature-writing/manifest.yaml"))
-        self.assertIn("version: 6.5.0", read("skills/nature-polishing/manifest.yaml"))
+        self.assertIn("version: 1.5.0", read("skills/nature-writing/manifest.yaml"))
+        self.assertIn("version: 6.6.0", read("skills/nature-polishing/manifest.yaml"))
 
     def test_response_route_prevents_reviewer_driven_main_text_bloat(self) -> None:
         files = (
@@ -101,7 +101,7 @@ class MainTextDisciplineTests(unittest.TestCase):
 
     def test_shared_registry_docs_and_output_contracts_are_complete(self) -> None:
         shared_manifest = read("skills/nature-shared/manifest.yaml")
-        self.assertIn("version: 1.5.0", shared_manifest)
+        self.assertIn("version: 1.6.0", shared_manifest)
         self.assertIn("core/main-text-discipline.md", shared_manifest)
 
         for relative in (

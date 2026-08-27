@@ -1,5 +1,5 @@
 name: nature-writing
-version: 1.4.0
+version: 1.5.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a drafting, restructuring, or
@@ -97,6 +97,8 @@ references:
       path: ../nature-shared/core/main-text-discipline.md
     - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is drafting or restructuring Results, Discussion, or their boundary; testing claim escalation; deciding whether local interpretation or robustness advances the claim; or separating necessary recap from redundant re-demonstration
       path: ../nature-shared/core/nature-results-discussion.md
+    - condition: drafting, restructuring, or auditing any scientific Discussion; choosing the opening anchor and reverse-funnel movement; positioning findings against prior work; calibrating modal verbs or hedging; writing claim-specific limitations; or deriving future work from a named uncertainty
+      path: ../nature-shared/core/discussion-argument-language.md
     - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is drafting or restructuring the Introduction or whole-manuscript narrative; building a fast problem funnel, exact knowledge gap, literature tension, question-first novelty, compact study roadmap, or Introduction–Results alignment
       path: ../nature-shared/core/nature-introduction.md
     - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is drafting or restructuring the abstract; compressing the manuscript into a discovery-centred evidence chain; selecting one main claim, one or two decisive supports, optional core numbers, or a bounded field-level payoff

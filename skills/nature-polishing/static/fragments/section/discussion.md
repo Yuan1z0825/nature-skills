@@ -1,5 +1,9 @@
 # Section: Discussion
 
+Load `../../../../nature-shared/core/discussion-argument-language.md` for the
+complete Discussion function chain, modality ladder, limitation logic, and
+sentence-function audit.
+
 Discussion should answer:
 
 - how the work fits within the broader field
@@ -36,3 +40,9 @@ Hedging strength should match evidence strength. Do not promote a "consistent wi
 - Re-summarizing Results instead of interpreting them.
 - Skipping rival explanations.
 - Omitting boundaries: when does the interpretation stop holding?
+- Expanding from a narrow result to a field-wide implication without an
+  evidence bridge.
+- Stacking hedges or using `must`, `cannot`, `demonstrates`, or causal verbs
+  more strongly than the design permits.
+- Naming a limitation without stating its consequence for a claim or scope.
+- Offering generic future work that does not resolve an identified uncertainty.

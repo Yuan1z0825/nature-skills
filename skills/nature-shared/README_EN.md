@@ -21,6 +21,7 @@ always_load:
 | `core/consistency-sweep.md` | `nature-polishing`, `nature-reviewer`, `nature-response`, `nature-statistics` |
 | `core/main-text-discipline.md` | `nature-writing`, `nature-polishing`, `nature-response` |
 | `core/nature-results-discussion.md` | Nature / Nature Portfolio Results claim escalation and Discussion synthesis for `nature-writing` and `nature-polishing`, distilled from published NMI and flagship Nature papers (not official policy) |
+| `core/discussion-argument-language.md` | Journal-general Discussion functions, reverse-funnel control, evidence-calibrated modality, claim boundaries, and future-work auditing for `nature-writing` and `nature-polishing` (writing guidance, not journal policy) |
 | `core/nature-introduction.md` | Nature / Nature Portfolio problem funnels, exact gaps, and Introduction–Results alignment for `nature-writing` and `nature-polishing`, initially distilled from NMI papers (not official policy) |
 | `core/nature-abstract.md` | Nature / Nature Portfolio discovery-centred abstract evidence chains, claim hierarchy, and numeric selection for `nature-writing` and `nature-polishing`, initially distilled from NMI papers (not official policy) |
 | `journal-formats/nat-comms.md` | `nature-polishing`, `nature-writing` |
