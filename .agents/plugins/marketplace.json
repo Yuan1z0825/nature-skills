@@ -1,0 +1,20 @@
+{
+  "name": "nature-skills",
+  "interface": {
+    "displayName": "Nature Skills"
+  },
+  "plugins": [
+    {
+      "name": "nature-skills",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Research"
+    }
+  ]
+}
