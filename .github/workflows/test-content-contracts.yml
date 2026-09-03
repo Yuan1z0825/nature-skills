@@ -1,0 +1,49 @@
+name: Test content contracts
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'scripts/tests/**'
+      - '.github/requirements-ci.txt'
+      - '.github/workflows/test-content-contracts.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'skills/**'
+      - 'scripts/tests/**'
+      - '.github/requirements-ci.txt'
+      - '.github/workflows/test-content-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  content-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: |
+            .github/requirements-ci.txt
+            skills/nature-figure/requirements.txt
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install \
+            -c .github/requirements-ci.txt \
+            pytest \
+            pyyaml \
+            matplotlib \
+            -r skills/nature-figure/requirements.txt
+
+      - name: Test repository content contracts
+        run: python -m pytest -q scripts/tests
