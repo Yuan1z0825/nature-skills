@@ -36,7 +36,7 @@ import tempfile
 from pathlib import Path
 
 
-def _local_mmdc() -> tuple[list[str], bool] | None:
+def _local_mmdc() -> list[str] | None:
     """``scripts/disclosure/npm install`` 后可用 ``node_modules/.bin/mmdc``，避免每次 npx 拉包。"""
     here = Path(__file__).resolve().parent
     if sys.platform == "win32":
@@ -44,25 +44,27 @@ def _local_mmdc() -> tuple[list[str], bool] | None:
     else:
         cand = here / "node_modules" / ".bin" / "mmdc"
     if cand.is_file():
-        return [str(cand)], False
+        return [str(cand)]
     return None
 
 
-def _find_mmdc_invocation() -> tuple[list[str], bool]:
+def _find_mmdc_invocation() -> list[str]:
     """
-    返回 (argv 前缀, use_shell)。
-    Windows 上 npx 常为 .ps1，无独立 .exe，需 shell=True 调用 ``npx ...``。
-    PATH 中的 ``mmdc`` 一般为 npm 全局安装的官方 CLI。
+    返回 argv 前缀。
+
+    始终保留参数列表，交由 subprocess 处理路径引用。Windows 上若把参数
+    拼成 shell 字符串，含空格的项目目录会被 cmd.exe 拆成多个参数。
     """
     local = _local_mmdc()
     if local:
         return local
     mmdc = shutil.which("mmdc")
     if mmdc and Path(mmdc).suffix.lower() not in (".ps1",):
-        return [mmdc], False
-    if sys.platform == "win32":
-        return ["npx", "-y", "@mermaid-js/mermaid-cli", "mmdc"], True
-    return ["npx", "-y", "@mermaid-js/mermaid-cli", "mmdc"], False
+        return [mmdc]
+    npx = shutil.which("npx")
+    if not npx:
+        raise RuntimeError("未找到 mmdc 或 npx，请先安装 Node.js 或 @mermaid-js/mermaid-cli")
+    return [npx, "-y", "@mermaid-js/mermaid-cli", "mmdc"]
 
 
 def _mmdc_extra_args(
@@ -87,7 +89,6 @@ def _render_one_mermaid(
     png_path: Path,
     mmdc_base: list[str],
     *,
-    use_shell: bool,
     scale: float,
     width: int,
     height: int,
@@ -103,42 +104,22 @@ def _render_one_mermaid(
         tmp_path = Path(tmp.name)
     try:
         extra = _mmdc_extra_args(scale=scale, width=width, height=height)
-        if use_shell:
-            parts = [
-                *mmdc_base,
-                "-i",
-                str(tmp_path),
-                "-o",
-                str(png_path),
-                "-b",
-                "white",
-                *extra,
-            ]
-            cmd = " ".join(shlex.quote(p) for p in parts)
-            r = subprocess.run(
-                cmd,
-                shell=True,
-                capture_output=True,
-                text=True,
-                timeout=180,
-            )
-        else:
-            cmd = [
-                *mmdc_base,
-                "-i",
-                str(tmp_path),
-                "-o",
-                str(png_path),
-                "-b",
-                "white",
-                *extra,
-            ]
-            r = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=180,
-            )
+        cmd = [
+            *mmdc_base,
+            "-i",
+            str(tmp_path),
+            "-o",
+            str(png_path),
+            "-b",
+            "white",
+            *extra,
+        ]
+        r = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
         if r.returncode != 0:
             err = (r.stderr or r.stdout or "").strip()
             raise RuntimeError(f"mmdc 失败 (exit {r.returncode}): {err[:2000]}")
@@ -187,7 +168,7 @@ def render_markdown_mermaid(
     failed = 0
     block_idx = 0
     assets_dir = out_md_path.parent / assets_rel
-    mmdc_base, use_shell = _find_mmdc_invocation()
+    mmdc_base = _find_mmdc_invocation()
 
     while i < len(lines):
         line = lines[i]
@@ -230,7 +211,6 @@ def render_markdown_mermaid(
                     "".join(body),
                     png_path,
                     mmdc_base,
-                    use_shell=use_shell,
                     scale=mmdc_scale,
                     width=mmdc_width,
                     height=mmdc_height,
