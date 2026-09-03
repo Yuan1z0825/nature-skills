@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - 'skills/nature-academic-search/mcp-server/**'
+      - 'skills/nature-citation/**'
       - 'skills/nature-downloader/**'
+      - 'skills/nature-figure/**'
       - 'skills/nature-image2ppt/**'
       - 'skills/nature-paper-card/**'
       - 'skills/nature-paper-to-patent/**'
@@ -22,7 +24,9 @@ on:
       - main
     paths:
       - 'skills/nature-academic-search/mcp-server/**'
+      - 'skills/nature-citation/**'
       - 'skills/nature-downloader/**'
+      - 'skills/nature-figure/**'
       - 'skills/nature-image2ppt/**'
       - 'skills/nature-paper-card/**'
       - 'skills/nature-paper-to-patent/**'
@@ -76,9 +80,17 @@ jobs:
         working-directory: skills/nature-academic-search/mcp-server
         run: python -m pytest -q tests
 
+      - name: Test nature-citation
+        working-directory: skills/nature-citation
+        run: python -m pytest -q tests
+
       - name: Test nature-downloader Python tooling
         working-directory: skills/nature-downloader
         run: python -m pytest -q tests/python
+
+      - name: Test nature-figure safety helpers
+        working-directory: skills/nature-figure
+        run: python -m pytest -q tests
 
       - name: Test nature-image2ppt full Linux runtime
         working-directory: skills/nature-image2ppt
