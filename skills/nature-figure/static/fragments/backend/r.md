@@ -1,6 +1,6 @@
 # Backend: R (ggplot2 / patchwork / ComplexHeatmap)
 
-**R-only execution rule.** When the user has selected R, do all figure drawing, previewing, exporting, and visual QA in R. Do not call matplotlib/seaborn or any Python graphics device to create a temporary preview, fallback export, or layout approximation. If `Rscript`/R or required R packages are missing, stop before rendering and report the exact blocker. You may still write the R script, provide install commands (for example `install.packages(...)`), or ask permission to install dependencies, but do not cross-render the figure in Python.
+**R-only execution rule.** When the user has selected R, do all figure drawing, previewing, exporting, and visual QA in R. Do not call matplotlib/seaborn or any Python graphics device to create a temporary preview, fallback export, or layout approximation. If `Rscript`/R or required R packages are missing, pause rendering, continue independent script or data checks, and report the exact blocker. You may still write the R script, provide install commands (for example `install.packages(...)`), or ask permission to install dependencies, but do not cross-render the figure in Python.
 
 ## R quick-start
 

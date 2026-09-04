@@ -62,7 +62,7 @@ panels. This claim-first pass prevents redundant figures that restate the same r
   the hero panel or the clearest axis; controls and robustness panels should be
   visually quieter.
 - If the user provides data but no claim, infer a provisional claim from the data
-  request and ask for confirmation before final styling.
+  request. Confirm only an unresolved interpretive claim that materially changes the final figure; continue independent data checks and layout preparation while waiting. Do not add unsupported causal claims.
 - If observations are matched by dataset, subject, seed, task, or specimen, decide
   whether the claim concerns the paired change. Marginal distributions can overlap
   because of between-unit heterogeneity even when paired differences are consistent.

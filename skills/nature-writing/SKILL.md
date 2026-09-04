@@ -36,7 +36,7 @@ For each axis in the manifest, decide the value using the manifest's `detect:` h
   Intelligence (NMI), and `nature-family` for other Nature Portfolio titles or
   an unspecified Nature-family request.
 
-State the detected axis values in one short line to the user before drafting, so they can correct you cheaply.
+State the detected axis values in one short line to the user before drafting, so they can correct you cheaply. This is a progress update, not an approval gate; continue unless a necessary decision remains unresolved.
 
 ### 3. Load the matching fragments
 
