@@ -48,14 +48,16 @@ Read [manifest.yaml](manifest.yaml). It declares the `backend` axis, the allowed
 
 Also read every file listed under `always_load` (`static/core/contract.md` and `static/core/stance.md`). These hold the figure contract, the backend gate, the missing-runtime rule, the privacy rule, and the default operating stance that apply to every figure job.
 
-### 2. Resolve the backend — a blocking gate
+### 2. Resolve the plotting backend
 
-Backend selection blocks plotting tasks, but it should not annoy the same user forever. Decide the `backend` value in this order:
+Backend selection applies only to rendering or editing plotting code. Reuse a choice already established in the same task and its follow-ups; do not ask again merely because a new message omits the language. Read-only figure review and backend-independent data inspection may proceed without this choice. If the backend remains unresolved, retain the one-time Python/R question and pause only dependent plotting steps. Explicit approval requirements and backend exclusivity remain in force.
+
+Resolve the plotting backend from the current task before consulting the saved default. Decide the `backend` value in this order:
 
 1. If the current request explicitly chooses Python or R, use that backend and save it with `scripts/nature_figure_backend.py set python` or `scripts/nature_figure_backend.py set r`.
 2. If the request provides a clearly language-specific input file/workflow, use that backend and save it.
-3. Otherwise run `scripts/nature_figure_backend.py get`. If it returns `python` or `r`, use the saved preference.
-4. If no saved preference exists, ask exactly one concise question — **Python or R? I will remember this as your default.** — and stop. After the user answers, save the answer before proceeding.
+3. Otherwise reuse a Python/R choice already established in this task. If none exists, run `scripts/nature_figure_backend.py get` and use a returned `python` or `r` preference.
+4. If neither a task choice nor a saved preference exists, ask exactly one concise question — **Python or R? I will remember this as your default.** — and pause only dependent plotting steps. After the user answers, save the answer before proceeding.
 
 - `python` — matplotlib / seaborn.
 - `r` — ggplot2 / patchwork / ComplexHeatmap.

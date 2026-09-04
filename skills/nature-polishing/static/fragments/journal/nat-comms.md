@@ -22,7 +22,7 @@ Open-access, broader than a subfield journal but more specialist-tolerant than N
 
 When polishing a Nature Communications Article, run these word-budget checks before sentence-level work:
 
-1. Estimate total word count **including Methods**. If over ~5,000, flag the gap and ask the user where to cut before polishing.
+1. Estimate total word count **including Methods**. Verify the current journal limit when submission compliance is requested. If over the applicable limit, continue meaning-preserving polishing and flag the gap in Revision notes. Obtain approval before substantive cuts to results, methods, or argument; length diagnosis does not block language edits.
 2. If display items > 10, flag for redistribution into Supplementary Information before deeper edits.
 3. If references > ~60, flag for trimming or consolidation.
 4. If the abstract is > 150 words or contains citations, restructure first.

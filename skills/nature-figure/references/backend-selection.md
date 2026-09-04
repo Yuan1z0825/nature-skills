@@ -9,14 +9,16 @@
 - [Recommendation language](#recommendation-language)
 
 
+Backend selection applies only to rendering or editing plotting code. Reuse a choice already established in the same task and its follow-ups; do not ask again merely because a new message omits the language. Read-only figure review and backend-independent data inspection may proceed without this choice. If the backend remains unresolved, retain the one-time Python/R question and pause only dependent plotting steps. Explicit approval requirements and backend exclusivity remain in force.
+
 At the start of a plotting task, resolve the user's preferred backend in this order:
 
 1. explicit Python/R choice in the current request;
 2. clearly language-specific input file or workflow;
-3. saved preference from `scripts/nature_figure_backend.py get`;
-4. if no preference exists, ask **Python or R? I will remember this as your default.**
+3. choice already established in this task, then saved preference from `scripts/nature_figure_backend.py get`;
+4. if neither exists, ask **Python or R? I will remember this as your default.**
 
-Stop after asking and wait for the user's answer. After the answer, save it with
+Pause dependent plotting steps after asking and wait for the user's answer; continue independent inspection. After the answer, save it with
 `scripts/nature_figure_backend.py set python` or `scripts/nature_figure_backend.py set r`.
 Do not infer Python just because the task involves simulation, NumPy-like data, or
 custom layout, and do not infer R just because the task is biological or omics-adjacent.

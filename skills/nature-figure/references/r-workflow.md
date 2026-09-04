@@ -21,7 +21,7 @@ claim first, evidence hierarchy second, plotting code third.
 When the user has selected R, do all figure drawing, previewing, exporting, and
 visual QA in R. Do not call Python/matplotlib/seaborn/plotly to create a temporary
 preview, fallback export, or layout approximation. If R, `Rscript`, or required R
-packages are missing, stop before rendering and report the missing dependency. You
+packages are missing, pause rendering, continue independent script or data checks, and report the missing dependency. You
 may still write the R script, provide `install.packages()` commands, or ask permission
 to install dependencies, but do not cross-render the figure in another language.
 
