@@ -4,6 +4,7 @@ import datetime as dt
 import importlib.util
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "generate-star-history.py"
@@ -11,6 +12,113 @@ SPEC = importlib.util.spec_from_file_location("generate_star_history", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+
+
+def graphql_page(
+    total: int,
+    timestamps: list[str],
+    *,
+    has_next: bool,
+    end_cursor: str | None,
+) -> dict:
+    return {
+        "data": {
+            "repository": {
+                "stargazerCount": total,
+                "stargazers": {
+                    "edges": [{"starredAt": timestamp} for timestamp in timestamps],
+                    "pageInfo": {
+                        "hasNextPage": has_next,
+                        "endCursor": end_cursor,
+                    },
+                },
+            },
+            "rateLimit": {
+                "cost": 1,
+                "remaining": 999,
+                "resetAt": "2026-09-13T04:00:00Z",
+            },
+        }
+    }
+
+
+class StarHistoryFetchingTests(unittest.TestCase):
+    def test_cursor_pagination_collects_all_pages_in_order(self) -> None:
+        responses = [
+            graphql_page(
+                3,
+                ["2026-01-01T00:00:00Z", "2026-01-02T00:00:00Z"],
+                has_next=True,
+                end_cursor="cursor-1",
+            ),
+            graphql_page(
+                3,
+                ["2026-01-03T00:00:00Z"],
+                has_next=False,
+                end_cursor="cursor-2",
+            ),
+        ]
+
+        with mock.patch.object(MODULE, "github_graphql", side_effect=responses) as request:
+            total, items = MODULE.fetch_stargazers("owner/repo", "token", 4, 5)
+
+        self.assertEqual(total, 3)
+        self.assertEqual(
+            [item["starred_at"] for item in items],
+            [
+                "2026-01-01T00:00:00Z",
+                "2026-01-02T00:00:00Z",
+                "2026-01-03T00:00:00Z",
+            ],
+        )
+        self.assertIsNone(request.call_args_list[0].args[1]["cursor"])
+        self.assertEqual(request.call_args_list[1].args[1]["cursor"], "cursor-1")
+
+    def test_cursor_pagination_has_no_400_page_ceiling(self) -> None:
+        def response_for_cursor(query, variables, token, retries):
+            del query, token, retries
+            page = int(variables["cursor"] or 0)
+            final_page = page == 400
+            timestamps = ["2026-01-01T00:00:00Z"] * (1 if final_page else 100)
+            return graphql_page(
+                40_001,
+                timestamps,
+                has_next=not final_page,
+                end_cursor=None if final_page else str(page + 1),
+            )
+
+        with mock.patch.object(
+            MODULE,
+            "github_graphql",
+            side_effect=response_for_cursor,
+        ) as request:
+            total, items = MODULE.fetch_stargazers("owner/repo", "token", 1, 0)
+
+        self.assertEqual(request.call_count, 401)
+        self.assertEqual(total, 40_001)
+        self.assertEqual(len(items), 40_001)
+
+    def test_missing_token_fails_with_actionable_message(self) -> None:
+        with self.assertRaisesRegex(MODULE.StarHistoryUnavailable, "requires GITHUB_TOKEN"):
+            MODULE.github_graphql(MODULE.STARGAZERS_QUERY, {}, None, 0)
+
+    def test_non_advancing_cursor_is_rejected(self) -> None:
+        response = graphql_page(
+            2,
+            ["2026-01-01T00:00:00Z"],
+            has_next=True,
+            end_cursor=None,
+        )
+
+        with mock.patch.object(MODULE, "github_graphql", return_value=response):
+            with self.assertRaisesRegex(RuntimeError, "did not advance"):
+                MODULE.fetch_stargazers("owner/repo", "token", 1, 0)
+
+    def test_source_no_longer_uses_numeric_rest_pagination(self) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+
+        self.assertIn("after: $cursor", source)
+        self.assertNotIn("/stargazers?per_page=100&page=", source)
 
 
 class StarHistoryRenderingTests(unittest.TestCase):
