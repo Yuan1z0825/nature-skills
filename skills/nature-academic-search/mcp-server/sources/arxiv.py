@@ -3,9 +3,10 @@
 import re
 import time
 import urllib.parse
-import urllib.request
-import xml.etree.ElementTree as ET
 from datetime import datetime
+
+import defusedxml.ElementTree as ET
+import requests
 
 from utils.config import get_config
 from utils.errors import DataSourceError
@@ -173,32 +174,36 @@ class ArxivSource:
         logger.debug("arXiv request: %s", url)
 
         try:
-            req = urllib.request.Request(url)
-            req.add_header("User-Agent", "academic-search/1.0")
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return resp.read().decode("utf-8")
-        except urllib.error.HTTPError as exc:
-            if exc.code in (429, 503):
+            resp = requests.get(
+                url,
+                headers={"User-Agent": "academic-search/1.0"},
+                timeout=timeout,
+            )
+            resp.raise_for_status()
+            return resp.text
+        except requests.exceptions.HTTPError as exc:
+            code = exc.response.status_code if exc.response is not None else 0
+            if code in (429, 503):
                 raise DataSourceError(
                     _SOURCE_NAME,
-                    f"Rate limited or unavailable (HTTP {exc.code})",
+                    f"Rate limited or unavailable (HTTP {code})",
                     original_error=exc,
                 ) from exc
             raise DataSourceError(
                 _SOURCE_NAME,
-                f"HTTP error {exc.code}: {exc.reason}",
+                f"HTTP error {code}: {exc}",
                 original_error=exc,
             ) from exc
-        except urllib.error.URLError as exc:
-            raise DataSourceError(
-                _SOURCE_NAME,
-                f"Network error: {exc.reason}",
-                original_error=exc,
-            ) from exc
-        except TimeoutError as exc:
+        except requests.exceptions.Timeout as exc:
             raise DataSourceError(
                 _SOURCE_NAME,
                 f"Request timed out after {timeout}s",
+                original_error=exc,
+            ) from exc
+        except requests.exceptions.RequestException as exc:
+            raise DataSourceError(
+                _SOURCE_NAME,
+                f"Network error: {exc}",
                 original_error=exc,
             ) from exc
 
