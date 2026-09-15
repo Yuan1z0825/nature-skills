@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from deck_run_state import now_iso, read_json, rel_to_run, save_deck, set_run_status, sha256_file, write_json
+from deck_run_state import now_iso, page_dir_for, read_json, rel_to_run, save_deck, set_run_status, sha256_file, write_json
 from deck_run_state import DEFAULT_MAX_CONCURRENT_PAGES
 from _input_normalization import normalize_inputs
 
@@ -72,7 +72,7 @@ def deck_slide_layout(run_dir, deck):
 
 
 def page_request(run_dir, deck, page):
-    page_dir = (run_dir / page["page_dir"]).resolve()
+    page_dir = page_dir_for(run_dir, page)
     source, width_px, height_px = page_source_size(run_dir, page)
     slide = dict(deck["slide"])
     page_id = page["page_id"]
@@ -118,7 +118,7 @@ def write_page_jobs(run_dir, deck):
         "pages": [],
     }
     for page in deck["pages"]:
-        page_dir = run_dir / page["page_dir"]
+        page_dir = page_dir_for(run_dir, page)
         request_path = page_dir / "page_request.json"
         request = page_request(run_dir, deck, page)
         write_json(request_path, request)
