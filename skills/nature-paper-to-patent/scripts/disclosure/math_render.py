@@ -191,6 +191,7 @@ def render_markdown_math(
 
         # 块级 $$ ... $$
         if stripped == "$$":
+            opening_line = lines[i]
             i += 1
             body_lines: list[str] = []
             while i < len(lines) and lines[i].strip() != "$$":
@@ -199,6 +200,12 @@ def render_markdown_math(
             closing = i < len(lines)
             if closing:
                 i += 1
+            else:
+                failed += 1
+                # 未闭合时保留整个原始块，避免把后续正文吞进公式并误报成功。
+                out.append(opening_line)
+                out.extend(body_lines)
+                continue
             if i < len(lines) and _HIDDEN_IMG_COMMENT_RE.match(lines[i].strip()):
                 out.append("$$\n")
                 out.extend(body_lines)
