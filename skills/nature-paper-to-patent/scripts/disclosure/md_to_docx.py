@@ -979,6 +979,10 @@ def main(argv: list[str] | None = None) -> int:
     if not in_path.is_file():
         print(f"错误：找不到输入文件 {in_path}", file=sys.stderr)
         return 1
+    out_path = Path(args.output).resolve()
+    if in_path == out_path:
+        print("输出 Word 文件不能覆盖输入 Markdown 原稿。", file=sys.stderr)
+        return 1
 
     base = Path(args.base_dir).resolve() if args.base_dir else in_path.parent
     try:
@@ -996,7 +1000,6 @@ def main(argv: list[str] | None = None) -> int:
         image_max_w_in=args.image_max_width_inches,
         image_max_h_in=args.image_max_height_inches,
     )
-    out_path = Path(args.output).resolve()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(str(out_path))
     print(f"已写入: {out_path}")
