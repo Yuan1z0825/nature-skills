@@ -28,8 +28,8 @@ import sys
 import time
 import json
 import argparse
-import xml.etree.ElementTree as ET
-from urllib.request import urlopen
+import defusedxml.ElementTree as ET
+import requests
 from urllib.parse import urlencode
 
 from converters import (
@@ -51,8 +51,8 @@ def esearch(query, max_results=5):
     params = {"db": "pubmed", "term": query, "retmax": max_results, "retmode": "xml"}
     url = f"{EUTILS_BASE}/esearch.fcgi?{urlencode(params)}"
     try:
-        with urlopen(url, timeout=30) as resp:
-            xml_data = resp.read().decode("utf-8")
+        resp = requests.get(url, timeout=30)
+        xml_data = resp.text
         root = ET.fromstring(xml_data)
         id_list = root.find("IdList")
         if id_list is not None:
