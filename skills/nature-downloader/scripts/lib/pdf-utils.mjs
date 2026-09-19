@@ -100,26 +100,45 @@ export async function streamToDisk(
   size,
   outPath,
   chunkSize = DEFAULT_CHUNK,
-  onProgress
+  onProgress,
+  evalImpl = evalJs
 ) {
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
-  const ws = fs.createWriteStream(outPath);
+  const tempPath = `${outPath}.part-${process.pid}-${Math.random().toString(36).slice(2, 10)}`;
+  let handle;
   try {
+    handle = await fs.promises.open(tempPath, "w");
     for (let s = 0; s < size; s += chunkSize) {
       const e = Math.min(s + chunkSize, size);
-      const b64 = await evalJs(
+      const b64 = await evalImpl(
         proxy,
         target,
         `(()=>{const b=window['${varName}'].slice(${s},${e});let x='';for(let i=0;i<b.length;i+=0x8000){x+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));}return btoa(x);})()`,
         60000
       );
-      ws.write(Buffer.from(b64, "base64"));
+      const chunk = Buffer.from(b64, "base64");
+      if (chunk.length !== e - s) {
+        throw new Error(`browser download chunk size mismatch: expected ${e - s}, received ${chunk.length}`);
+      }
+      let offset = 0;
+      while (offset < chunk.length) {
+        const { bytesWritten } = await handle.write(
+          chunk,
+          offset,
+          chunk.length - offset,
+        );
+        offset += bytesWritten;
+      }
       if (onProgress) onProgress(e, size);
     }
-    await new Promise((r) => ws.end(r));
+    await handle.close();
+    handle = undefined;
+    fs.renameSync(tempPath, outPath);
   } finally {
+    if (handle) await handle.close().catch(() => {});
+    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
     // Always clean up the window var, even on error.
-    await evalJs(proxy, target, `delete window['${varName}']`).catch(() => {});
+    await evalImpl(proxy, target, `delete window['${varName}']`).catch(() => {});
   }
   return { file: outPath, bytes: size };
 }
