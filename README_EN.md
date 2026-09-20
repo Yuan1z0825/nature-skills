@@ -5,7 +5,7 @@
   <p>
     <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-2ea44f"></a>
     <a href="#5-installation"><img alt="Install" src="https://img.shields.io/badge/install-Claude%20Code%20%7C%20Codex%20%7C%20OpenClaw%20%7C%20OpenCode%20%7C%20Hermes-111827"></a>
-    <a href="#6-skill-index"><img alt="Skills" src="https://img.shields.io/badge/skills-19-0ea5e9"></a>
+    <a href="#6-skill-index"><img alt="Skills" src="https://img.shields.io/badge/skills-20-0ea5e9"></a>
     <a href="README.md"><img alt="Language" src="https://img.shields.io/badge/language-English%20%7C%20中文-1f6feb"></a>
   </p>
   <p>
@@ -585,6 +585,7 @@ The current `skills/` directory contains the following triggerable skills.
 | [`nature-literature-pipeline`](skills/nature-literature-pipeline/README_EN.md) | Stable | Automated literature discovery pipeline: multi-source retrieval, six-axis scoring, deep-reading delivery, and local archiving | "literature pipeline", "daily literature", "literature push", "daily literature push", "cron" | [Details](skills/nature-literature-pipeline/README_EN.md) |
 | [`nature-experiment-log`](skills/nature-experiment-log/README_EN.md) | Draft | Standardize experiment images, voice, and text into Obsidian experiment logs with YAML frontmatter and archived source materials | "experiment log", "record experiment", "Obsidian vault", "Feishu research group" | [Details](skills/nature-experiment-log/README_EN.md) |
 | [`nature-proposal-writer`](skills/nature-proposal-writer/README_EN.md) | Beta | Proposal-first research writing state machine: establish evidence, argument, and section contracts before drafting or reviewing text | "researchwrite", "proposal", "opening report", "research plan", "research writing QA" | [Details](skills/nature-proposal-writer/README_EN.md) |
+| [`nature-exam-thumbnail`](skills/nature-exam-thumbnail/README_EN.md) | Beta | Batch-generate learning-platform exam thumbnails: read DB rows missing covers, fetch unique stock photos, render uniform WebP, upload to R2/S3, and write back to the database | "exam thumbnails", "generate thumbnails", "考试缩略图", "批量缩略图" | [Details](skills/nature-exam-thumbnail/README_EN.md) |
 
 ## 7. Contribution and Development
 

@@ -1,0 +1,15 @@
+---
+name: nature-exam-thumbnail
+version: 1.0.0
+description: >
+  Declarative manifest for the batch exam-thumbnail generation workflow.
+  SKILL.md carries the core generate -> upload -> write-back -> verify
+  procedure; the reference file documents the full bulk-run flow and pitfalls.
+
+always_load:
+  - SKILL.md
+
+references:
+  on_demand:
+    - condition: running a real bulk generation run, troubleshooting duplicate/broken thumbnails, or checking R2 env conventions
+      path: references/bulk-exam-thumbnail-cli-workflow.md

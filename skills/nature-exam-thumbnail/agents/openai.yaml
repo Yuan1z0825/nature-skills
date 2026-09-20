@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Exam Thumbnail"
+  short_description: "Generate platform exam thumbnails in one batch"
+  default_prompt: "Use $nature-exam-thumbnail to generate thumbnails for these exams and update their photo_url."
