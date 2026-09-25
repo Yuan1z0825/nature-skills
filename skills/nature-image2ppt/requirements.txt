@@ -5,3 +5,4 @@ numpy>=1.26.0
 requests>=2.31.0
 PyYAML>=6.0.0
 openai>=2.0.0
+defusedxml>=0.7.1
