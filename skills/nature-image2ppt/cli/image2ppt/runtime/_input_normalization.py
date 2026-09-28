@@ -3,12 +3,12 @@ import io
 import json
 import posixpath
 import shutil
-import subprocess
+import subprocess  # nosec
 import tempfile
 import zipfile
 from datetime import datetime
 from pathlib import Path
-from xml.etree import ElementTree as ET
+from defusedxml import ElementTree as ET
 
 from PIL import Image
 
