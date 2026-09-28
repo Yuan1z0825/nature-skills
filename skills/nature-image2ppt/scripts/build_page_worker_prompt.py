@@ -58,6 +58,7 @@ def render_prompt(run_dir: Path, page: dict, page_dir: Path) -> str:
     base = fenced_template(BASE_TEMPLATE)
     addendum = PROFILE_ADDENDUM.read_text(encoding="utf-8").strip()
     template = base + "\n\n" + addendum
+    page_dir = resolve_inside(run_dir, page_dir)
     request = read_json(page_dir / "page_request.json")
     cli = shlex.join([__import__("sys").executable, str(CLI_ENTRY)])
     replacements = {
