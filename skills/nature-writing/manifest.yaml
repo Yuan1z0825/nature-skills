@@ -65,11 +65,16 @@ axes:
 
   language:
     detect: |
-      Detect the source language of the user's notes. Use zh-to-en when the
-      input is Chinese, mixed Chinese-English, or organized as Chinese lab
-      notes. Otherwise use en.
+      Detect the source language of the user's notes AND the target language
+      of the manuscript. Use zh when the input is Chinese and the draft is to
+      be written in Chinese (中文写作/中文期刊/学位论文). Use zh-to-en when
+      the input is Chinese, mixed Chinese-English, or organized as Chinese lab
+      notes and the target is an English manuscript. Otherwise use en. When
+      the user explicitly says 中文写作/用中文写/中文稿件, use zh regardless
+      of other signals.
     values:
       en:             static/fragments/language/en.md
+      zh:             static/fragments/language/zh.md
       zh-to-en:       static/fragments/language/zh-to-en.md
     default: en
     multi: false
