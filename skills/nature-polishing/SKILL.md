@@ -1,6 +1,6 @@
 ---
 name: nature-polishing
-description: Polish, translate, or tighten existing academic prose while preserving facts, terminology, and evidence boundaries. Use for 论文润色、学术翻译、正文精简, or manuscript LaTeX layout fixes. Use nature-writing when the main task is drafting new sections or rebuilding the manuscript argument.
+description: Polish, translate, or tighten existing academic prose while preserving facts, terminology, and evidence boundaries. Use for 论文润色、中文润色（保持中文输出）、学术翻译、正文精简, or manuscript LaTeX layout fixes. Use nature-writing when the main task is drafting new sections or rebuilding the manuscript argument.
 ---
 
 # Nature-Style Academic Polishing — Router
@@ -21,7 +21,7 @@ For each axis in the manifest, decide the value using the manifest's `detect:` h
 
 - `paper_type` — research / methods / hypothesis / algorithmic / review. Default: research.
 - `section` — abstract / intro / results / discussion / conclusion / title / methods. May be multiple. Ask the user if it is ambiguous and matters for the polish.
-- `language` — en or zh-to-en. Detect from the draft itself.
+- `language` — en, zh, or zh-to-en. Detect from the draft itself and the user's stated target: use `zh` when the draft is Chinese and the output should stay Chinese (中文润色); use `zh-to-en` when a Chinese draft should become English.
 - `journal` — nature / nat-comms / nat-mach-intell / generic. Default:
   generic. Use `nature` only for flagship Nature, `nat-comms` for Nature
   Communications and `nat-mach-intell` for Nature Machine Intelligence (NMI).

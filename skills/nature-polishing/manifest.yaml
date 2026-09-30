@@ -46,11 +46,15 @@ axes:
 
   language:
     detect: |
-      Detect the source language of the draft. Use zh-to-en when the draft
-      is Chinese or shows strong Chinese-influenced English structure.
-      Otherwise use en.
+      Detect the source language of the draft AND the user's target language.
+      Use zh when the draft is Chinese and the user wants the polished text to
+      remain in Chinese (中文润色). Use zh-to-en when the draft is Chinese and
+      the target is English, or the draft shows strong Chinese-influenced
+      English structure. Otherwise use en. When the user explicitly says
+      中文润色/润色中文/保留中文, use zh regardless of other signals.
     values:
       en:             static/fragments/language/en.md
+      zh:             static/fragments/language/zh.md
       zh-to-en:       static/fragments/language/zh-to-en.md
     default: en
     multi: false

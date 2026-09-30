@@ -1,6 +1,6 @@
 ---
 name: nature-writing
-description: Draft or restructure scientific manuscript arguments, sections, and initial-submission materials from author-provided evidence. Use for 论文写作、章节起草、论证重构、正文压缩、首次投稿材料. Use nature-polishing for language-only edits to existing prose and nature-response for post-decision correspondence.
+description: Draft or restructure scientific manuscript arguments, sections, and initial-submission materials from author-provided evidence. Use for 论文写作、中文论文写作、章节起草、论证重构、正文压缩、首次投稿材料. Use nature-polishing for language-only edits to existing prose and nature-response for post-decision correspondence.
 ---
 
 # Nature-Style Scientific Writing — Router
@@ -22,7 +22,7 @@ For each axis in the manifest, decide the value using the manifest's `detect:` h
 - `task` — manuscript / submission-package. Use `submission-package` for first-submission materials, never for revision correspondence.
 - `paper_type` — research / methods / hypothesis / algorithmic / review. Default: research.
 - `section` — abstract / intro / related-work / method / experiments / discussion / conclusion / title. May be multiple. Ask the user if it is ambiguous and matters for the draft.
-- `language` — en or zh-to-en. Detect from the user's notes themselves.
+- `language` — en, zh, or zh-to-en. Detect from the user's notes AND the target language: use `zh` when drafting a Chinese manuscript (中文期刊、学位论文); use `zh-to-en` when Chinese notes become an English manuscript.
 - `journal` — nature / nature-family / nat-comms / nat-mach-intell / generic.
   Default: generic. Use `nature` only for the flagship journal Nature,
   `nat-comms` for Nature Communications, `nat-mach-intell` for Nature Machine
