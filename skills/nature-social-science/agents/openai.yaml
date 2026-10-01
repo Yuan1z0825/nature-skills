@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Social Science"
+  short_description: "Social-science topic development and honest-claim audit"
+  default_prompt: "Use $nature-social-science to turn my interest into a research space, audit my candidate research question, or check my argument paragraphs for overclaiming."

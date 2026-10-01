@@ -1,0 +1,41 @@
+name: nature-social-science
+version: 1.0.0
+description: >
+  Declarative manifest for the social-science topic-development and
+  argumentation workbench. SKILL.md routes each request to one entry mode
+  (A/B/C) and one or more of the eight workflow steps; this manifest maps
+  those routes to the reference files that carry the detailed instructions,
+  prompt templates, worksheets, and terminology.
+
+# Design note: nature-social-science is a staged, gate-controlled workflow
+# (search space -> landscape -> unresolved problems -> evidence map ->
+# candidate RQs -> academic survival -> feasibility -> shortlist), with a
+# separate academic-expression discipline layer. Its variation — the user's
+# entry point and current step — is handled by the routing table in SKILL.md,
+# not by loading different large content bodies. The split is therefore one
+# always-loaded foundations file plus on-demand per-step references. The skill
+# does not use the prose-oriented nature-shared layer; it governs
+# social-science research design and honest-claim discipline, with its own
+# status systems and prompt library.
+
+always_load:
+  - references/01-foundations.md
+
+references:
+  on_demand:
+    - condition: Step 1 search space / Step 2 research landscape (literature mapping) / Step 3 unresolved problems
+      path: references/02-workflow-steps1-3.md
+    - condition: Step 4 evidence map and claim ceiling / Step 5 candidate research questions
+      path: references/03-workflow-steps4-5.md
+    - condition: Step 6 academic attack (Novelty Audit + Reviewer 2) / Step 7 PhD feasibility / Step 8 final shortlist
+      path: references/04-workflow-steps6-8.md
+    - condition: ready-to-copy prompt templates for any step (the single authoritative prompt version)
+      path: references/05-prompt-library.md
+    - condition: worksheet templates for any step (Search Space, Landscape, Problem Cards, RQ Cards, Topic Cards, etc.)
+      path: references/06-worksheets.md
+    - condition: the five status systems, terminology ledger, or Current Research State template
+      path: references/07-status-terminology.md
+    - condition: shortlist usage, supervisor communication, the nine handoffs, or resume rules
+      path: references/08-usage-handoff.md
+    - condition: drafting or revising argument paragraphs — claim ceiling, verb-evidence matching, honest-wording table, red flags
+      path: references/09-academic-expression.md
