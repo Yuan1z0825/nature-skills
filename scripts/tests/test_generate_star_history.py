@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime as dt
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -101,6 +102,38 @@ class StarHistoryFetchingTests(unittest.TestCase):
     def test_missing_token_fails_with_actionable_message(self) -> None:
         with self.assertRaisesRegex(MODULE.StarHistoryUnavailable, "requires GITHUB_TOKEN"):
             MODULE.github_graphql(MODULE.STARGAZERS_QUERY, {}, None, 0)
+
+    @staticmethod
+    def _fake_response(payload: dict) -> mock.MagicMock:
+        response = mock.MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = json.dumps(payload).encode("utf-8")
+        return response
+
+    def test_transient_graphql_error_is_retried(self) -> None:
+        transient = {"errors": [{"message": "Something went wrong while executing your query"}]}
+        good = {"data": {"ok": True}}
+        responses = [self._fake_response(transient), self._fake_response(good)]
+
+        with mock.patch.object(
+            MODULE.urllib.request, "urlopen", side_effect=responses
+        ) as urlopen, mock.patch.object(MODULE.time, "sleep") as sleep:
+            result = MODULE.github_graphql("query", {}, "token", 2)
+
+        self.assertEqual(result, good)
+        self.assertEqual(urlopen.call_count, 2)
+        sleep.assert_called_once_with(1)
+
+    def test_typed_graphql_error_is_not_retried(self) -> None:
+        typed = {"errors": [{"type": "NOT_FOUND", "message": "Could not resolve to a Repository"}]}
+
+        with mock.patch.object(
+            MODULE.urllib.request, "urlopen", return_value=self._fake_response(typed)
+        ) as urlopen, mock.patch.object(MODULE.time, "sleep"):
+            with self.assertRaisesRegex(RuntimeError, "GitHub GraphQL returned errors"):
+                MODULE.github_graphql("query", {}, "token", 2)
+
+        self.assertEqual(urlopen.call_count, 1)
 
     def test_non_advancing_cursor_is_rejected(self) -> None:
         response = graphql_page(

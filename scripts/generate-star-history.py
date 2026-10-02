@@ -176,6 +176,19 @@ def github_graphql(
             raise RuntimeError("GitHub GraphQL returned a non-object response")
         errors = payload.get("errors")
         if errors:
+            transient = (
+                isinstance(errors, list)
+                and all(isinstance(error, dict) and "type" not in error for error in errors)
+                and any("went wrong" in str(error.get("message", "")) for error in errors)
+            )
+            if transient and attempt < retries:
+                delay = min(60, 2 ** attempt)
+                print(
+                    f"GraphQL returned a transient error: {errors}; retrying in {delay}s",
+                    file=sys.stderr,
+                )
+                time.sleep(delay)
+                continue
             raise RuntimeError(f"GitHub GraphQL returned errors: {errors}")
         return payload
 
