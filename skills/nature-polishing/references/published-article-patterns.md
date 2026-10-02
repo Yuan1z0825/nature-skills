@@ -1,5 +1,17 @@
 # Published Article Patterns
 
+## Contents
+
+- [Abstract pattern](#abstract-pattern)
+- [Introduction pattern](#introduction-pattern)
+- [Results pattern](#results-pattern)
+- [Discussion pattern](#discussion-pattern)
+- [Conclusion pattern](#conclusion-pattern)
+- [Title pattern](#title-pattern)
+- [Sentence-level pattern](#sentence-level-pattern)
+- [Overclaim checks from article patterns](#overclaim-checks-from-article-patterns)
+
+
 Use this file when polishing should improve scientific argument, not just English.
 The patterns below are distilled from curated Nature and Nature Communications
 research articles across materials, energy systems, construction decarbonization

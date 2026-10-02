@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Paper to PPT"
+  short_description: "Turn scientific papers into polished presentation decks"
+  default_prompt: "Use $nature-paper2ppt to turn this scientific paper into a polished, evidence-grounded presentation deck."

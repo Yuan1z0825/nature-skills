@@ -1,0 +1,52 @@
+name: nature-shared
+version: 1.6.0
+description: >
+  Declarative manifest for shared Nature reference modules. This package is not
+  a standalone workflow; installed Nature skills use it to load exact shared
+  core or journal-format files on demand.
+
+# Design note: never preload the whole shared package. Requesting skills should
+# load only the specific file listed below and then return to their own workflow,
+# output format, and QA rules.
+
+always_load: []
+
+core:
+  on_demand:
+    - condition: shared ethics, safety, authorship, disclosure, or non-invention guardrails are needed
+      path: core/ethics.md
+    - condition: human or animal ethics, clinical research, reporting summaries, image integrity, structures, chemistry, taxonomy, geological, archaeological, or palaeontological compliance is involved
+      path: core/research-compliance.md
+    - condition: classifying paper type, article genre, or manuscript family before applying a writing/reader workflow
+      path: core/paper-type-taxonomy.md
+    - condition: shared reader workflow is explicitly requested by another Nature skill
+      path: core/reader-workflow.md
+    - condition: maintaining terminology consistency across paper reading, polishing, writing, or slide generation
+      path: core/terminology-ledger.md
+    - condition: auditing an existing or multi-round-revised manuscript for accumulated drift — terminology/unit/number variants, headline counts that do not reconcile with the Methods, claims contradicted by the paper's own tables, over- or under-claiming, tense parallelism, and prose that restates displays
+      path: core/consistency-sweep.md
+    - condition: drafting, restructuring, compressing, or reviewer-revising scientific main text — classify results as core/support/qualification/robustness/heterogeneity/provenance/alternative inference/edge case; allocate evidence across main text, captions, and SI; run paragraph-necessity, deletion, statistics-location, and claim-repetition checks
+      path: core/main-text-discipline.md
+    - condition: drafting, restructuring, or polishing Results or Discussion for flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title; auditing claim escalation, evidence-bound local interpretation, diagnostic perturbation, necessary recap versus redundant re-demonstration, or cross-Results synthesis
+      path: core/nature-results-discussion.md
+    - condition: drafting, restructuring, or polishing any scientific Discussion; sequencing anchor, positioning, interpretation, contribution, limitations, and future work; calibrating modal verbs or hedging to evidence strength; or auditing whether Discussion repeats Results
+      path: core/discussion-argument-language.md
+    - condition: drafting, restructuring, or polishing an Introduction for flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title; building a fast problem funnel, exact knowledge gap, literature tension, question-first novelty, compact study roadmap, or Introduction–Results alignment audit
+      path: core/nature-introduction.md
+    - condition: drafting, restructuring, or polishing an abstract for flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title; compressing the manuscript into a discovery-centred evidence chain; selecting one main claim, one or two decisive supports, optional core numbers, and a bounded field-level payoff
+      path: core/nature-abstract.md
+
+journal_formats:
+  on_demand:
+    - condition: formatting, initial-submission readiness, or stage-aware checking for a flagship Nature Article
+      path: journal-formats/nature.md
+    - condition: formatting or checking output for Nature Communications conventions
+      path: journal-formats/nat-comms.md
+    - condition: formatting, article-type selection, initial-submission readiness, or stage-aware checking for Nature Machine Intelligence
+      path: journal-formats/nature-machine-intelligence.md
+
+quality_tools:
+  consistency_script: scripts/check_consistency.py
+  use_when: auditing whole-manuscript consistency, or local discrepancies indicate wider drift; a new editing round alone does not require a full sweep
+  purpose: warn about terminology variants, equivalent lengths expressed in different units, and equal numeric values reported at different precision
+  script_resolution: resolve relative to the nature-shared package directory, never the user working directory

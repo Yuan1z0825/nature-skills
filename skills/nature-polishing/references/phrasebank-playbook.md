@@ -1,5 +1,18 @@
 # Phrasebank Playbook
 
+## Contents
+
+- [Evidence strength](#evidence-strength)
+- [Evidence collocations](#evidence-collocations)
+- [Transition families](#transition-families)
+- [Paragraph linking without sounding repetitive](#paragraph-linking-without-sounding-repetitive)
+- [Gap language](#gap-language)
+- [Comparison with prior work](#comparison-with-prior-work)
+- [Limitation language](#limitation-language)
+- [Implication language](#implication-language)
+- [Future-work language](#future-work-language)
+
+
 Use this file after the main argument and section role are already clear. It is a phrasebank layer derived from `Academic Phrasebank`, not a substitute for deciding what the paragraph is trying to do.
 
 ## Evidence strength

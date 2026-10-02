@@ -1,29 +1,62 @@
 name: nature-figure
-version: 2.0.0
+version: 2.8.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is
-  the plotting backend (Python or R), which is a blocking gate: it must be
-  chosen explicitly before any figure is drawn. The large body of design,
-  API, pattern, and QA material stays in on-demand references.
+  the plotting backend (Python or R). The first plotting use should establish
+  a saved user preference; later tasks reuse that preference unless the user
+  explicitly changes it. The large body of design, API, pattern, and QA
+  material stays in on-demand references.
 
 always_load:
-  # Skill-local core (figure does not use the prose-oriented _shared layer)
+  # Skill-local core (figure does not use the prose-oriented nature-shared layer)
   - static/core/contract.md
   - static/core/stance.md
+
+routes:
+  graphical_abstract_workflow:
+    detect: |
+      Use this route whenever AI assists the planning, generation, revision, or
+      audit of a graphical abstract. Planning and audit-only tasks do not need
+      the Python/R backend gate. The reference owns the policy check,
+      message/audience brief, visual design workflow, human verification,
+      disclosure boundary, and provenance record.
+    reference: references/ai-graphical-abstract-workflow.md
+  openrouter_image_generation:
+    detect: |
+      Use this route only when the user explicitly asks for OpenRouter, GPT
+      Image 2, image-generation API output, AI-generated paper schematics,
+      graphical abstracts, concept illustrations, or mechanism diagrams. This
+      route skips the Python/R backend gate because it generates a raster/vector
+      image draft through an external image API rather than plotting data.
+    reference: references/openrouter-image-generation.md
+    script: scripts/generate_openrouter_schematic.py
+
+preference:
+  backend_script: scripts/nature_figure_backend.py
+  config_env: NATURE_FIGURE_CONFIG
+  default_config: ~/.config/nature-skills/nature-figure.json
+  behavior: |
+    For plotting tasks, first honor an explicit Python/R choice, then a clearly
+    language-specific input workflow, then a choice established in this task,
+    then the saved preference returned by the backend script. If none exists,
+    ask the user once and save the answer. Pause only dependent plotting work.
 
 axes:
   backend:
     detect: |
-      BLOCKING GATE. Determine the plotting backend from an explicit user
-      choice or a clearly language-specific input file/workflow. If the user
-      has NOT explicitly chosen Python or R, ask exactly one concise question —
-      "Python or R?" — and stop. Do not default, do not guess, do not generate
-      mock data or scripts before the answer. Only recommend a backend when the
-      user explicitly asks you to choose; in that case use
-      references/backend-selection.md, state the reason, then proceed.
-      Once selected, the backend is exclusive for all drawing, previewing,
-      exporting, and visual QA.
+      BLOCKING GATE WITH PERSISTED PREFERENCE. Determine the plotting backend
+      from an explicit user choice, a clearly language-specific input
+      file/workflow, a choice established in this task, or the saved preference
+      returned by scripts/nature_figure_backend.py get. If none resolves it, ask
+      exactly one concise question — "Python or R? I will remember this as your
+      default." — and pause dependent plotting steps while continuing independent
+      inspection. Read-only review does not require a backend choice.
+      Save the answer with the backend preference script
+      before proceeding. Only recommend a backend when the user explicitly asks
+      you to choose; in that case use references/backend-selection.md, state the
+      reason, save the selected backend, then proceed. Once selected, the
+      backend is exclusive for all drawing, previewing, exporting, and visual QA.
     values:
       python:  static/fragments/backend/python.md
       r:       static/fragments/backend/r.md
@@ -33,27 +66,41 @@ references:
   on_demand:
     - condition: convert a user request into core conclusion, evidence hierarchy, panel map, and review-risk checks
       path: references/figure-contract.md
+    - condition: plan, restructure, or audit a multi-panel manuscript figure; decide panel roles or main-versus-Extended-Data placement; or align figure order with a Results evidence chain
+      path: references/multipanel-evidence-architecture.md
     - condition: user has not chosen Python/R, asks for a recommendation, or a mixed Python/R workflow is possible
       path: references/backend-selection.md
     - condition: user chooses R or provides R scripts/templates/data
       path: references/r-workflow.md
     - condition: adapt a user-provided or private R template collection without exposing source paths
       path: references/r-template-index.md
-    - condition: before final delivery, revision package, microscopy/blot figure, or journal-specific audit
+    - condition: reuse or adapt a bundled example, plotting script, preview image, or user-provided template against new data
+      path: references/asset-adaptation.md
+    - condition: every generated or revised Python/R scientific figure, multi-panel alignment gate, rendered PDF collision audit, final delivery, revision package, rendered PDF text audit, panel-by-panel visual QA, microscopy/blot figure, or journal-specific audit
       path: references/qa-contract.md
+    - condition: target is the flagship journal Nature, or exact initial-versus-production main/Extended Data figure and legend requirements are needed
+      path: references/nature-article-requirements.md
+    - condition: target is Nature Machine Intelligence, or exact NMI main-display, Extended Data, legend, source-data, initial-review, or production-figure requirements are needed
+      path: ../nature-shared/journal-formats/nature-machine-intelligence.md
     - condition: typography, color theory, layout rationale, export policy
       path: references/design-theory.md
-    - condition: Python PALETTE, helper function signatures, validation rules
+    - condition: Python PALETTE, helper function signatures, Matplotlib panel-alignment integration, validation rules
       path: references/api.md
     - condition: "Python layout patterns: hero panels, legend-only axes, dark image plates, asymmetric layouts"
       path: references/common-patterns.md
     - condition: "real Nature page archetypes: schematic-led composites, dark image plates, clinical triptychs, asymmetric hero layouts"
       path: references/nature-2026-observations.md
-    - condition: writing or auditing figure/table legend text — Fig. N | title, panel style, stats in legend, Source Data boilerplate, attribution
+    - condition: "OpenRouter/GPT Image 2 route: AI-generated graphical abstracts, mechanism diagrams, paper schematics, or concept illustrations"
+      path: references/openrouter-image-generation.md
+    - condition: AI-assisted graphical abstract planning, generation, revision, audit, journal-policy check, scientific verification, disclosure, or provenance
+      path: references/ai-graphical-abstract-workflow.md
+    - condition: writing or auditing figure/table legend text — Fig. N | title, panel style, stats in legend, Source Data boilerplate, attribution; load the flagship Nature requirements too when that is the target journal
       path: references/figure-legend-conventions.md
     - condition: "end-to-end walkthroughs: bars, trends, heatmaps"
       path: references/tutorials.md
-    - condition: "radar, 3D sphere, fill_between, scatter patterns"
+    - condition: "validated Python CSV templates: volcano, ROC, marker dot plot, marginal density, or paired plot"
+      path: references/template-catalog.md
+    - condition: "radar, 3D sphere, fill_between, scatter, ablation-line, probability/manifold concept patterns"
       path: references/chart-types.md
-    - condition: bundled figures4papers Python scripts and output previews for concrete pattern adaptation
+    - condition: third-party figures4papers demo lookup, copyright-aware reference use, or original pattern reimplementation
       path: references/demos.md

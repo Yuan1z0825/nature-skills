@@ -1,39 +1,21 @@
 ---
 name: nature-data
-description: >-
-  Prepare, audit, or revise Nature-ready Data Availability statements, data repository plans,
-  dataset citations, and FAIR metadata checklists for manuscripts. Use when the user asks about
-  Nature data availability, research data sharing, repository selection, accession numbers,
-  restricted or sensitive data, source data, supplementary datasets, DataCite-style dataset
-  references, FAIR metadata for academic publication, or Chinese-to-English data availability
-  wording for Chinese-speaking authors preparing Nature-family submissions.
-  Also trigger on general academic-writing data needs even without the word "Nature", such as
-  writing a data availability statement for any journal, code/data sharing sections, repository
-  selection while writing a paper, and Chinese phrasings like 数据可用性声明、数据可用性、
-  数据共享、代码可用性、学术写作数据声明、写数据声明、数据存放、数据仓库选择.
-version: 2.0.0
-author: Yuan1z skill, refactored into static/dynamic layers
+description: "Draft or audit manuscript Data/Code Availability statements, dataset access routes, repository plans, and FAIR metadata. Use for 数据可用性声明、数据共享、数据仓库选择 and dataset citations; not general data cleaning or statistical analysis."
+metadata:
+  author: Yuan1z skill, refactored into static/dynamic layers
 ---
 
 # Nature Data Availability — Router
 
-This skill is split into two layers:
-
-- A **static layer** under `static/` that holds versioned, reusable content fragments (the default stance and source hierarchy, the Chinese-user operating mode, and the workflow with output format).
-- A **dynamic layer** (this file plus `manifest.yaml`) that loads the core every time and reaches for the deeper policy/repository/FAIR references only when a step needs them.
-
-Do not try to apply the data-availability logic from memory or from this router. Always load fragments from disk as described below.
-
 ## Routing protocol
 
-Follow these four steps every time the skill is invoked.
+For a new task, load the core and matching resources below. Reuse already loaded guidance on follow-ups; load more only when the task needs it.
 
 ### 1. Load the manifest and the core layer
 
 Read [manifest.yaml](manifest.yaml). Then read every file listed under `always_load`:
 
 - `static/core/stance.md` — what the data-availability package is, the default stance, and the source hierarchy.
-- `static/core/chinese-mode.md` — how to operate when the user writes in Chinese (accept Chinese, draft English, convert terms precisely).
 - `static/core/workflow.md` — the eight-step workflow and the output format.
 
 ### 2. No content axis — confirm journal and language inline
@@ -42,9 +24,14 @@ Unlike nature-writing or nature-figure, nature-data has no fragment axis. Its va
 
 - **journal/article type** — if journal-specific instructions conflict with this skill, follow the journal.
 - **access route** — each dataset is classified into one route (public repository, controlled access, within paper, reused public, third-party restricted, justified request, or not applicable).
-- **user language** — if the user writes Chinese, follow `core/chinese-mode.md` and add the 中文核对 block.
+- **user language** — if the user writes Chinese or requests Chinese guidance, read `static/core/chinese-mode.md` and add the 中文核对 block unless the user requested statement text only.
 
 ### 3. Run the workflow
+
+For a wording edit or audit of one existing statement, preserve supplied repository identifiers
+and access conditions and check the affected claims. Report gaps relevant to that statement;
+do not require a full study-wide dataset inventory or repository redesign. Use the complete
+workflow below for a new data-sharing plan, full statement, or submission audit.
 
 Follow the eight-step workflow in `core/workflow.md`: identify the journal, inventory every supporting dataset, classify each into one access route, choose repository and identifier strategy before drafting, draft the statement with explicit dataset-to-location mapping, add formal dataset citations, run the FAIR/metadata audit, and return ready-to-paste text plus unresolved fields.
 
@@ -54,9 +41,14 @@ Do not invent DOIs, accession numbers, repository names, licences, embargo dates
 
 The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest — for example `references/policy-principles.md` for the governing rules and edge cases, `references/repository-and-identifiers.md` for repository/accession/DOI choices, `references/statement-patterns.md` for ready-to-adapt statements, `references/fair-metadata-checklist.md` for the FAIR audit, `references/chinese-author-alignment.md` for Chinese wording, and `references/source-basis.md` to justify a rule with its official source.
 
-## Why this split
+When the target is the flagship journal Nature, also open
+`references/nature-article-requirements.md` for statement placement,
+mandatory-deposition routing, central-code review access, materials and
+structure-file checks.
 
-- The static layer is versioned and reviewable; the core stays small for a normal statement.
-- The dynamic layer keeps each invocation cheap: the policy, repository, and FAIR depth load only when a step needs them.
-- The router itself is short on purpose. Update fragments and references, not this file, when adding scope.
-- This structure mirrors `nature-writing`, `nature-polishing`, `nature-reader`, `nature-paper2ppt`, `nature-figure`, `nature-citation`, and `nature-response`.
+When the target is Nature Machine Intelligence, open
+`../nature-shared/journal-formats/nature-machine-intelligence.md`. Enforce a
+Data Availability statement and a separate `Code availability` section after
+it and before references; check reviewer access, precise restrictions,
+repository/identifier quality and the Software Submission Checklist for newly
+developed central code.

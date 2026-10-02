@@ -1,0 +1,60 @@
+name: nature-paper-card
+version: 1.2.0
+description: >
+  Declarative routing for a source-grounded Sections 01-16 Paper Card. The paper_type
+  axis changes the analytical checks while the final card structure remains
+  stable across disciplines.
+
+always_load:
+  - ../nature-shared/core/terminology-ledger.md
+  - static/core/principles.md
+  - static/core/workflow.md
+  - static/core/output-contract.md
+
+axes:
+  paper_type:
+    detect: |
+      Select one primary lens from the dominant argument. Select one secondary
+      lens only when a second contribution carries substantial independent
+      evidence and would otherwise be under-audited:
+        methods   - algorithm, model, tool, framework, or system contribution
+        discovery - empirical discovery or biological/physical mechanism
+        resource  - dataset, benchmark, atlas, database, or community resource
+        clinical  - patient, population, diagnostic, prognostic, or intervention study
+        materials - material design, synthesis, characterization, or engineering performance
+        review    - review, perspective, commentary, or meta-analysis
+      Classify by evidence logic rather than field label. Load no more than two
+      values. A methods paper with a substantial dataset contribution may use
+      methods as primary and resource as secondary.
+    values:
+      methods:   static/fragments/paper_type/methods.md
+      discovery: static/fragments/paper_type/discovery.md
+      resource:  static/fragments/paper_type/resource.md
+      clinical:  static/fragments/paper_type/clinical.md
+      materials: static/fragments/paper_type/materials.md
+      review:    static/fragments/paper_type/review.md
+    default: methods
+    multi: true
+
+references:
+  on_demand:
+    - condition: assigning provenance labels and separating source facts, external facts, analysis, and hypotheses
+      path: references/evidence-and-provenance.md
+    - condition: writing or auditing the exact Sections 01-16 Markdown structure
+      path: references/card-schema.md
+    - condition: generating, evaluating, or qualifying candidate research ideas
+      path: references/research-idea-gates.md
+
+quality_tools:
+  prepare_script: scripts/prepare_paper.py
+  prepare_use_when: processing a PDF or nature-reader source-map JSON
+  prepare_output: source_bundle.json
+  audit_script: scripts/audit_paper_card.py
+  audit_use_when: after the first complete Paper Card draft and after every corrective revision
+  audit_output: audit-report.json
+  script_resolution: resolve relative to the loaded SKILL.md directory, never the user working directory
+  replacement_scripts: forbidden during normal Paper Card generation
+  locator_modes:
+    - page-grounded
+    - structure-grounded
+    - source-limited

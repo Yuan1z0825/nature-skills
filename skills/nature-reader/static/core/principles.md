@@ -5,15 +5,16 @@ Use this skill to turn a research paper into a complete Markdown reading artifac
 - keep the extractable prose, paragraph structure, and section flow
 - show original text and Chinese translation together at block level
 - extract figures and tables as assets and place them at the first substantive mention or interpretation point
+- render equations as Markdown math with stable equation anchors; never expose bare LaTeX commands as ordinary prose
 - keep captions attached to figures/tables with English caption text and Chinese caption translation
 - preserve stable page and block anchors for traceability
 - write a complete `paper.md` by default, plus `source_map.json`, `translation_notes.md`, and `assets/`
 
-This skill is for papers, preprints, and conference proceedings across disciplines. It is not limited to Nature-family journals. If the user only wants a summary, use a summarization skill instead. If the user only wants citation search, use a citation skill instead.
+This skill is for papers, preprints, and conference proceedings across disciplines. It is not limited to Nature-family journals. Honor an explicit request for a summary, excerpt, or source-linked answer at that scope; no separate summarization skill is required. Citation-only searches belong to the appropriate citation workflow.
 
 ## Non-negotiable defaults
 
-When the user asks for paper translation, reading, `nature-reader`, `中英文对照`, `原文对照`, `全文翻译`, or `翻译解读`, produce a paragraph-level bilingual reader by default.
+When the user requests a reader, `中英文对照`, `原文对照`, `全文翻译`, or invokes `nature-reader` without a narrower deliverable, produce a paragraph-level bilingual reader by default. An explicit question, summary, or excerpt request takes precedence; do not expand it into full-paper processing.
 
 Do not replace the reader with:
 
@@ -28,6 +29,8 @@ If constraints prevent full processing, still create a draft reader and clearly 
 ## Core principle
 
 Translate for meaning, not for style. Preserve the paper's structure, evidence, hedging, terminology, equations, units, and citation markers. Keep the output in prose paragraphs unless the source itself is tabular or list-like. Do not collapse the paper into keyword bullets or slide-style notes.
+
+Equations are first-class source blocks. Give every display equation an `E001`, `E002`, ... anchor and put valid inline math inside `$...$` or display math inside `$$...$$`. If the expression cannot be transcribed confidently, crop the original formula into `assets/equations/`, show that image in `paper.md`, and label any best-effort LaTeX as low confidence. Never guess missing symbols or leave commands such as `\\frac` and `\\sum` outside a math delimiter.
 
 The reading file should help a reader move between:
 
@@ -58,4 +61,5 @@ Good output feels like a paper reader, not a machine translation dump. It should
 - read the paper in two languages
 - see where a claim came from
 - inspect the nearby figure or table
+- read equations directly in the Markdown viewer or inspect the original crop when transcription is uncertain
 - move through a complete Markdown file without losing source traceability

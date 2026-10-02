@@ -1,0 +1,35 @@
+{
+  "skill_name": "nature-paper-card",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Turn this methods paper into a complete Paper Card. Explain why each module exists, which ablation supports it, where the experimental conclusions stop, and propose testable research ideas without claiming novelty.",
+      "expected_output": "A paper-card.md with Sections 01-16, source-grounded method and module analysis, experiment-to-claim mapping, bounded conclusions, separated author limitations and Agent analysis, and hypothesis-labelled research candidates."
+    },
+    {
+      "id": 2,
+      "prompt": "I currently have only the abstract and metadata. Generate a preliminary Paper Card without guessing any unavailable information.",
+      "expected_output": "A visibly Partial Paper Card that identifies Abstract-only coverage, preserves all Sections 01-16 headings, fills only supported fields, and marks unseen methods, figures, experiments, limitations, and ideas as not assessable or provisional."
+    },
+    {
+      "id": 3,
+      "prompt": "Generate a Paper Card for this experimental science paper. Separate author-acknowledged limitations from your critical analysis, and determine whether the evidence supports association, necessity, sufficiency, or mechanism.",
+      "expected_output": "A discovery-oriented Paper Card with causal-strength discipline, figure/evidence pointers, author-stated limitations isolated in Section 12, and falsifiable Agent analysis in Section 13."
+    },
+    {
+      "id": 4,
+      "prompt": "Write the Paper Card in Chinese for this algorithm paper, which also introduces a major training dataset. Distinguish PDF page indices from printed page labels and audit both the system and dataset contributions.",
+      "expected_output": "A Chinese Paper Card using a primary methods lens plus a secondary resource lens, localized headings, unambiguous PDF page pointers, complete figure/table inventory, and separate card-completeness and context-verification statuses."
+    },
+    {
+      "id": 5,
+      "prompt": "The bundled preparation script cannot extract reliable page indices from this paper, but section headings, Figure 2, Table 1, and the Methods text are readable. Generate the Paper Card without writing any replacement Python.",
+      "expected_output": "A structure-grounded Paper Card that declares the canonical locator mode, uses section/figure/table/equation pointers without page numbers, records the preparation failure, and runs the bundled auditor without a source bundle."
+    },
+    {
+      "id": 6,
+      "prompt": "Only the abstract and bibliographic metadata are available. Generate the most honest Paper Card possible without inventing methods, experiments, figures, tables, limitations, or page numbers.",
+      "expected_output": "A source-limited partial Paper Card using only Abstract or Metadata pointers, explicit not-assessable markers, no page citations, and a structure-only audit warning that source-inventory coverage could not be checked."
+    }
+  ]
+}

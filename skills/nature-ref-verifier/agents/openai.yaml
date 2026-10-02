@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Reference Verifier"
+  short_description: "Verify scholarly references across independent sources"
+  default_prompt: "Use $nature-ref-verifier to verify every field of these references across independent scholarly sources."

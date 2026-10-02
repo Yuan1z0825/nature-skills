@@ -1,42 +1,52 @@
 # `nature-academic-search` 技能
 
-`nature-academic-search` 是面向 Claude Code / Codex 工作流的学术检索技能包，集成 CrossRef、PubMed、arXiv、Scopus 和 ScienceDirect 文献数据源。
+[English](README_EN.md)
 
-## 功能
+`nature-academic-search` 用于多源学术检索、文献元数据核查、引用格式生成、严格他引审计和高影响力引用者分析。
 
-- **多源并发搜索**：默认查询 CrossRef、PubMed、arXiv，并合并返回结果。
-- **按 ID 获取详情**：支持 DOI、PMID、arXiv ID 自动识别。
-- **格式化引用**：支持 APA、Nature、IEEE、Vancouver 等风格。
-- **MeSH 词表查询**：辅助构建精准 PubMed 检索式。
-- **文献管理脚本**：支持 `.nbib`、`.ris`、`.bib`、`.enw` 格式互转。
-- **Scopus / ScienceDirect**：支持论文、作者、机构、期刊、引用概览、PlumX 指标和 ScienceDirect 元数据检索。
+## 适合用它做什么
 
-## MCP 运行
+- 在 CrossRef、PubMed、arXiv、Scopus、ScienceDirect 等来源中检索论文。
+- 根据 DOI、PMID 或 arXiv ID 获取结构化文献信息。
+- 生成 Nature、APA、IEEE、Vancouver 等引用格式。
+- 构建 MeSH 检索式，辅助医学和生命科学主题检索。
+- 审计目标论文的严格他引，排除自引、团队引和明显合作网络引用。
+- 识别院士、Fellow、高被引学者、院校领导或领域专家如何引用目标论文。
 
-插件默认通过 `uv` 启动隔离运行环境：
+## 典型请求
 
-```bash
-uv run --no-project --directory <mcp-server> --with "mcp>=1.0.0,<2.0.0" --with "requests>=2.28.0,<3.0.0" --with "toml>=0.10.2,<2.0.0" --with "lxml>=4.9.0,<6.0.0" --with "pybliometrics>=4.4.1,<5.0.0" python academic_search_server.py
-```
+- “帮我查这篇论文的严格他引，并列出高影响力引用者。”
+- “按这个主题找 20 篇近五年的 Nature/Science/Cell 相关论文。”
+- “把这些 DOI 转成 Nature 格式引用，并导出 RIS。”
+- “为 PubMed 检索式补 MeSH 词和同义词。”
 
-PubMed 需要在环境变量 `PUBMED_EMAIL` 或 `mcp-server/config.toml` 中配置邮箱。Scopus / ScienceDirect 是可选 provider，复用本机 `pybliometrics` 配置，默认读取 `~/.config/pybliometrics.cfg`；不要把 Elsevier API key 写入插件文件。
+## 你需要提供
 
-`search_papers` 只有在 `sources` 显式包含 `scopus` / `sciencedirect` 时才会调用 Elsevier-backed provider，以避免无意消耗 Elsevier API 配额。
+- 检索主题、关键词、时间范围、期刊范围或目标文献 DOI。
+- 是否允许使用 Scopus / ScienceDirect 等需要本机配置的来源。
+- 严格他引的排除口径，例如是否排除同机构、共同作者或课题组网络。
 
-## MCP 工具
+## 产出
 
-| 工具 | 说明 |
-|------|------|
-| `search_papers` | 默认三源并发搜索；可显式添加 Scopus / ScienceDirect |
-| `get_paper_by_id` | 按 DOI、PMID 或 arXiv ID 获取详情 |
-| `get_citation` | 生成格式化引用 |
-| `lookup_mesh` | 查询 MeSH 词表 |
-| `search_scopus` | Scopus 高级检索 |
-| `get_scopus_abstract` | Scopus 摘要与详情元数据 |
-| `get_scopus_citation_overview` | Scopus 引用概览 |
-| `search_scopus_authors` / `get_scopus_author` | 作者检索与详情 |
-| `search_scopus_affiliations` / `get_scopus_affiliation` | 机构检索与详情 |
-| `search_scopus_serial_titles` / `get_scopus_serial_title` | 期刊与连续出版物检索和详情 |
-| `get_scopus_plumx_metrics` | PlumX 指标 |
-| `search_sciencedirect` | ScienceDirect 检索 |
-| `get_sciencedirect_article_metadata` | ScienceDirect 文章元数据 |
+- 去重后的文献表，包含标题、作者、年份、期刊、DOI 和来源。
+- 引用格式文本或 `.ris`、`.bib`、`.nbib`、`.enw` 等文献管理文件。
+- 严格他引统计表和引用上下文摘要。
+- 查询策略、数据源说明和无法验证的条目列表。
+
+## 运行和依赖
+
+- PubMed 检索需要配置 `PUBMED_EMAIL` 或 `mcp-server/config.toml`。
+- Scopus / ScienceDirect 依赖本机 `pybliometrics` 配置，默认读取 `~/.config/pybliometrics.cfg`。
+- 不要把 Elsevier API key 写入仓库文件；只在本机安全配置中保存。
+
+## 边界
+
+- 二级学术索引只能作为发现线索，关键字段应回到 DOI、PubMed、出版社页面或数据库记录核实。
+- 严格他引判断需要明确排除规则；没有作者/机构信息时会标注不确定。
+- 无权限数据库不会被绕过，只会报告缺失来源或需要用户登录。
+
+## 相关技能
+
+- `nature-citation`：为手稿 claim 匹配 Nature/CNS/Cell 支撑文献。
+- `nature-literature-pipeline`：把一次性检索升级为持续文献监测。
+- `nature-ref-verifier`：逐条核查参考文献字段。

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Nature Shared References"
+  short_description: "Shared references for dependent Nature Skills only"
+  default_prompt: "Use $nature-shared only as a support package requested by another Nature Skill."
+policy:
+  allow_implicit_invocation: false

@@ -1,10 +1,27 @@
 # Backend Selection
 
-At the start of a figure task, ask the user to choose **Python or R** if they have
-not already specified a backend. This is a blocking gate: stop after asking and wait
-for the user's answer. Do not infer Python just because the task involves simulation,
-NumPy-like data, or custom layout, and do not infer R just because the task is biological
-or omics-adjacent.
+## Contents
+
+- [Quick decision table](#quick-decision-table)
+- [Backend exclusivity rule](#backend-exclusivity-rule)
+- [Default stacks](#default-stacks)
+- [Mixed workflow rule](#mixed-workflow-rule)
+- [Recommendation language](#recommendation-language)
+
+
+Backend selection applies only to rendering or editing plotting code. Reuse a choice already established in the same task and its follow-ups; do not ask again merely because a new message omits the language. Read-only figure review and backend-independent data inspection may proceed without this choice. If the backend remains unresolved, retain the one-time Python/R question and pause only dependent plotting steps. Explicit approval requirements and backend exclusivity remain in force.
+
+At the start of a plotting task, resolve the user's preferred backend in this order:
+
+1. explicit Python/R choice in the current request;
+2. clearly language-specific input file or workflow;
+3. choice already established in this task, then saved preference from `scripts/nature_figure_backend.py get`;
+4. if neither exists, ask **Python or R? I will remember this as your default.**
+
+Pause dependent plotting steps after asking and wait for the user's answer; continue independent inspection. After the answer, save it with
+`scripts/nature_figure_backend.py set python` or `scripts/nature_figure_backend.py set r`.
+Do not infer Python just because the task involves simulation, NumPy-like data, or
+custom layout, and do not infer R just because the task is biological or omics-adjacent.
 
 Use the decision table only in either of these cases:
 
@@ -21,8 +38,9 @@ Use the decision table only in either of these cases:
 | The user provides an R template collection or an existing R plotting workflow | The user wants a self-contained script with matplotlib/seaborn/statsmodels and no R dependency |
 | Heatmap annotations are biologically rich and multi-layered | Image panels and quantitative panels need tight pixel/axis control |
 
-If either backend can do the job, honor the user's preference. Do not switch
-backends for aesthetics alone.
+If either backend can do the job, honor the user's saved preference. Do not switch
+backends for aesthetics alone. If the user explicitly switches backend, save the new
+preference.
 
 ## Backend exclusivity rule
 

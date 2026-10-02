@@ -1,0 +1,44 @@
+name: Update star history
+
+on:
+  schedule:
+    # Every three calendar days at 02:17 UTC.
+    - cron: "17 2 */3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-star-history-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update-star-history:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Generate static star history
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/generate-star-history.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --output assets/star-history.svg \
+            --cache-bust-readme README.md \
+            --cache-bust-readme README_EN.md
+
+      - name: Commit updated chart
+        run: |
+          if git diff --quiet -- assets/star-history.svg 'assets/star-history-*.svg' README.md README_EN.md; then
+            echo "Star history is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- assets/star-history.svg 'assets/star-history-*.svg' README.md README_EN.md
+          git commit -m "chore: update star history"
+          git push

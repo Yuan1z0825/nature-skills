@@ -1,5 +1,18 @@
 # Introduction Writing Guide
 
+## Contents
+
+- [Goal](#goal)
+- [Introduction Logic Map](#introduction-logic-map)
+- [How to Think About Introduction: Backward First, Then Forward](#how-to-think-about-introduction-backward-first-then-forward)
+- [Section Skeleton](#section-skeleton)
+- [Part A: Introduce Task and Application](#part-a-introduce-task-and-application)
+- [Part B: Introduce Technical Challenge for Previous Methods (Very Important)](#part-b-introduce-technical-challenge-for-previous-methods-very-important)
+- [Part C: Introduce Our Pipeline for Solving the Challenge](#part-c-introduce-our-pipeline-for-solving-the-challenge)
+- [Example Bank](#example-bank)
+- [Quick Quality Checklist](#quick-quality-checklist)
+
+
 ## Goal
 
 Write a strong introduction in three steps:

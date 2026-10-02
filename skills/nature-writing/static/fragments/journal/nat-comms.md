@@ -2,7 +2,7 @@
 
 ## Read the shared facts first
 
-Open `../../../../_shared/journal-formats/nat-comms.md` for the authoritative formatting facts: word limits, abstract rules, figure specs, reference style, mandatory statements, and common desk-rejection patterns.
+Open `../../../../nature-shared/journal-formats/nat-comms.md` for the authoritative formatting facts: word limits, abstract rules, figure specs, reference style, mandatory statements, and common desk-rejection patterns.
 
 The notes below are the **drafting action layer** on top of those facts.
 
@@ -19,7 +19,7 @@ Open-access, broader than a subfield journal, more specialist-tolerant than *Nat
 
 ## Pre-drafting word budget (Articles)
 
-The ~5,000-word cap **includes Methods**. Before drafting any section, propose a budget and confirm with the user:
+The ~5,000-word cap **includes Methods**. For a new manuscript or substantial restructuring, reuse an established word budget or propose one as a working assumption. Ask only if it conflicts with the requested scope or an explicit author constraint; do not require budget approval for a local section edit:
 
 | Section | Suggested budget |
 |---|---|

@@ -1,0 +1,2 @@
+id	project	title	doi	year	venue	publisher	failure_stage	status	source_url	current_url	next_action	notes
+1	example-project	Example article title	10.xxxx/example	2026	Example Journal	Example Publisher	publisher_redirect	carsi_waiting_user	https://example.com/article	https://login.university.example/	user_complete_institution_login_in_chrome	Complete institutional login in Chrome, then retry the same tab.

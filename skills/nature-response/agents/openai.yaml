@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Response"
+  short_description: "Draft isolated reviewer responses and revision packages"
+  default_prompt: "Use $nature-response to prepare mutually isolated reviewer responses and a consistent revision package."

@@ -1,4 +1,4 @@
 [academic-search]
-trigger = ["查文献", "搜论文", "检索", "导入EndNote", "导出RIS", "检查参考文献", "验证DOI", "验证引用", "相关文献", "找类似论文", "构建检索式", "MeSH", "去重", "search papers", "find articles", "academic search", "literature search", "verify references", "check DOI", "verify citations", "download citation", "export .nbib", "export .ris", "BibTeX", "DOI", "PMID"]
+trigger = ["查文献", "搜论文", "检索", "导入EndNote", "导出RIS", "检查参考文献", "验证DOI", "验证引用", "相关文献", "找类似论文", "构建检索式", "MeSH", "去重", "严格他引", "他引判定", "排除自引", "谁引用了我的文章", "引用我的文章的人有没有大牛", "文章引用表", "指定文章引用数", "严格他引数", "整理成表格", "院士引用", "校长引用", "院长引用", "杰青引用", "长江学者引用", "Fellow引用", "search papers", "find articles", "academic search", "literature search", "verify references", "check DOI", "verify citations", "strict other citation", "independent citation audit", "article citation table", "citation metrics table", "strict other-citation count", "influential citer", "citation context", "Fellow citation", "download citation", "export .nbib", "export .ris", "BibTeX", "DOI", "PMID"]
 priority = 5
 suppress_active_skills = ["lit-process"]

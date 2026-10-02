@@ -202,6 +202,20 @@ def validate(data: dict) -> list[Finding]:
     if abstract_figure not in figure_numbers:
         add(findings, "ERROR", "ABSTRACT_FIGURE", "摘要附图编号未指向现有附图。")
     for figure in figures:
+        node_ids = [str(node.get("id", "")) for node in figure.get("nodes", [])]
+        seen_node_ids = set()
+        duplicate_node_ids = set()
+        for node_id in node_ids:
+            if node_id in seen_node_ids:
+                duplicate_node_ids.add(node_id)
+            seen_node_ids.add(node_id)
+        for node_id in sorted(duplicate_node_ids):
+            add(
+                findings,
+                "ERROR",
+                "DUPLICATE_FIGURE_NODE_ID",
+                f"图{figure.get('number')}的节点ID重复：{node_id!r}。",
+            )
         if not figure.get("source_ids"):
             add(findings, "WARNING", "FIGURE_SOURCE", f"图{figure.get('number')}缺少来源ID或重绘依据。")
         for source_id in figure.get("source_ids", []):

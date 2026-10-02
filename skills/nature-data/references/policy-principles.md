@@ -1,5 +1,16 @@
 # Policy Principles
 
+## Contents
+
+- [Governing rules](#governing-rules)
+- [Minimal dataset test](#minimal-dataset-test)
+- [Availability routes](#availability-routes)
+- [Data, code, materials, protocols](#data-code-materials-protocols)
+- [Sensitive and human-participant data](#sensitive-and-human-participant-data)
+- [Submission-stage checks](#submission-stage-checks)
+- [Source notes](#source-notes)
+
+
 Use this file when deciding what a Nature-ready data statement must disclose.
 
 ## Governing rules
@@ -62,6 +73,10 @@ Data Availability is not a substitute for code, materials, or protocol availabil
 - For unique biological materials, reagents, cell lines, plasmids, or model organisms, use
   persistent identifiers where available and state distribution restrictions separately.
 - For protocols, cite protocol repositories or include enough method detail for reproducibility.
+
+For a flagship Nature Article, load `nature-article-requirements.md` and apply
+its separate Data Availability/Code Availability placement, mandatory-deposition
+and reviewer-access gates.
 
 ## Sensitive and human-participant data
 

@@ -1,5 +1,5 @@
 name: nature-citation
-version: 2.0.0
+version: 2.1.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a citation request.
@@ -12,15 +12,16 @@ description: >
 # split is core (always loaded) plus on-demand references. Heavy, only-sometimes-
 # needed material (the script flag reference and long-article batching strategy)
 # lives in references so a normal short run stays cheap. nature-citation does not
-# use the prose-oriented _shared layer.
+# use the prose-oriented nature-shared layer.
 
 always_load:
   - static/core/principles.md
-  - static/core/chinese-mode.md
   - static/core/workflow.md
 
 references:
   on_demand:
+    - condition: the user writes Chinese or requests Chinese guidance
+      path: static/core/chinese-mode.md
     - condition: running nature_citation.py — full flag list, long-article batch strategy, quick-guide tables
       path: references/script-usage.md
     - condition: translating a manuscript claim into search queries and support grades

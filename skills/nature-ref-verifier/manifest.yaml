@@ -1,0 +1,19 @@
+name: nature-ref-verifier
+version: 1.0.1
+description: >
+  Declarative manifest for the multi-source reference verification workflow.
+  SKILL.md carries the core DOI/title/source-check procedure; pattern libraries
+  are loaded only when the user needs batch diagnosis, severity examples, or
+  field-specific correction guidance.
+
+# Design note: reference verification can run on a single citation or a full
+# bibliography. Keep the default path lightweight and open pattern references
+# only for ambiguous or batch cases.
+
+always_load:
+  - SKILL.md
+
+references:
+  on_demand:
+    - condition: diagnosing recurring bibliography errors, field-level mismatch patterns, DOI/title conflicts, author-order anomalies, page-range drift, or batch report wording
+      path: references/common-patterns.md

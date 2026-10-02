@@ -1,5 +1,17 @@
 # 2026 Nature Sample Observations
 
+## Contents
+
+- [Archetype 1: Schematic-led composite](#archetype-1-schematic-led-composite)
+- [Archetype 2: Dark image plate](#archetype-2-dark-image-plate)
+- [Archetype 3: Clinical triptych](#archetype-3-clinical-triptych)
+- [Archetype 4: Dense categorical physical-science panel](#archetype-4-dense-categorical-physical-science-panel)
+- [Archetype 5: Asymmetric mixed-modality figure](#archetype-5-asymmetric-mixed-modality-figure)
+- [Cross-cutting Nature rules from the sample](#cross-cutting-nature-rules-from-the-sample)
+- [Palette guidance by modality](#palette-guidance-by-modality)
+- [What not to copy blindly](#what-not-to-copy-blindly)
+
+
 This note captures page-level figure patterns observed from a local 2026 sample of `Nature`
 papers, plus one `Nature Biomedical Engineering` paper used as a clinical / ML-adjacent
 cross-check.

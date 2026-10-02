@@ -13,3 +13,9 @@ If the user asks for side-by-side revision, provide:
 - `Why changed`
 
 If any paragraph's structural problem could not be fixed without inventing content, say so under `Revision notes:` instead of papering over it.
+
+When the main-text discipline is triggered, add a compact
+`Main-text discipline audit:` that identifies material kept, replaced,
+compressed, relocated to SI/caption, or deleted; states which descriptive and
+primary inferential quantities remain in the main text; and reports the
+before/after word count. Do not bury the polished prose under the audit.

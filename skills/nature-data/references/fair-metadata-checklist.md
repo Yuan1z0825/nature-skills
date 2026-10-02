@@ -1,5 +1,23 @@
 # FAIR Metadata Checklist
 
+## Contents
+
+- [Quick FAIR test](#quick-fair-test)
+- [DataCite core fields](#datacite-core-fields)
+- [Dataset README template](#dataset-readme-template)
+- [Summary](#summary)
+- [Files](#files)
+- [Variables and units](#variables-and-units)
+- [Methods and provenance](#methods-and-provenance)
+- [Software and environment](#software-and-environment)
+- [Access and licence](#access-and-licence)
+- [Citation](#citation)
+- [File organization](#file-organization)
+- [Provenance prompts](#provenance-prompts)
+- [Licence guidance](#licence-guidance)
+- [Final audit](#final-audit)
+
+
 Use this file to audit whether a dataset deposit is findable, accessible, interoperable, and
 reusable enough for a Nature-style submission.
 

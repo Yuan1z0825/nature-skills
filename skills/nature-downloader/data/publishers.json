@@ -1,0 +1,23 @@
+{
+  "elsevier": {
+    "name": "Elsevier / ScienceDirect",
+    "config_url": "https://dev.elsevier.com/",
+    "doi_pattern": "^10\\.(?:1016|1053|1067|1072|1097|1205|1383|1532|1588|1600|1618|2016|3168)/",
+    "marker_pattern": "elsevier|sciencedirect",
+    "credential_fields": ["api_key", "insttoken", "authtoken"]
+  },
+  "springer_nature": {
+    "name": "Springer Nature",
+    "config_url": "https://dev.springernature.com/docs/quick-start/api-access/",
+    "doi_pattern": "^10\\.(?:1007|1023|1038|1057|1134|1186|1365)/",
+    "marker_pattern": "springer|nature portfolio|biomed central|bmc\\b",
+    "credential_fields": ["api_key"]
+  },
+  "ieee": {
+    "name": "IEEE Xplore",
+    "config_url": "https://developer.ieee.org/member/register",
+    "doi_pattern": "^10\\.1109/",
+    "marker_pattern": "\\bieee\\b|ieeexplore",
+    "credential_fields": ["api_key", "fulltext_endpoint"]
+  }
+}

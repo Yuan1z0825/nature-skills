@@ -2,7 +2,7 @@
 
 ## Source routing
 
-See [Source Tiers & Reliability](../../references/source-tiers.md) for the complete reliability classification and fallback routing rules. The T1→T2→T3 fallback chain is the standard execution order across all workflows.
+See [Source Tiers & Reliability](../../references/source-tiers.md) for source retrieval and fallback routing. Local format conversion from supplied complete records does not require source retrieval, credentials, or network preflight. Retrieve metadata only when the requested verification or missing fields require it; do not invent absent fields.
 
 Quick guide:
 
@@ -40,7 +40,7 @@ export https_proxy=http://127.0.0.1:7890
 python scripts/preflight.py
 ```
 
-Run before batch operations to verify API endpoints are reachable.
+Run before batch network operations to verify API endpoints are reachable.
 
 ### Format converter dependencies
 

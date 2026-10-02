@@ -1,0 +1,9 @@
+{
+  "name": "nature-paper-to-patent-disclosure-tools",
+  "private": true,
+  "description": "Optional local install for @mermaid-js/mermaid-cli (mmdc); speeds up mermaid_render.py",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.4.0",
+    "puppeteer": "^23.1.1"
+  }
+}

@@ -1,0 +1,2827 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="pageTitle">Nature Skills — 面向全球学者的 AI 科研技能库</title>
+<meta name="description" data-i18n="pageDesc" data-i18n-attrs="content" content="Nature Skills 收录 19 个可复用 AI 科研技能，覆盖论文阅读、学术写作、审稿模拟、科研绘图、专利生成、文献检索等全流程。">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   Nature Skills — Design Token System
+   ============================================ */
+:root {
+  /* Palette */
+  --inkwell:        #0B192C;
+  --inkwell-light:  #132338;
+  --scholar-blue:   #1E3E62;
+  --paper:          #FDFBF7;
+  --gold-leaf:      #C8963E;
+  --gold-light:     #E8C97A;
+  --verdigris:      #5B8C7E;
+  --verdigris-pale: #D4E5DF;
+  --slate:          #6B7D8D;
+  --slate-light:    #9AABBA;
+  --linen:          #F0EDE6;
+  --mist:           #E8EDEB;
+  --card-bg:        #FFFFFF;
+  --border:         #E2E0DA;
+  --border-light:   #EDEBE6;
+  
+  /* Semantic */
+  --text-primary:    #1A1D23;
+  --text-secondary:  #5B6870;
+  --text-tertiary:   #8B959E;
+  --bg-primary:      var(--paper);
+  --bg-hero:         var(--inkwell);
+  --accent:          var(--gold-leaf);
+  --accent-soft:     var(--gold-light);
+  --link:            var(--verdigris);
+  
+  /* Type Scale */
+  --fs-display: clamp(2.8rem, 6vw, 4.8rem);
+  --fs-h1:      clamp(2rem, 4vw, 2.8rem);
+  --fs-h2:      clamp(1.5rem, 3vw, 2rem);
+  --fs-h3:      1.25rem;
+  --fs-body:    1rem;
+  --fs-small:   0.875rem;
+  --fs-caption: 0.75rem;
+  --fs-code:    0.85rem;
+  
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+  --space-3xl: 8rem;
+  
+  /* Layout */
+  --max-width: 1200px;
+  --content-padding: clamp(1rem, 5vw, 3rem);
+  
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-slow: 0.8s;
+  --duration-normal: 0.4s;
+  --duration-fast: 0.2s;
+  
+  /* Borders */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+/* Reset & Base */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+/* Selection */
+::selection {
+  background: var(--verdigris-pale);
+  color: var(--inkwell);
+}
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--verdigris);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+.display-font {
+  font-family: 'Crimson Text', 'Georgia', 'Times New Roman', serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Crimson Text', 'Georgia', 'Times New Roman', serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+/* ============================================
+   Layout Utilities
+   ============================================ */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--content-padding);
+}
+
+.section {
+  padding: var(--space-2xl) 0;
+}
+
+.section-label {
+  display: inline-block;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--verdigris);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: var(--space-md);
+}
+
+/* ============================================
+   Navigation
+   ============================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1rem var(--content-padding);
+  transition: background var(--duration-normal) var(--ease-out-expo),
+              box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.nav--scrolled {
+  background: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--border-light);
+}
+
+.nav__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav__logo {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--paper);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color var(--duration-fast);
+}
+
+.nav--scrolled .nav__logo { color: var(--inkwell); }
+
+.nav__links {
+  display: flex;
+  gap: var(--space-lg);
+  list-style: none;
+}
+
+.nav__links a {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--slate-light);
+  text-decoration: none;
+  transition: color var(--duration-fast);
+  position: relative;
+}
+
+.nav--scrolled .nav__links a { color: var(--slate); }
+
+.nav__links a:hover,
+.nav__links a:focus-visible { color: var(--gold-leaf); }
+
+.nav__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.5rem 1.25rem;
+  background: var(--gold-leaf);
+  color: var(--inkwell) !important;
+  border-radius: 100px;
+  font-size: var(--fs-small) !important;
+  font-weight: 600 !important;
+  text-decoration: none;
+  transition: background var(--duration-fast), transform var(--duration-fast);
+}
+
+.nav__cta:hover {
+  background: var(--gold-light);
+  transform: translateY(-1px);
+}
+
+/* Lang Toggle */
+.nav__lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: var(--slate-light);
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.nav--scrolled .nav__lang {
+  border-color: var(--border);
+  color: var(--slate);
+}
+
+.nav__lang:hover {
+  border-color: var(--gold-leaf);
+  color: var(--gold-leaf);
+  background: rgba(200, 150, 62, 0.08);
+}
+
+/* Mobile nav toggle */
+.nav__toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-sm);
+  color: var(--paper);
+}
+
+.nav--scrolled .nav__toggle { color: var(--inkwell); }
+
+@media (max-width: 768px) {
+  .nav__links { display: none; }
+  .nav__toggle { display: block; }
+  
+  .nav__links--open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(253, 251, 247, 0.95);
+    backdrop-filter: blur(16px);
+    padding: var(--space-lg) var(--content-padding);
+    gap: var(--space-md);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    align-items: stretch;
+  }
+  
+  .nav__links--open a { color: var(--inkwell); }
+  
+  .nav__lang { margin-top: var(--space-sm); }
+}
+
+/* ============================================
+   Hero Section
+   ============================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: var(--inkwell);
+  overflow: hidden;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--content-padding) var(--space-2xl);
+  width: 100%;
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.35rem 1rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  font-size: var(--fs-small);
+  color: var(--gold-light);
+  margin-bottom: var(--space-xl);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.hero__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-leaf);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.75); }
+}
+
+.hero__title {
+  font-family: 'Crimson Text', serif;
+  font-size: var(--fs-display);
+  font-weight: 700;
+  color: var(--paper);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  max-width: 14ch;
+  margin-bottom: var(--space-lg);
+}
+
+.hero__title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.hero__subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--slate-light);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: var(--space-xl);
+  font-weight: 350;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.hero__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 100px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+  cursor: pointer;
+  border: none;
+}
+
+.hero__btn--primary {
+  background: var(--gold-leaf);
+  color: var(--inkwell);
+}
+
+.hero__btn--primary:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(200, 150, 62, 0.3);
+}
+
+.hero__btn--secondary {
+  background: rgba(255,255,255,0.08);
+  color: var(--paper);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.hero__btn--secondary:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.hero__stats {
+  display: flex;
+  gap: var(--space-xl);
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.hero__stat-value {
+  font-family: 'Crimson Text', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--paper);
+  line-height: 1;
+}
+
+.hero__stat-label {
+  font-size: var(--fs-caption);
+  color: var(--slate-light);
+  margin-top: var(--space-xs);
+  letter-spacing: 0.03em;
+}
+
+.hero__scroll-hint {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--slate-light);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.08em;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+.hero__scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--slate-light), transparent);
+}
+
+/* ============================================
+   Philosophy Section
+   ============================================ */
+.philosophy {
+  background: var(--paper);
+  position: relative;
+}
+
+.philosophy__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.philosophy__intro {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: var(--space-lg);
+}
+
+.philosophy__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.philosophy__card {
+  padding: var(--space-lg);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.philosophy__card:hover {
+  border-color: var(--verdigris);
+  box-shadow: 0 4px 24px rgba(91, 140, 126, 0.08);
+}
+
+.philosophy__card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--verdigris-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+  font-size: 1.2rem;
+}
+
+.philosophy__card h3 {
+  margin-bottom: var(--space-sm);
+}
+
+.philosophy__card p {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .philosophy__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   Skills Section
+   ============================================ */
+.skills {
+  background: var(--linen);
+}
+
+.skills__header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto var(--space-2xl);
+}
+
+.skills__header p {
+  color: var(--text-secondary);
+  margin-top: var(--space-md);
+}
+
+.skills__categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.skills__cat-btn {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  background: var(--card-bg);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  font-family: 'Inter', sans-serif;
+}
+
+.skills__cat-btn:hover {
+  border-color: var(--verdigris);
+  color: var(--verdigris);
+}
+
+.skills__cat-btn--active,
+.skills__cat-btn--active:hover,
+.skills__cat-btn--active:focus-visible {
+  background: var(--verdigris);
+  color: #FFFFFF;
+  border-color: var(--verdigris);
+}
+
+.skills__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-md);
+}
+
+.skill-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--duration-normal) var(--ease-out-expo);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--verdigris), var(--gold-leaf));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.skill-card:hover::before {
+  transform: scaleX(1);
+}
+
+.skill-card:hover {
+  border-color: transparent;
+  box-shadow: 0 8px 40px rgba(11, 25, 44, 0.08);
+  transform: translateY(-2px);
+}
+
+.skill-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.skill-card__name {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: var(--fs-code);
+  font-weight: 500;
+  color: var(--scholar-blue);
+}
+
+.skill-card__badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 100px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.skill-card__badge--stable {
+  background: #D4EDDA;
+  color: #155724;
+}
+
+.skill-card__badge--beta {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+.skill-card__badge--draft {
+  background: #E2E3E5;
+  color: #383D41;
+}
+
+.skill-card__desc {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+}
+
+.skill-card__triggers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.skill-card__tag {
+  font-size: var(--fs-caption);
+  padding: 0.15rem 0.55rem;
+  border-radius: 100px;
+  background: var(--linen);
+  color: var(--slate);
+}
+
+.skill-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--verdigris);
+  text-decoration: none;
+  transition: gap var(--duration-fast);
+}
+
+.skill-card__link:hover { gap: var(--space-sm); }
+
+.skill-card__link-arrow {
+  transition: transform var(--duration-fast);
+}
+
+.skill-card__link:hover .skill-card__link-arrow {
+  transform: translateX(3px);
+}
+
+/* ============================================
+   Quick Start Section
+   ============================================ */
+.quickstart {
+  background: var(--paper);
+}
+
+.quickstart__header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto var(--space-2xl);
+}
+
+.quickstart__header p {
+  color: var(--text-secondary);
+  margin-top: var(--space-md);
+}
+
+.quickstart__table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+}
+
+.quickstart__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+}
+
+.quickstart__table th {
+  text-align: left;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--linen);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quickstart__table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+
+.quickstart__table tr:last-child td { border-bottom: none; }
+
+.quickstart__table td:first-child {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.quickstart__table code {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.82rem;
+  background: var(--linen);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--scholar-blue);
+}
+
+/* ============================================
+   Installation Section
+   ============================================ */
+.installation {
+  background: var(--inkwell);
+  color: var(--paper);
+  position: relative;
+  overflow: hidden;
+}
+
+.installation::before {
+  content: '';
+  position: absolute;
+  width: 38rem;
+  height: 38rem;
+  top: -24rem;
+  right: -12rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(91, 140, 126, 0.12), transparent 68%);
+  pointer-events: none;
+}
+
+.installation__header {
+  max-width: 720px;
+  position: relative;
+}
+
+.installation .section-label {
+  color: var(--gold-light);
+}
+
+.installation h2 { color: var(--paper); }
+
+.installation__intro {
+  color: var(--slate-light);
+  margin-top: var(--space-md);
+  max-width: 620px;
+  text-wrap: pretty;
+}
+
+.install-platform-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: var(--space-xl);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.install-platform-tab {
+  appearance: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--slate-light);
+  padding: 0.95rem 0.9rem 1.1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: color var(--duration-fast),
+              background var(--duration-fast),
+              border-color var(--duration-fast);
+}
+
+.install-platform-tab:hover {
+  color: var(--paper);
+  background: rgba(255,255,255,0.025);
+}
+
+.install-platform-tab[aria-selected="true"] {
+  color: var(--paper);
+  border-bottom-color: var(--gold-light);
+  background: linear-gradient(180deg, transparent, rgba(200,150,62,0.06));
+}
+
+.install-platform-tab__index {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.68rem;
+  color: var(--slate);
+  letter-spacing: 0.04em;
+}
+
+.install-platform-tab[aria-selected="true"] .install-platform-tab__index {
+  color: var(--gold-light);
+}
+
+.install-platform-tab__name {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.install-panel {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+  margin-top: var(--space-md);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: rgba(255,255,255,0.035);
+  box-shadow: 0 28px 80px rgba(3, 12, 24, 0.22);
+  position: relative;
+  z-index: 1;
+}
+
+.install-panel__guide {
+  padding: clamp(1.75rem, 4vw, 3rem);
+}
+
+.install-panel__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 0.75rem;
+  color: var(--gold-light);
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.install-panel__eyebrow::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.install-panel__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.install-panel__title {
+  color: var(--paper);
+  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  letter-spacing: -0.02em;
+}
+
+.install-panel__badge {
+  border-left: 2px solid var(--gold-light);
+  padding: 0.15rem 0.5rem;
+  background: rgba(200,150,62,0.08);
+  color: var(--gold-light);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.install-panel__description {
+  color: var(--slate-light);
+  font-size: var(--fs-small);
+  line-height: 1.65;
+  max-width: 52ch;
+}
+
+.install-steps {
+  list-style: none;
+  margin-top: var(--space-lg);
+  display: grid;
+  gap: 1.15rem;
+}
+
+.install-step {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.85rem;
+  position: relative;
+}
+
+.install-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 1.8rem;
+  bottom: -1rem;
+  left: 0.94rem;
+  width: 1px;
+  background: rgba(255,255,255,0.1);
+}
+
+.install-step__number {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,0.16);
+  color: var(--gold-light);
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.68rem;
+  background: var(--inkwell-light);
+  position: relative;
+  z-index: 1;
+}
+
+.install-step__title {
+  color: var(--paper);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.install-step__body {
+  color: var(--slate-light);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  margin-top: 0.2rem;
+}
+
+.install-doc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: var(--space-lg);
+  color: var(--gold-light);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--duration-fast), transform var(--duration-fast);
+}
+
+.install-doc-link:hover {
+  color: var(--paper);
+  transform: translateX(2px);
+}
+
+.install-panel__terminal {
+  min-width: 0;
+  background: #081321;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.install-terminal__bar {
+  min-height: 3.2rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.install-terminal__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.install-terminal__dots {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.install-terminal__dots span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+}
+
+.install-terminal__label {
+  color: var(--slate-light);
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.install-copy {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.04);
+  color: var(--paper);
+  padding: 0.45rem 0.7rem;
+  font: 500 var(--fs-caption) 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast);
+  white-space: nowrap;
+}
+
+.install-copy:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.24);
+}
+
+.install-copy:active { transform: translateY(1px); }
+
+.install-code {
+  margin: 0;
+  padding: clamp(1.4rem, 3vw, 2.25rem);
+  overflow: auto;
+  flex: 1;
+  color: #D8DEE9;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: clamp(0.72rem, 1vw, 0.82rem);
+  line-height: 1.8;
+  tab-size: 2;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.install-code .comment { color: #68798C; }
+.install-code .cmd { color: var(--gold-light); }
+
+.install-panel--refreshing {
+  animation: install-panel-in 320ms var(--ease-out-expo);
+}
+
+@keyframes install-panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .install-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .install-panel__terminal {
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+}
+
+@media (max-width: 680px) {
+  .install-platform-tabs {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+  }
+
+  .install-platform-tab {
+    flex: 0 0 auto;
+    min-width: 8.5rem;
+    scroll-snap-align: start;
+  }
+
+  .install-panel__guide {
+    padding: 1.5rem;
+  }
+
+  .install-terminal__bar {
+    padding-inline: 0.8rem;
+  }
+
+  .install-code {
+    padding: 1.25rem;
+  }
+}
+
+/* ============================================
+   Founder Quote
+   ============================================ */
+.founder-quote {
+  background: var(--paper);
+  text-align: center;
+  padding: var(--space-3xl) 0;
+}
+
+.founder-quote blockquote {
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--text-primary);
+  position: relative;
+}
+
+.founder-quote blockquote::before {
+  content: '"';
+  position: absolute;
+  top: -0.3em;
+  left: -0.15em;
+  font-size: 5rem;
+  color: var(--verdigris-pale);
+  font-family: 'Crimson Text', serif;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.founder-quote__attr {
+  margin-top: var(--space-lg);
+  font-size: var(--fs-small);
+  color: var(--text-tertiary);
+  font-style: normal;
+}
+
+.founder-quote__attr strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ============================================
+   Contributors Section
+   ============================================ */
+.contributors {
+  background: var(--linen);
+}
+
+.contributors__header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto var(--space-2xl);
+}
+
+.contributor-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.contributor-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  transition: all var(--duration-fast);
+}
+
+.contributor-card:hover {
+  border-color: var(--verdigris);
+  box-shadow: 0 4px 24px rgba(91, 140, 126, 0.08);
+}
+
+.contributor-card__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--verdigris), var(--scholar-blue));
+  margin: 0 auto var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Crimson Text', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.contributor-card__name {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+}
+
+.contributor-card__role {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.contributor-card__links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.contributor-card__links a {
+  font-size: var(--fs-caption);
+  color: var(--verdigris);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--duration-fast);
+}
+
+.contributor-card__links a:hover { color: var(--gold-leaf); }
+
+/* ============================================
+   Community Section
+   ============================================ */
+.community {
+  background: var(--paper);
+  text-align: center;
+}
+
+.community__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-lg);
+  max-width: 800px;
+  margin: var(--space-xl) auto 0;
+}
+
+.community-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  transition: all var(--duration-fast);
+}
+
+.community-card:hover {
+  border-color: var(--verdigris);
+  box-shadow: 0 4px 24px rgba(91, 140, 126, 0.08);
+}
+
+.community-card__icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-md);
+}
+
+.community-card h3 {
+  margin-bottom: var(--space-sm);
+}
+
+.community-card p {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.community-card img {
+  max-width: 160px;
+  border-radius: var(--radius-md);
+  margin-top: var(--space-md);
+}
+
+/* ============================================
+   Design Principles
+   ============================================ */
+.principles {
+  background: var(--linen);
+}
+
+.principles__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-md);
+  counter-reset: principle;
+}
+
+.principle-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  position: relative;
+  counter-increment: principle;
+}
+
+.principle-item::before {
+  content: '0' counter(principle);
+  font-family: 'Crimson Text', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--verdigris-pale);
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-lg);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.principle-item h3 {
+  margin-bottom: var(--space-sm);
+  font-size: 1.1rem;
+}
+
+.principle-item p {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ============================================
+   CTA Banner
+   ============================================ */
+.cta-banner {
+  background: var(--inkwell);
+  text-align: center;
+  padding: var(--space-3xl) 0;
+}
+
+.cta-banner h2 {
+  color: var(--paper);
+  margin-bottom: var(--space-md);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-banner p {
+  color: var(--slate-light);
+  margin-bottom: var(--space-xl);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-banner__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.cta-banner .hero__btn--primary {
+  background: var(--gold-leaf);
+}
+
+.cta-banner .hero__btn--secondary {
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.footer {
+  background: var(--inkwell-light);
+  color: var(--slate-light);
+  padding: var(--space-xl) 0;
+  font-size: var(--fs-small);
+}
+
+.footer__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--content-padding);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.footer__brand {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.footer__links {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.footer__links a {
+  color: var(--slate-light);
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+
+.footer__links a:hover { color: var(--gold-light); }
+
+/* ============================================
+   Animations
+   ============================================ */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-slow) var(--ease-out-expo),
+              transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.fade-in--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delay modifiers */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">Nature Skills</a>
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle navigation">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="18" x2="20" y2="18"/>
+      </svg>
+    </button>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="#skills" data-i18n="navSkills">技能库</a></li>
+      <li><a href="#quickstart" data-i18n="navQuickstart">快速开始</a></li>
+      <li><a href="#install" data-i18n="navInstall">安装指南</a></li>
+      <li><a href="#philosophy" data-i18n="navPhilosophy">设计哲学</a></li>
+      <li><a href="https://github.com/Yuan1z0825/nature-skills" class="nav__cta" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span data-i18n="navGitHub">GitHub</span>
+      </a></li>
+      <li><button class="nav__lang" id="langToggle" aria-label="切换到英文" data-i18n-attrs="aria-label" data-i18n="langLabel">EN</button></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <canvas class="hero__canvas" id="heroCanvas" aria-hidden="true"></canvas>
+  <div class="hero__content">
+    <div class="hero__badge">
+      <span class="hero__badge-dot"></span>
+      <span data-i18n="heroBadge">19 个可复用技能 · 5 大平台支持</span>
+    </div>
+    <h1 class="hero__title" data-i18n-html="heroTitle">
+      让 AI 成为<br>你的<em>科研伙伴</em>
+    </h1>
+    <p class="hero__subtitle" data-i18n="heroSubtitle">
+      Nature Skills 是为全球学者构建的 AI 科研技能库。从论文阅读、学术写作到审稿模拟、专利生成——每一步都有可复用的智能技能包。
+    </p>
+    <div class="hero__actions">
+      <a href="#install" class="hero__btn hero__btn--primary" data-i18n="heroBtnPrimary">开始安装</a>
+      <a href="#skills" class="hero__btn hero__btn--secondary" data-i18n="heroBtnSecondary">浏览全部技能 →</a>
+    </div>
+    <div class="hero__stats">
+      <div>
+        <div class="hero__stat-value">18</div>
+        <div class="hero__stat-label" data-i18n="heroStat1Label">科研技能</div>
+      </div>
+      <div>
+        <div class="hero__stat-value">5+</div>
+        <div class="hero__stat-label" data-i18n="heroStat2Label">支持平台</div>
+      </div>
+      <div>
+        <div class="hero__stat-value">∞</div>
+        <div class="hero__stat-label" data-i18n="heroStat3Label">科研场景</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero__scroll-hint" aria-hidden="true">
+    <span>SCROLL</span>
+    <div class="hero__scroll-line"></div>
+  </div>
+</section>
+
+<!-- Philosophy -->
+<section class="section philosophy" id="philosophy">
+  <div class="container">
+    <span class="section-label" data-i18n="philosophyLabel">设计哲学</span>
+    <div class="philosophy__grid">
+      <div>
+        <h2 data-i18n-html="philosophyTitle">不只是工具，<br>是科研范式的转变</h2>
+        <p class="philosophy__intro" data-i18n="philosophyIntro">
+          Nature Skills 的真正价值，或许并不在于那些具体的技能模块——它让很多人第一次意识到，原来可以借助 AI Agent 来操控本地电脑做科研。这种认知上的破壁和解放，远比 Skills 本身更有意义。
+        </p>
+        <p style="color: var(--text-secondary); line-height: 1.7;" data-i18n="philosophyPara">
+          在当下，几乎所有实用的工具，都可以被提炼为标准化的流程，而标准化的流程，恰好就能封装成可复用的技能。
+        </p>
+      </div>
+      <div class="philosophy__cards">
+        <div class="philosophy__card fade-in">
+          <div class="philosophy__card-icon">🧬</div>
+          <h3 data-i18n="philosophyCard1Title">机器可理解的设计</h3>
+          <p data-i18n="philosophyCard1Desc">技能设计思想本身就具备被 AI 理解并复用的能力——把仓库地址交给 Codex，它就能自动学习设计精髓，帮你创建新技能。</p>
+        </div>
+        <div class="philosophy__card fade-in">
+          <div class="philosophy__card-icon">🌍</div>
+          <h3 data-i18n="philosophyCard2Title">被世界看见的中国原创</h3>
+          <p data-i18n="philosophyCard2Desc">Nature Skills 的引用体系与设计哲学已被 Google DeepMind 关注并借鉴，中国开发者的原创思想正在开源土壤中生根发芽。</p>
+        </div>
+        <div class="philosophy__card fade-in">
+          <div class="philosophy__card-icon">📐</div>
+          <h3 data-i18n="philosophyCard3Title">标准化的科研流程</h3>
+          <p data-i18n="philosophyCard3Desc">一手来源驱动、显式胜过隐式、输出优先——每个技能都返回能直接使用的产物，而非泛泛建议。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section class="section skills" id="skills">
+  <div class="container">
+    <div class="skills__header">
+      <span class="section-label" data-i18n="skillsLabel">技能索引</span>
+      <h2 data-i18n="skillsTitle">覆盖科研全流程的 19 个技能</h2>
+      <p data-i18n="skillsDesc">从文献阅读到论文发表，每个环节都有对应的 AI 技能包。点击分类筛选，找到你需要的技能。</p>
+    </div>
+
+    <div class="skills__categories" id="skillCategories">
+      <button class="skills__cat-btn skills__cat-btn--active" data-category="all" data-i18n="catAll">全部</button>
+      <button class="skills__cat-btn" data-category="reading" data-i18n="catReading">📖 阅读与翻译</button>
+      <button class="skills__cat-btn" data-category="writing" data-i18n="catWriting">✍️ 写作与润色</button>
+      <button class="skills__cat-btn" data-category="review" data-i18n="catReview">🔍 审稿与回复</button>
+      <button class="skills__cat-btn" data-category="figures" data-i18n="catFigures">📊 图表与数据</button>
+      <button class="skills__cat-btn" data-category="literature" data-i18n="catLiterature">📚 文献与引用</button>
+      <button class="skills__cat-btn" data-category="output" data-i18n="catOutput">📤 产出与发布</button>
+    </div>
+
+    <div class="skills__grid" id="skillsGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Quick Start -->
+<section class="section quickstart" id="quickstart">
+  <div class="container">
+    <div class="quickstart__header">
+      <span class="section-label" data-i18n="qsLabel">快速开始</span>
+      <h2 data-i18n="qsTitle">一句话，开始你的科研</h2>
+      <p data-i18n="qsDesc">安装完成后，直接把任务描述交给 AI Agent。以下提示词可以直接复制使用。</p>
+    </div>
+    <div class="quickstart__table-wrap">
+      <table class="quickstart__table">
+        <thead>
+          <tr>
+            <th data-i18n="qsThGoal">想做什么</th>
+            <th data-i18n="qsThPrompt">直接这样说</th>
+          </tr>
+        </thead>
+        <tbody id="quickstartBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Installation -->
+<section class="section installation" id="install">
+  <div class="container">
+    <div class="installation__header">
+      <span class="section-label" data-i18n="installLabel">安装指南</span>
+      <h2 data-i18n="installTitle">选择你的平台，即刻开始</h2>
+      <p class="installation__intro" data-i18n="installDesc">
+        Nature Skills 支持 Claude Code、Codex、OpenClaw、OpenCode、Hermes 等主流 AI Agent 平台。
+      </p>
+    </div>
+
+    <div class="install-platform-tabs" id="installPlatformTabs" role="tablist" aria-label="选择安装平台">
+      <button class="install-platform-tab" type="button" role="tab" data-platform="codex" aria-controls="installPanel" aria-selected="true" tabindex="0">
+        <span class="install-platform-tab__index">01</span>
+        <span class="install-platform-tab__name">Codex</span>
+      </button>
+      <button class="install-platform-tab" type="button" role="tab" data-platform="claude" aria-controls="installPanel" aria-selected="false" tabindex="-1">
+        <span class="install-platform-tab__index">02</span>
+        <span class="install-platform-tab__name">Claude Code</span>
+      </button>
+      <button class="install-platform-tab" type="button" role="tab" data-platform="openclaw" aria-controls="installPanel" aria-selected="false" tabindex="-1">
+        <span class="install-platform-tab__index">03</span>
+        <span class="install-platform-tab__name">OpenClaw</span>
+      </button>
+      <button class="install-platform-tab" type="button" role="tab" data-platform="opencode" aria-controls="installPanel" aria-selected="false" tabindex="-1">
+        <span class="install-platform-tab__index">04</span>
+        <span class="install-platform-tab__name">OpenCode</span>
+      </button>
+      <button class="install-platform-tab" type="button" role="tab" data-platform="hermes" aria-controls="installPanel" aria-selected="false" tabindex="-1">
+        <span class="install-platform-tab__index">05</span>
+        <span class="install-platform-tab__name">Hermes</span>
+      </button>
+    </div>
+
+    <div class="install-panel" id="installPanel" role="tabpanel" tabindex="0" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- Founder Quote -->
+<section class="founder-quote">
+  <div class="container">
+    <blockquote data-i18n="quoteText">
+      Nature Skills 不是工具的成功，而是一种新的思考方式开始在人群中蔓延。我见证了许多人完成科研范式的转变——当他们惊叹"原来科研还可以这样去做"的那一刻，这种认知上的破壁和解放，远比 Skills 本身更让我觉得有意义。
+    </blockquote>
+    <p class="founder-quote__attr" data-i18n-html="quoteAttr">—— <strong>袁一哲</strong>，Nature Skills 创立者</p>
+  </div>
+</section>
+
+<!-- Design Principles -->
+<section class="section principles" id="principles">
+  <div class="container">
+    <span class="section-label" data-i18n="principlesLabel">设计原则</span>
+    <h2 style="margin-bottom: var(--space-xl);" data-i18n="principlesTitle">所有技能共同遵守的契约</h2>
+    <div class="principles__list">
+      <div class="principle-item fade-in">
+        <h3 data-i18n="p1Title">一手来源优先</h3>
+        <p data-i18n="p1Desc">规则基于已发表 Nature 内容、官方期刊指南或明确的本地来源，而非泛泛审美偏好。</p>
+      </div>
+      <div class="principle-item fade-in">
+        <h3 data-i18n="p2Title">显式胜过隐式</h3>
+        <p data-i18n="p2Desc">每条规则都说明理由，而不是只给断言。让 AI 和人类都能理解设计意图。</p>
+      </div>
+      <div class="principle-item fade-in">
+        <h3 data-i18n="p3Title">感知上下文</h3>
+        <p data-i18n="p3Desc">学术写作、图件、引用和回复都依赖上下文；不同论文部分使用不同的处理逻辑。</p>
+      </div>
+      <div class="principle-item fade-in">
+        <h3 data-i18n="p4Title">输出优先</h3>
+        <p data-i18n="p4Desc">每个技能都返回能直接使用的产物——可粘贴文本、SVG、PPTX、DOCX 或具体建议。</p>
+      </div>
+      <div class="principle-item fade-in">
+        <h3 data-i18n="p5Title">可扩展</h3>
+        <p data-i18n="p5Desc">每个技能自包含在自己的目录中，新增技能不要求修改既有技能，保持独立与灵活。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contributors -->
+<section class="section contributors" id="contributors">
+  <div class="container">
+    <div class="contributors__header">
+      <span class="section-label" data-i18n="contributorsLabel">核心贡献者</span>
+      <h2 data-i18n="contributorsTitle">来自社区的学术力量</h2>
+    </div>
+    <div class="contributor-cards">
+      <div class="contributor-card fade-in">
+        <div class="contributor-card__avatar">YZ</div>
+        <h3 class="contributor-card__name">袁一哲</h3>
+        <p class="contributor-card__role" data-i18n="contributor1Role">Nature Skills 创立者</p>
+        <div class="contributor-card__links">
+          <a href="https://github.com/Yuan1z0825" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+      <div class="contributor-card fade-in delay-1">
+        <div class="contributor-card__avatar">XM</div>
+        <h3 class="contributor-card__name">马昕瑞</h3>
+        <p class="contributor-card__role" data-i18n="contributor2Role">第二贡献者 · 东南大学土木工程学院博士</p>
+        <div class="contributor-card__links">
+          <a href="https://github.com/Travisma2233" target="_blank" rel="noopener">GitHub</a>
+          <a href="mailto:travisma2233@gmail.com">Email</a>
+          <a href="https://scholar.google.com/citations?user=CDydADoAAAAJ" target="_blank" rel="noopener">Google Scholar</a>
+          <a href="https://www.researchgate.net/profile/Xin-Rui-Ma" target="_blank" rel="noopener">ResearchGate</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Community -->
+<section class="section community" id="community">
+  <div class="container">
+    <span class="section-label" data-i18n="communityLabel">加入社区</span>
+    <h2 data-i18n="communityTitle">与全球学者一起探索 AI 科研</h2>
+    <div class="community__grid">
+      <div class="community-card fade-in">
+        <div class="community-card__icon">📹</div>
+        <h3 data-i18n="community1Title">视频教程</h3>
+        <p data-i18n="community1Desc">关注抖音获取详细视频教程，搜索 Nature Skills 即可找到。</p>
+        <img src="https://github.com/user-attachments/assets/37d4b0b6-3d22-4492-bb01-c0d9bae5a9e0" alt="抖音教程" width="160" height="160" loading="lazy">
+      </div>
+      <div class="community-card fade-in delay-1">
+        <div class="community-card__icon">💬</div>
+        <h3 data-i18n="community2Title">Agent 科研交流群</h3>
+        <p data-i18n="community2Desc">加入知识星球，与同行交流 AI Agent 科研经验。</p>
+        <img src="https://github.com/user-attachments/assets/28d1886a-69be-46bc-a1cb-777d7510ddab" alt="Agent科研交流群" width="160" height="160" loading="lazy">
+      </div>
+      <div class="community-card fade-in delay-2">
+        <div class="community-card__icon">⭐</div>
+        <h3>GitHub</h3>
+        <p data-i18n="community3Desc">在 GitHub 上 Star 本项目，提交 Issue 或 PR 参与贡献。</p>
+        <a href="https://github.com/Yuan1z0825/nature-skills" class="hero__btn hero__btn--primary" style="margin-top: var(--space-md); display: inline-flex; background: var(--inkwell); color: var(--paper);" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span data-i18n="community3Btn">Star on GitHub</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner">
+  <div class="container">
+    <h2 data-i18n="ctaTitle">准备好改变你的科研方式了吗？</h2>
+    <p data-i18n="ctaDesc">从 19 个技能中选择，或把整个技能库装进你的 AI Agent。</p>
+    <div class="cta-banner__actions">
+      <a href="#install" class="hero__btn hero__btn--primary" data-i18n="ctaBtnPrimary">开始安装</a>
+      <a href="https://github.com/Yuan1z0825/nature-skills" class="hero__btn hero__btn--secondary" target="_blank" rel="noopener" data-i18n="ctaBtnSecondary">GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer__inner">
+    <span class="footer__brand">Nature Skills</span>
+    <div class="footer__links">
+      <a href="https://github.com/Yuan1z0825/nature-skills" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/Yuan1z0825/nature-skills/blob/main/LICENSE" target="_blank" rel="noopener">Apache 2.0</a>
+      <a href="README.md" data-i18n="footerChinese">中文</a>
+      <a href="README_EN.md" data-i18n="footerEnglish">English</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================
+   i18n — Internationalization
+   ============================================ */
+const i18n = {
+  zh: {
+    pageTitle: 'Nature Skills — 面向全球学者的 AI 科研技能库',
+    pageDesc: 'Nature Skills 收录 19 个可复用 AI 科研技能，覆盖论文阅读、学术写作、审稿模拟、科研绘图、专利生成、文献检索等全流程。',
+
+    langLabel: 'EN',
+
+    navSkills: '技能库',
+    navQuickstart: '快速开始',
+    navInstall: '安装指南',
+    navPhilosophy: '设计哲学',
+    navGitHub: 'GitHub',
+
+    heroBadge: '19 个可复用技能 · 5 大平台支持',
+    heroTitle: '让 AI 成为<br>你的<em>科研伙伴</em>',
+    heroSubtitle: 'Nature Skills 是为全球学者构建的 AI 科研技能库。从论文阅读、学术写作到审稿模拟、专利生成——每一步都有可复用的智能技能包。',
+    heroBtnPrimary: '开始安装',
+    heroBtnSecondary: '浏览全部技能 →',
+    heroStat1Label: '科研技能',
+    heroStat2Label: '支持平台',
+    heroStat3Label: '科研场景',
+
+    philosophyLabel: '设计哲学',
+    philosophyTitle: '不只是工具，<br>是科研范式的转变',
+    philosophyIntro: 'Nature Skills 的真正价值，或许并不在于那些具体的技能模块——它让很多人第一次意识到，原来可以借助 AI Agent 来操控本地电脑做科研。这种认知上的破壁和解放，远比 Skills 本身更有意义。',
+    philosophyPara: '在当下，几乎所有实用的工具，都可以被提炼为标准化的流程，而标准化的流程，恰好就能封装成可复用的技能。',
+    philosophyCard1Title: '机器可理解的设计',
+    philosophyCard1Desc: '技能设计思想本身就具备被 AI 理解并复用的能力——把仓库地址交给 Codex，它就能自动学习设计精髓，帮你创建新技能。',
+    philosophyCard2Title: '被世界看见的中国原创',
+    philosophyCard2Desc: 'Nature Skills 的引用体系与设计哲学已被 Google DeepMind 关注并借鉴，中国开发者的原创思想正在开源土壤中生根发芽。',
+    philosophyCard3Title: '标准化的科研流程',
+    philosophyCard3Desc: '一手来源驱动、显式胜过隐式、输出优先——每个技能都返回能直接使用的产物，而非泛泛建议。',
+
+    skillsLabel: '技能索引',
+    skillsTitle: '覆盖科研全流程的 19 个技能',
+    skillsDesc: '从文献阅读到论文发表，每个环节都有对应的 AI 技能包。点击分类筛选，找到你需要的技能。',
+    catAll: '全部',
+    catReading: '📖 阅读与翻译',
+    catWriting: '✍️ 写作与润色',
+    catReview: '🔍 审稿与回复',
+    catFigures: '📊 图表与数据',
+    catLiterature: '📚 文献与引用',
+    catOutput: '📤 产出与发布',
+
+    skillDetail: '查看详情',
+
+    qsLabel: '快速开始',
+    qsTitle: '一句话，开始你的科研',
+    qsDesc: '安装完成后，直接把任务描述交给 AI Agent。以下提示词可以直接复制使用。',
+    qsThGoal: '想做什么',
+    qsThPrompt: '直接这样说',
+
+    installLabel: '安装指南',
+    installTitle: '选择你的平台，即刻开始',
+    installDesc: '选择平台后，按照三个步骤完成安装、验证和后续更新。所有方式都会保留完整技能目录。',
+    installTabsAria: '选择安装平台',
+    installStepsLabel: '三步完成',
+    installTerminalLabel: '快速安装命令',
+    installCopy: '复制命令',
+    installCopied: '已复制',
+    installCopyFailed: '复制失败',
+    installDocs: '查看完整安装文档',
+
+    quoteText: 'Nature Skills 不是工具的成功，而是一种新的思考方式开始在人群中蔓延。我见证了许多人完成科研范式的转变——当他们惊叹"原来科研还可以这样去做"的那一刻，这种认知上的破壁和解放，远比 Skills 本身更让我觉得有意义。',
+    quoteAttr: '—— <strong>袁一哲</strong>，Nature Skills 创立者',
+
+    principlesLabel: '设计原则',
+    principlesTitle: '所有技能共同遵守的契约',
+    p1Title: '一手来源优先',
+    p1Desc: '规则基于已发表 Nature 内容、官方期刊指南或明确的本地来源，而非泛泛审美偏好。',
+    p2Title: '显式胜过隐式',
+    p2Desc: '每条规则都说明理由，而不是只给断言。让 AI 和人类都能理解设计意图。',
+    p3Title: '感知上下文',
+    p3Desc: '学术写作、图件、引用和回复都依赖上下文；不同论文部分使用不同的处理逻辑。',
+    p4Title: '输出优先',
+    p4Desc: '每个技能都返回能直接使用的产物——可粘贴文本、SVG、PPTX、DOCX 或具体建议。',
+    p5Title: '可扩展',
+    p5Desc: '每个技能自包含在自己的目录中，新增技能不要求修改既有技能，保持独立与灵活。',
+
+    contributorsLabel: '核心贡献者',
+    contributorsTitle: '来自社区的学术力量',
+    contributor1Role: 'Nature Skills 创立者',
+    contributor2Role: '第二贡献者 · 东南大学土木工程学院博士',
+
+    communityLabel: '加入社区',
+    communityTitle: '与全球学者一起探索 AI 科研',
+    community1Title: '视频教程',
+    community1Desc: '关注抖音获取详细视频教程，搜索 Nature Skills 即可找到。',
+    community2Title: 'Agent 科研交流群',
+    community2Desc: '加入知识星球，与同行交流 AI Agent 科研经验。',
+    community3Desc: '在 GitHub 上 Star 本项目，提交 Issue 或 PR 参与贡献。',
+    community3Btn: 'Star on GitHub',
+
+    ctaTitle: '准备好改变你的科研方式了吗？',
+    ctaDesc: '从 19 个技能中选择，或把整个技能库装进你的 AI Agent。',
+    ctaBtnPrimary: '开始安装',
+    ctaBtnSecondary: 'GitHub →',
+
+    footerChinese: '中文',
+    footerEnglish: 'English',
+
+    statusStable: '稳定版',
+    statusBeta: '测试版',
+    statusDraft: '开发中',
+
+    qs1Goal: '读论文 / 中英文对照',
+    qs1Prompt: '把这篇 PDF 做成图文对应的中英文对照 Markdown reader。',
+    qs2Goal: '生成文献汇报 PPT',
+    qs2Prompt: '把这篇论文做成中文组会汇报 PPT，保留关键图件和来源标注。',
+    qs3Goal: '润色或翻译论文段落',
+    qs3Prompt: '把这段中文改写成 Nature 风格英文，保持学术含义不变。',
+    qs4Goal: '写摘要、引言或讨论',
+    qs4Prompt: '根据这些结果和图件，帮我起草 Nature 风格的摘要和引言。',
+    qs5Goal: '预投稿审稿模拟',
+    qs5Prompt: '从 Nature 审稿人视角评估这篇稿件，给出三份 reviewer reports。',
+    qs6Goal: '回复审稿意见',
+    qs6Prompt: '根据这封返修邮件，帮我写逐点回复、cover letter，并标出修改稿需要标红的位置。',
+    qs7Goal: '查文献与引用画像',
+    qs7Prompt: '整理这篇文章的引用数、严格他引数、DOI，并看引用者里有没有院士或领域大牛。',
+    qs8Goal: '做科研图或示意图',
+    qs8Prompt: '根据这段方法和结果，帮我生成投稿级科研图或论文示意图草稿。',
+
+    skillNatureReaderDesc: '生成带来源锚点、图文对应和中英文对照的全文 Markdown reader，支持 PDF 精准翻译。',
+    skillNaturePaperCardDesc: '精读单篇论文并生成有来源约束的 01–16 节 Paper Card，覆盖证据链、结论边界和可检验研究想法。',
+    skillNaturePolishingDesc: '将学术文本润色、重构或翻译为 Nature 风格英文，保持学术含义完全不变。',
+    skillNatureWritingDesc: '起草 Nature 风格手稿章节，基于证据和论证重建论文的学术逻辑。',
+    skillNatureProposalWriterDesc: 'proposal-first 科研写作状态机，先建立证据和论证契约，再起草或审查文本。',
+    skillNatureReviewerDesc: '从审稿人视角模拟 Nature 风格评审，输出三份 reviewer reports 和综合意见。',
+    skillNatureResponseDesc: '解析返修邮件，起草 cover letter、逐点回复审稿人、标红修改稿，提供 LaTeX 模板。',
+    skillNatureFigureDesc: '面向 Nature 期刊的 Python/R 投稿级科研图工作流，支持 OpenRouter GPT Image 2 生成论文示意图。',
+    skillNatureDataDesc: '准备 Data Availability statement、数据仓储方案和 FAIR 合规检查。',
+    skillNatureStatisticsDesc: '审查统计报告——覆盖样本量、p 值、多重比较、效应量、置信区间和图注统计。',
+    skillNatureCitationDesc: '检索严格限定在 Nature/CNS 系列的支撑文献，导出 ENW、RIS 或 Zotero RDF 格式。',
+    skillNatureAcademicSearchDesc: '多源文献检索、引用核验、严格他引审计、高影响力引用者画像和参考文献管理。',
+    skillNatureRefVerifierDesc: '参考文献多源交叉验证：逐字段对比作者/标题/年份/卷期/页码，标记冲突和偏差。',
+    skillNatureLiteraturePipelineDesc: '自动化文献发现管线：多源检索、六维评分、精读推送和本地归档，支持 cron 定时。',
+    skillNaturePaper2pptDesc: '从科研论文自动生成中文 PPTX 文献汇报 deck，保留关键图表和来源标注。',
+    skillNatureImage2pptDesc: '将幻灯片图片、扫描 PDF 和图片型 PPTX 重建为对象级可编辑 PowerPoint，并执行渲染 QA。',
+    skillNaturePaperToPatentDesc: '从论文或技术报告生成有证据约束的中国发明专利草稿，支持专利点挖掘和查新。',
+    skillNatureDownloaderDesc: '通过图书馆资源入口、CARSI 和开放获取路径合法获取学术全文 PDF。',
+    skillNatureExperimentLogDesc: '标准化记录实验材料，生成带 YAML frontmatter 的 Obsidian 实验日志并归档原始材料。',
+
+    skillTriggerNatureReader: ['nature reader', '全文 Markdown', '图文对应', '全文翻译'],
+    skillTriggerNaturePaperCard: ['nature paper card', '论文精读', 'Paper Card', '证据链'],
+    skillTriggerNaturePolishing: ['Nature style', '润色', 'academic writing', '论文英文'],
+    skillTriggerNatureWriting: ['Nature writing', '写摘要', '写引言', 'manuscript draft'],
+    skillTriggerNatureProposalWriter: ['researchwrite', 'proposal', '开题报告', '研究方案'],
+    skillTriggerNatureReviewer: ['Nature reviewer', '预投稿评审', 'reviewer report'],
+    skillTriggerNatureResponse: ['response to reviewers', 'rebuttal letter', '修回信', 'LaTeX 模板'],
+    skillTriggerNatureFigure: ['Nature figure', '投稿级图片', 'figures4papers', '论文示意图'],
+    skillTriggerNatureData: ['Data Availability', '数据可用性', 'repository', 'FAIR metadata'],
+    skillTriggerNatureStatistics: ['Nature statistics', '统计审查', 'p value', '图注统计'],
+    skillTriggerNatureCitation: ['Nature citation', 'CNS citation', '支撑文献', 'Zotero RDF'],
+    skillTriggerNatureAcademicSearch: ['search papers', '查文献', '严格他引', '引用者大牛'],
+    skillTriggerNatureRefVerifier: ['verify refs', '校验文献', 'check references', 'ref check'],
+    skillTriggerNatureLiteraturePipeline: ['literature pipeline', '每日文献', '文献推送', 'cron'],
+    skillTriggerNaturePaper2ppt: ['paper PPT', 'journal club', '论文汇报', 'paper to slides'],
+    skillTriggerNatureImage2ppt: ['图片转可编辑PPT', '截图还原PPT', '扫描PDF转PPTX', 'editable PowerPoint'],
+    skillTriggerNaturePaperToPatent: ['paper to patent', 'Chinese patent', '论文转专利', '技术交底书'],
+    skillTriggerNatureDownloader: ['download papers', '图书馆下载文献', 'CARSI', 'PDF 下载'],
+    skillTriggerNatureExperimentLog: ['实验日志', '记录实验', 'experiment log', 'Obsidian vault'],
+  },
+
+  en: {
+    pageTitle: 'Nature Skills — AI Research Skills for Global Scholars',
+    pageDesc: 'Nature Skills: 19 reusable AI research skills covering paper reading, academic writing, reviewer simulation, scientific plotting, patent drafting, and literature search.',
+
+    langLabel: '中文',
+
+    navSkills: 'Skills',
+    navQuickstart: 'Quick Start',
+    navInstall: 'Install',
+    navPhilosophy: 'Philosophy',
+    navGitHub: 'GitHub',
+
+    heroBadge: '19 Reusable Skills · 5 Platform Support',
+    heroTitle: 'Make AI Your<br><em>Research Partner</em>',
+    heroSubtitle: 'Nature Skills is an AI research skill library built for global scholars. From paper reading and academic writing to reviewer simulation and patent drafting — every step has a reusable intelligent skill pack.',
+    heroBtnPrimary: 'Get Started',
+    heroBtnSecondary: 'Browse All Skills →',
+    heroStat1Label: 'Research Skills',
+    heroStat2Label: 'Platforms',
+    heroStat3Label: 'Use Cases',
+
+    philosophyLabel: 'Philosophy',
+    philosophyTitle: 'Not Just Tools,<br>But a Paradigm Shift',
+    philosophyIntro: 'The real value of Nature Skills may not lie in any individual module. It has quietly opened a new door — letting many people realize for the first time that AI agents can operate local computers for research. This breakthrough in understanding and liberation of thought matters far more than the skills themselves.',
+    philosophyPara: 'In practice, almost every useful tool can be distilled into a standardized process, and standardized processes can be packaged as reusable skills.',
+    philosophyCard1Title: 'Machine-Understandable Design',
+    philosophyCard1Desc: 'The skill design philosophy itself is capable of being understood and reused by AI — give the repository URL to Codex, and it will automatically learn the design patterns to help you create new skills.',
+    philosophyCard2Title: 'Chinese Originality, Seen by the World',
+    philosophyCard2Desc: 'Nature Skills\' citation system and design philosophy have drawn attention from Google DeepMind and been referenced. Original ideas from Chinese developers are taking root and growing in the open-source ecosystem.',
+    philosophyCard3Title: 'Standardized Research Pipelines',
+    philosophyCard3Desc: 'Primary-source driven, explicit over implicit, output-first — every skill returns immediately usable artifacts, not vague suggestions.',
+
+    skillsLabel: 'Skill Index',
+    skillsTitle: '19 Skills Covering the Full Research Pipeline',
+    skillsDesc: 'From literature reading to paper publication, every stage has a corresponding AI skill pack. Click to filter by category.',
+    catAll: 'All',
+    catReading: '📖 Reading & Translation',
+    catWriting: '✍️ Writing & Polishing',
+    catReview: '🔍 Review & Response',
+    catFigures: '📊 Figures & Data',
+    catLiterature: '📚 Literature & Citations',
+    catOutput: '📤 Output & Publishing',
+
+    skillDetail: 'View Details',
+
+    qsLabel: 'Quick Start',
+    qsTitle: 'Start Your Research in One Sentence',
+    qsDesc: 'After installation, simply describe your task to the AI agent. These prompts are ready to copy and use.',
+    qsThGoal: 'What You Want',
+    qsThPrompt: 'Just Say This',
+
+    installLabel: 'Installation',
+    installTitle: 'Choose Your Platform, Get Started Now',
+    installDesc: 'Choose a platform, then follow three clear steps to install, verify, and keep your skills updated. Every route preserves complete skill directories.',
+    installTabsAria: 'Choose an installation platform',
+    installStepsLabel: 'Three-step setup',
+    installTerminalLabel: 'Quick install commands',
+    installCopy: 'Copy commands',
+    installCopied: 'Copied',
+    installCopyFailed: 'Copy failed',
+    installDocs: 'Read the full installation guide',
+
+    quoteText: 'Nature Skills is not the success of a tool, but the beginning of a new way of thinking spreading among people. I have witnessed many people complete a paradigm shift in research — when they exclaim "so research can be done this way," that breakthrough in understanding and liberation of thought matters far more to me than the skills themselves.',
+    quoteAttr: '— <strong>Yizhe Yuan</strong>, Founder of Nature Skills',
+
+    principlesLabel: 'Design Principles',
+    principlesTitle: 'The Contract All Skills Share',
+    p1Title: 'Primary Sources First',
+    p1Desc: 'Rules are based on published Nature content, official journal guidelines, or explicit local sources — not general aesthetic preferences.',
+    p2Title: 'Explicit Over Implicit',
+    p2Desc: 'Every rule states its reasoning, not just assertions. Both AI and humans can understand the design intent.',
+    p3Title: 'Context-Aware',
+    p3Desc: 'Academic writing, figures, citations, and responses all depend on context. Different paper sections use different logic.',
+    p4Title: 'Output-First',
+    p4Desc: 'Every skill returns immediately usable artifacts — pasteable text, SVG, PPTX, DOCX, or concrete recommendations.',
+    p5Title: 'Extensible',
+    p5Desc: 'Each skill is self-contained in its own directory. Adding a new skill should never require modifying existing ones.',
+
+    contributorsLabel: 'Core Contributors',
+    contributorsTitle: 'Academic Power from the Community',
+    contributor1Role: 'Founder of Nature Skills',
+    contributor2Role: 'Second Contributor · PhD Candidate, Southeast University',
+
+    communityLabel: 'Join Community',
+    communityTitle: 'Explore AI Research with Global Scholars',
+    community1Title: 'Video Tutorials',
+    community1Desc: 'Follow us on Douyin for detailed video tutorials — search "Nature Skills" to find us.',
+    community2Title: 'Agent Research Community',
+    community2Desc: 'Join our Knowledge Planet to exchange AI agent research experiences with peers.',
+    community3Desc: 'Star this project on GitHub, submit Issues or PRs to contribute.',
+    community3Btn: 'Star on GitHub',
+
+    ctaTitle: 'Ready to Transform Your Research?',
+    ctaDesc: 'Choose from 19 skills, or load the entire skill library into your AI agent.',
+    ctaBtnPrimary: 'Get Started',
+    ctaBtnSecondary: 'GitHub →',
+
+    footerChinese: '中文',
+    footerEnglish: 'English',
+
+    statusStable: 'Stable',
+    statusBeta: 'Beta',
+    statusDraft: 'Draft',
+
+    qs1Goal: 'Read a Paper / Bilingual Reader',
+    qs1Prompt: 'Turn this PDF into a figure-aware Chinese-English Markdown reader.',
+    qs2Goal: 'Generate a Paper Presentation',
+    qs2Prompt: 'Create a Chinese journal-club PPT from this paper, keeping key figures and source labels.',
+    qs3Goal: 'Polish or Translate a Paragraph',
+    qs3Prompt: 'Rewrite this Chinese paragraph into Nature-style academic English without changing the meaning.',
+    qs4Goal: 'Draft Abstract, Intro, or Discussion',
+    qs4Prompt: 'Using these results and figures, draft a Nature-style abstract and introduction.',
+    qs5Goal: 'Simulate Pre-Submission Review',
+    qs5Prompt: 'Evaluate this manuscript from a Nature reviewer perspective and produce three reviewer reports.',
+    qs6Goal: 'Respond to Reviewer Comments',
+    qs6Prompt: 'Use this revision email to draft point-by-point replies, a cover letter, and redline locations for the revised manuscript.',
+    qs7Goal: 'Check Citations & Citer Profiles',
+    qs7Prompt: 'Create a table with this paper\'s citation count, strict external citation count, DOI, and whether major scholars cited it.',
+    qs8Goal: 'Create Scientific Figures',
+    qs8Prompt: 'Use this method and result description to draft a publication-ready scientific figure or manuscript schematic.',
+
+    skillNatureReaderDesc: 'Generate a full-text Markdown reader with source anchors, figure-text alignment, and Chinese-English bilingual output with precise PDF translation.',
+    skillNaturePaperCardDesc: 'Deep-read one paper into a source-grounded Sections 01–16 Paper Card covering evidence chains, conclusion boundaries, and testable research ideas.',
+    skillNaturePolishingDesc: 'Polish, restructure, or translate academic text into Nature-style English while preserving academic meaning completely.',
+    skillNatureWritingDesc: 'Draft Nature-style manuscript sections, reconstructing the paper\'s academic logic based on evidence and argumentation.',
+    skillNatureProposalWriterDesc: 'A proposal-first research writing state machine: establish evidence, argumentation, and section contracts before drafting or reviewing text.',
+    skillNatureReviewerDesc: 'Simulate Nature-style peer review from a reviewer\'s perspective, outputting three reviewer reports and a comprehensive assessment.',
+    skillNatureResponseDesc: 'Parse revision emails, draft cover letters, point-by-point reviewer responses, redline revisions, and provide LaTeX templates.',
+    skillNatureFigureDesc: 'Publication-grade scientific figure workflow in Python/R for Nature journals, with separately noticed third-party figures4papers references, original templates, and OpenRouter GPT Image 2 schematic support.',
+    skillNatureDataDesc: 'Prepare Data Availability statements, data repository plans, and FAIR compliance checks.',
+    skillNatureStatisticsDesc: 'Review statistical reporting — covering sample size, p-values, multiple comparisons, effect sizes, confidence intervals, and figure legends.',
+    skillNatureCitationDesc: 'Retrieve supporting literature strictly limited to Nature/CNS series, exporting in ENW, RIS, or Zotero RDF formats.',
+    skillNatureAcademicSearchDesc: 'Multi-source literature search, citation verification, strict external citation audit, high-impact citer profiling, and reference management.',
+    skillNatureRefVerifierDesc: 'Multi-source cross-validation of references: field-by-field comparison of authors/title/year/volume/pages, flagging conflicts and deviations.',
+    skillNatureLiteraturePipelineDesc: 'Automated literature discovery pipeline: multi-source retrieval, six-dimension scoring, deep-reading push, and local archiving with cron scheduling.',
+    skillNaturePaper2pptDesc: 'Automatically generate Chinese PPTX journal club decks from research papers, preserving key figures and source annotations.',
+    skillNatureImage2pptDesc: 'Reconstruct slide images, scanned PDFs, and image-only PPTX files as object-level editable PowerPoint with rendered QA.',
+    skillNaturePaperToPatentDesc: 'Generate evidence-constrained Chinese invention patent drafts from papers or technical reports, with patent point mining and novelty search.',
+    skillNatureDownloaderDesc: 'Legally access academic full-text PDFs through library portals, CARSI, and open access paths.',
+    skillNatureExperimentLogDesc: 'Standardize recording of experimental materials, generate Obsidian experiment logs with YAML frontmatter, and archive raw materials.',
+
+    skillTriggerNatureReader: ['nature reader', 'full-text Markdown', 'figure-aware', 'bilingual translation'],
+    skillTriggerNaturePaperCard: ['nature paper card', 'deep-read paper', 'Paper Card', 'evidence chain'],
+    skillTriggerNaturePolishing: ['Nature style', 'polishing', 'academic writing', 'manuscript English'],
+    skillTriggerNatureWriting: ['Nature writing', 'abstract draft', 'introduction draft', 'manuscript draft'],
+    skillTriggerNatureProposalWriter: ['researchwrite', 'proposal', 'research plan', 'grant writing'],
+    skillTriggerNatureReviewer: ['Nature reviewer', 'pre-submission review', 'reviewer report'],
+    skillTriggerNatureResponse: ['response to reviewers', 'rebuttal letter', 'revision letter', 'LaTeX template'],
+    skillTriggerNatureFigure: ['Nature figure', 'publication plot', 'figures4papers', 'scientific schematic'],
+    skillTriggerNatureData: ['Data Availability', 'data repository', 'FAIR metadata'],
+    skillTriggerNatureStatistics: ['Nature statistics', 'statistical review', 'p value', 'figure legend stats'],
+    skillTriggerNatureCitation: ['Nature citation', 'CNS citation', 'supporting literature', 'Zotero RDF'],
+    skillTriggerNatureAcademicSearch: ['search papers', 'find articles', 'verify DOI', 'citer profiling'],
+    skillTriggerNatureRefVerifier: ['verify refs', 'check references', 'ref validation', 'ref check'],
+    skillTriggerNatureLiteraturePipeline: ['literature pipeline', 'daily literature', 'literature push', 'cron'],
+    skillTriggerNaturePaper2ppt: ['paper PPT', 'journal club', 'paper to slides'],
+    skillTriggerNatureImage2ppt: ['image to editable PowerPoint', 'reconstruct slide screenshot', 'scanned PDF to PPTX'],
+    skillTriggerNaturePaperToPatent: ['paper to patent', 'Chinese patent', 'patent draft', 'disclosure'],
+    skillTriggerNatureDownloader: ['download papers', 'library access', 'CARSI', 'PDF download'],
+    skillTriggerNatureExperimentLog: ['experiment log', 'lab notebook', 'Obsidian vault'],
+  }
+};
+
+let currentLang = 'zh';
+let activeInstallPlatform = 'codex';
+
+const installPlatformOrder = ['codex', 'claude', 'openclaw', 'opencode', 'hermes'];
+
+const installPlatformData = {
+  codex: {
+    name: 'Codex',
+    zh: {
+      badge: '推荐',
+      description: '通过 npx skills 发现并全局安装全部 Nature Skills，适合希望由 Codex 直接管理技能更新的用户。',
+      steps: [
+        ['查看技能', '先读取仓库中的可安装技能名称。'],
+        ['全局安装', '一次安装全部技能及共享支持包。'],
+        ['持续更新', '使用同一 CLI 拉取并同步后续版本。']
+      ],
+      code: `# 1. 查看可安装技能
+npx skills add Yuan1z0825/nature-skills --list
+
+# 2. 全局安装全部技能到 Codex
+npx skills add Yuan1z0825/nature-skills --global --agent codex --skill '*' --yes --copy
+
+# 3. 后续更新
+npx skills update --global --yes`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills#53-codex-安装方式'
+    },
+    en: {
+      badge: 'Recommended',
+      description: 'Use npx skills to discover and install the complete Nature Skills library globally, with future updates managed from the same CLI.',
+      steps: [
+        ['Inspect the library', 'List the installable skill names in the repository.'],
+        ['Install globally', 'Install every skill together with its shared support package.'],
+        ['Keep it current', 'Pull and sync future versions through the same CLI.']
+      ],
+      code: `# 1. List installable skills
+npx skills add Yuan1z0825/nature-skills --list
+
+# 2. Install every skill globally for Codex
+npx skills add Yuan1z0825/nature-skills --global --agent codex --skill '*' --yes --copy
+
+# 3. Update later
+npx skills update --global --yes`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/README_EN.md#53-codex-installation'
+    }
+  },
+  claude: {
+    name: 'Claude Code',
+    zh: {
+      badge: '完整目录',
+      description: '保留一个稳定的本地仓库，再把完整技能同步到 Claude Code 自动发现的技能目录。',
+      steps: [
+        ['克隆仓库', '把仓库放在稳定路径，避免后续 wrapper 或更新路径失效。'],
+        ['同步技能', '运行仓库脚本，将完整目录复制到 ~/.claude/skills。'],
+        ['验证并更新', '确认 SKILL.md 存在；以后拉取仓库后重新同步。']
+      ],
+      code: `# 1. 克隆到稳定路径
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. 首次同步全部技能
+~/ai-skills/nature-skills/scripts/autoupdate-skills.sh --force
+
+# 3. 验证安装
+test -f ~/.claude/skills/nature-reader/SKILL.md && echo "Nature Skills ready"`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills#52-claude-code-安装方式'
+    },
+    en: {
+      badge: 'Full directories',
+      description: 'Keep a stable local clone, then sync complete skill directories into the location Claude Code discovers automatically.',
+      steps: [
+        ['Clone once', 'Use a stable path so wrappers and future updates never lose their source.'],
+        ['Sync the skills', 'Run the repository script to copy complete directories into ~/.claude/skills.'],
+        ['Verify and update', 'Confirm SKILL.md exists; pull and re-run the sync script for future versions.']
+      ],
+      code: `# 1. Clone to a stable path
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. Sync every skill once
+~/ai-skills/nature-skills/scripts/autoupdate-skills.sh --force
+
+# 3. Verify the installation
+test -f ~/.claude/skills/nature-reader/SKILL.md && echo "Nature Skills ready"`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/README_EN.md#52-claude-code-installation'
+    }
+  },
+  openclaw: {
+    name: 'OpenClaw',
+    zh: {
+      badge: '符号链接',
+      description: '让 OpenClaw 的 workspace skill 目录指向稳定仓库，后续更新无需重复复制文件。',
+      steps: [
+        ['准备仓库', '将 Nature Skills 克隆到长期保留的本地路径。'],
+        ['连接技能', '把目标技能和 nature-shared 链接到 OpenClaw workspace。'],
+        ['后续更新', '在稳定仓库中执行 git pull，链接会自动读取新版。']
+      ],
+      code: `# 1. 准备稳定仓库
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. 连接一个技能及共享支持包
+mkdir -p ~/.openclaw/workspace/skills
+ln -s ~/ai-skills/nature-skills/skills/nature-reader ~/.openclaw/workspace/skills/nature-reader
+ln -s ~/ai-skills/nature-skills/skills/nature-shared ~/.openclaw/workspace/skills/nature-shared
+
+# 3. 后续更新
+git -C ~/ai-skills/nature-skills pull`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/docs/open-source-agent-frameworks.md#openclaw'
+    },
+    en: {
+      badge: 'Symlink setup',
+      description: 'Point OpenClaw workspace skills at a stable clone so future repository updates require no repeated copying.',
+      steps: [
+        ['Prepare the clone', 'Keep Nature Skills in a stable local path.'],
+        ['Link the skills', 'Link the selected skill and nature-shared into the OpenClaw workspace.'],
+        ['Update in place', 'Run git pull in the stable clone; the links immediately expose the new version.']
+      ],
+      code: `# 1. Prepare a stable clone
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. Link one skill and its shared support package
+mkdir -p ~/.openclaw/workspace/skills
+ln -s ~/ai-skills/nature-skills/skills/nature-reader ~/.openclaw/workspace/skills/nature-reader
+ln -s ~/ai-skills/nature-skills/skills/nature-shared ~/.openclaw/workspace/skills/nature-shared
+
+# 3. Update later
+git -C ~/ai-skills/nature-skills pull`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/docs/open-source-agent-frameworks_EN.md#openclaw'
+    }
+  },
+  opencode: {
+    name: 'OpenCode',
+    zh: {
+      badge: '全局发现',
+      description: '通过全局 .agents/skills 目录让所有 OpenCode 项目发现常用 Nature Skills。',
+      steps: [
+        ['准备仓库', '将完整技能库克隆到稳定的本地路径。'],
+        ['建立全局链接', '把常用技能和 nature-shared 链接到 ~/.agents/skills。'],
+        ['启动验证', '打开 OpenCode 后明确请求使用 nature-reader。']
+      ],
+      code: `# 1. 准备稳定仓库
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. 建立全局技能链接
+mkdir -p ~/.agents/skills
+ln -s ~/ai-skills/nature-skills/skills/nature-reader ~/.agents/skills/nature-reader
+ln -s ~/ai-skills/nature-skills/skills/nature-shared ~/.agents/skills/nature-shared
+
+# 3. 后续更新
+git -C ~/ai-skills/nature-skills pull`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/docs/open-source-agent-frameworks.md#opencode'
+    },
+    en: {
+      badge: 'Global discovery',
+      description: 'Use the global .agents/skills directory to make selected Nature Skills available across every OpenCode project.',
+      steps: [
+        ['Prepare the clone', 'Clone the complete skill library into a stable local path.'],
+        ['Create global links', 'Link selected skills and nature-shared into ~/.agents/skills.'],
+        ['Verify in OpenCode', 'Start OpenCode and explicitly request the nature-reader skill.']
+      ],
+      code: `# 1. Prepare a stable clone
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. Create global skill links
+mkdir -p ~/.agents/skills
+ln -s ~/ai-skills/nature-skills/skills/nature-reader ~/.agents/skills/nature-reader
+ln -s ~/ai-skills/nature-skills/skills/nature-shared ~/.agents/skills/nature-shared
+
+# 3. Update later
+git -C ~/ai-skills/nature-skills pull`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/docs/open-source-agent-frameworks_EN.md#opencode'
+    }
+  },
+  hermes: {
+    name: 'Hermes',
+    zh: {
+      badge: '外部目录',
+      description: '让 Hermes 直接扫描稳定仓库的 skills 目录，避免为每个技能单独复制文件。',
+      steps: [
+        ['准备仓库', '将完整仓库克隆到稳定路径。'],
+        ['声明外部目录', '在 ~/.hermes/config.yaml 中加入 skills.external_dirs。'],
+        ['更新与使用', 'git pull 后即可通过 /nature-reader 等命令使用新版。']
+      ],
+      code: `# 1. 准备稳定仓库
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. 在 ~/.hermes/config.yaml 中加入
+skills:
+  external_dirs:
+    - ~/ai-skills/nature-skills/skills
+
+# 3. 后续更新仓库
+git -C ~/ai-skills/nature-skills pull`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/docs/open-source-agent-frameworks.md#hermes'
+    },
+    en: {
+      badge: 'External directory',
+      description: 'Let Hermes scan the skills directory in a stable clone instead of copying every skill separately.',
+      steps: [
+        ['Prepare the clone', 'Clone the complete repository into a stable path.'],
+        ['Declare the directory', 'Add skills.external_dirs to ~/.hermes/config.yaml.'],
+        ['Update and use', 'After git pull, invoke the new version through commands such as /nature-reader.']
+      ],
+      code: `# 1. Prepare a stable clone
+git clone https://github.com/Yuan1z0825/nature-skills.git ~/ai-skills/nature-skills
+
+# 2. Add this to ~/.hermes/config.yaml
+skills:
+  external_dirs:
+    - ~/ai-skills/nature-skills/skills
+
+# 3. Update the repository later
+git -C ~/ai-skills/nature-skills pull`,
+      docs: 'https://github.com/Yuan1z0825/nature-skills/blob/main/docs/open-source-agent-frameworks_EN.md#hermes'
+    }
+  }
+};
+
+function setLanguage(lang) {
+  currentLang = lang;
+  const t = i18n[lang];
+
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.documentElement.setAttribute('data-lang', lang);
+
+  // Text content
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) {
+      el.textContent = t[key];
+    }
+  });
+
+  // innerHTML (for elements with markup like <br>, <em>, <strong>)
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (t[key] !== undefined) {
+      el.innerHTML = t[key];
+    }
+  });
+
+  // Lang toggle button
+  const langToggle = document.getElementById('langToggle');
+  if (langToggle) {
+    langToggle.textContent = t.langLabel;
+    langToggle.setAttribute('aria-label', lang === 'zh' ? '切换到英文' : 'Switch to Chinese');
+  }
+
+  // Page title & meta description
+  document.title = t.pageTitle;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.setAttribute('content', t.pageDesc);
+
+  // Re-render skills grid & quickstart table
+  const activeCat = document.querySelector('.skills__cat-btn--active');
+  renderSkills(activeCat ? activeCat.dataset.category : 'all');
+  renderQuickstart();
+  renderInstallation(activeInstallPlatform);
+
+  // Store preference
+  try { localStorage.setItem('nature-skills-lang', lang); } catch(e) {}
+}
+
+/* ============================================
+   Skills Data (bilingual via i18n keys)
+   ============================================ */
+const skillsDataDefs = [
+  { id: 'nature-reader',              status: 'beta',   category: 'reading',    descKey: 'skillNatureReaderDesc',              triggersKey: 'skillTriggerNatureReader',              link: 'skills/nature-reader/README.md' },
+  { id: 'nature-paper-card',          status: 'beta',   category: 'reading',    descKey: 'skillNaturePaperCardDesc',           triggersKey: 'skillTriggerNaturePaperCard',           link: 'skills/nature-paper-card/README.md' },
+  { id: 'nature-polishing',           status: 'stable', category: 'writing',    descKey: 'skillNaturePolishingDesc',           triggersKey: 'skillTriggerNaturePolishing',           link: 'skills/nature-polishing/README.md' },
+  { id: 'nature-writing',             status: 'draft',  category: 'writing',    descKey: 'skillNatureWritingDesc',             triggersKey: 'skillTriggerNatureWriting',             link: 'skills/nature-writing/README.md' },
+  { id: 'nature-proposal-writer',     status: 'beta',   category: 'writing',    descKey: 'skillNatureProposalWriterDesc',      triggersKey: 'skillTriggerNatureProposalWriter',      link: 'skills/nature-proposal-writer/README.md' },
+  { id: 'nature-reviewer',            status: 'draft',  category: 'review',     descKey: 'skillNatureReviewerDesc',            triggersKey: 'skillTriggerNatureReviewer',            link: 'skills/nature-reviewer/README.md' },
+  { id: 'nature-response',            status: 'beta',   category: 'review',     descKey: 'skillNatureResponseDesc',            triggersKey: 'skillTriggerNatureResponse',            link: 'skills/nature-response/README.md' },
+  { id: 'nature-figure',              status: 'stable', category: 'figures',    descKey: 'skillNatureFigureDesc',              triggersKey: 'skillTriggerNatureFigure',              link: 'skills/nature-figure/README.md' },
+  { id: 'nature-data',                status: 'draft',  category: 'figures',    descKey: 'skillNatureDataDesc',                triggersKey: 'skillTriggerNatureData',                link: 'skills/nature-data/README.md' },
+  { id: 'nature-statistics',          status: 'draft',  category: 'figures',    descKey: 'skillNatureStatisticsDesc',          triggersKey: 'skillTriggerNatureStatistics',          link: 'skills/nature-statistics/README.md' },
+  { id: 'nature-citation',            status: 'beta',   category: 'literature', descKey: 'skillNatureCitationDesc',            triggersKey: 'skillTriggerNatureCitation',            link: 'skills/nature-citation/README.md' },
+  { id: 'nature-academic-search',     status: 'beta',   category: 'literature', descKey: 'skillNatureAcademicSearchDesc',      triggersKey: 'skillTriggerNatureAcademicSearch',      link: 'skills/nature-academic-search/README.md' },
+  { id: 'nature-ref-verifier',        status: 'beta',   category: 'literature', descKey: 'skillNatureRefVerifierDesc',          triggersKey: 'skillTriggerNatureRefVerifier',         link: 'skills/nature-ref-verifier/README.md' },
+  { id: 'nature-literature-pipeline', status: 'stable', category: 'literature', descKey: 'skillNatureLiteraturePipelineDesc',   triggersKey: 'skillTriggerNatureLiteraturePipeline',   link: 'skills/nature-literature-pipeline/README.md' },
+  { id: 'nature-paper2ppt',           status: 'beta',   category: 'output',     descKey: 'skillNaturePaper2pptDesc',           triggersKey: 'skillTriggerNaturePaper2ppt',           link: 'skills/nature-paper2ppt/README.md' },
+  { id: 'nature-image2ppt',           status: 'beta',   category: 'output',     descKey: 'skillNatureImage2pptDesc',           triggersKey: 'skillTriggerNatureImage2ppt',           link: 'skills/nature-image2ppt/README.md' },
+  { id: 'nature-paper-to-patent',     status: 'beta',   category: 'output',     descKey: 'skillNaturePaperToPatentDesc',       triggersKey: 'skillTriggerNaturePaperToPatent',       link: 'skills/nature-paper-to-patent/README.md' },
+  { id: 'nature-downloader',          status: 'beta',   category: 'output',     descKey: 'skillNatureDownloaderDesc',          triggersKey: 'skillTriggerNatureDownloader',          link: 'skills/nature-downloader/README.md' },
+  { id: 'nature-experiment-log',      status: 'draft',  category: 'output',     descKey: 'skillNatureExperimentLogDesc',       triggersKey: 'skillTriggerNatureExperimentLog',       link: 'skills/nature-experiment-log/README.md' },
+];
+
+function getStatusLabel(status) {
+  const t = i18n[currentLang];
+  const key = 'status' + status.charAt(0).toUpperCase() + status.slice(1);
+  return t[key] || status;
+}
+
+/* ============================================
+   Render Skills Grid
+   ============================================ */
+function renderSkills(filter = 'all') {
+  const t = i18n[currentLang];
+  const grid = document.getElementById('skillsGrid');
+  const filtered = filter === 'all'
+    ? skillsDataDefs
+    : skillsDataDefs.filter(s => s.category === filter);
+
+  grid.innerHTML = filtered.map((skill, i) => {
+    const desc = t[skill.descKey] || '';
+    const triggers = t[skill.triggersKey] || [];
+    return `
+    <div class="skill-card fade-in delay-${Math.min(i % 4, 3)}" style="transition-delay: ${i * 0.05}s">
+      <div class="skill-card__header">
+        <span class="skill-card__name">${skill.id}</span>
+        <span class="skill-card__badge skill-card__badge--${skill.status}">${getStatusLabel(skill.status)}</span>
+      </div>
+      <p class="skill-card__desc">${desc}</p>
+      <div class="skill-card__triggers">
+        ${triggers.slice(0, 3).map(tg => `<span class="skill-card__tag">${tg}</span>`).join('')}
+      </div>
+      <a href="${skill.link}" class="skill-card__link" target="_blank" rel="noopener">
+        ${t.skillDetail} <span class="skill-card__link-arrow">→</span>
+      </a>
+    </div>`;
+  }).join('');
+
+  observeFadeElements();
+}
+
+/* ============================================
+   Render Quickstart Table
+   ============================================ */
+function renderQuickstart() {
+  const t = i18n[currentLang];
+  const tbody = document.getElementById('quickstartBody');
+  const rows = [];
+  for (let i = 1; i <= 8; i++) {
+    const goal = t['qs' + i + 'Goal'];
+    const prompt = t['qs' + i + 'Prompt'];
+    if (goal && prompt) {
+      rows.push(`<tr><td>${goal}</td><td><code>${prompt}</code></td></tr>`);
+    }
+  }
+  tbody.innerHTML = rows.join('');
+}
+
+/* ============================================
+   Installation Platform Switcher
+   ============================================ */
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatInstallCode(code) {
+  return code.split('\n').map(line => {
+    const escaped = escapeHtml(line);
+    if (/^\s*#/.test(line)) {
+      return `<span class="comment">${escaped}</span>`;
+    }
+    if (!line.trim()) return '';
+    return escaped.replace(/^(\s*)(\S+)/, '$1<span class="cmd">$2</span>');
+  }).join('\n');
+}
+
+function renderInstallation(platform = activeInstallPlatform) {
+  if (!installPlatformData[platform]) platform = 'codex';
+  activeInstallPlatform = platform;
+
+  const t = i18n[currentLang];
+  const platformDef = installPlatformData[platform];
+  const content = platformDef[currentLang];
+  const tabs = document.getElementById('installPlatformTabs');
+  const panel = document.getElementById('installPanel');
+
+  if (!tabs || !panel) return;
+
+  tabs.setAttribute('aria-label', t.installTabsAria);
+  tabs.querySelectorAll('[data-platform]').forEach(tab => {
+    const isActive = tab.dataset.platform === platform;
+    tab.id = `install-tab-${tab.dataset.platform}`;
+    tab.setAttribute('aria-selected', String(isActive));
+    tab.setAttribute('tabindex', isActive ? '0' : '-1');
+  });
+
+  const activeTab = tabs.querySelector(`[data-platform="${platform}"]`);
+  panel.setAttribute('aria-labelledby', activeTab.id);
+  panel.dataset.platform = platform;
+  panel.innerHTML = `
+    <div class="install-panel__guide">
+      <div class="install-panel__eyebrow">${escapeHtml(t.installStepsLabel)}</div>
+      <div class="install-panel__title-row">
+        <h3 class="install-panel__title">${escapeHtml(platformDef.name)}</h3>
+        <span class="install-panel__badge">${escapeHtml(content.badge)}</span>
+      </div>
+      <p class="install-panel__description">${escapeHtml(content.description)}</p>
+      <ol class="install-steps">
+        ${content.steps.map((step, index) => `
+          <li class="install-step">
+            <span class="install-step__number">${String(index + 1).padStart(2, '0')}</span>
+            <div>
+              <div class="install-step__title">${escapeHtml(step[0])}</div>
+              <p class="install-step__body">${escapeHtml(step[1])}</p>
+            </div>
+          </li>`).join('')}
+      </ol>
+      <a class="install-doc-link" href="${escapeHtml(content.docs)}" target="_blank" rel="noopener">
+        ${escapeHtml(t.installDocs)} <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    <div class="install-panel__terminal">
+      <div class="install-terminal__bar">
+        <div class="install-terminal__identity">
+          <span class="install-terminal__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span class="install-terminal__label">${escapeHtml(t.installTerminalLabel)} · ${escapeHtml(platformDef.name)}</span>
+        </div>
+        <button class="install-copy" type="button" data-copy-install>${escapeHtml(t.installCopy)}</button>
+      </div>
+      <pre class="install-code"><code>${formatInstallCode(content.code)}</code></pre>
+    </div>`;
+
+  panel.classList.remove('install-panel--refreshing');
+  void panel.offsetWidth;
+  panel.classList.add('install-panel--refreshing');
+}
+
+async function copyInstallCommands(button) {
+  const t = i18n[currentLang];
+  const content = installPlatformData[activeInstallPlatform][currentLang];
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(content.code);
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.value = content.code;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand('copy');
+      textarea.remove();
+      if (!copied) throw new Error('copy command failed');
+    }
+
+    button.textContent = t.installCopied;
+    button.setAttribute('aria-live', 'polite');
+    setTimeout(() => {
+      if (button.isConnected) button.textContent = i18n[currentLang].installCopy;
+    }, 1800);
+  } catch (error) {
+    button.textContent = t.installCopyFailed;
+    setTimeout(() => {
+      if (button.isConnected) button.textContent = i18n[currentLang].installCopy;
+    }, 1800);
+  }
+}
+
+const installPlatformTabs = document.getElementById('installPlatformTabs');
+const installPanel = document.getElementById('installPanel');
+
+installPlatformTabs.addEventListener('click', (event) => {
+  const tab = event.target.closest('[data-platform]');
+  if (!tab) return;
+  renderInstallation(tab.dataset.platform);
+});
+
+installPlatformTabs.addEventListener('keydown', (event) => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+
+  const currentIndex = installPlatformOrder.indexOf(activeInstallPlatform);
+  let nextIndex = currentIndex;
+  if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + installPlatformOrder.length) % installPlatformOrder.length;
+  if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % installPlatformOrder.length;
+  if (event.key === 'Home') nextIndex = 0;
+  if (event.key === 'End') nextIndex = installPlatformOrder.length - 1;
+
+  const nextPlatform = installPlatformOrder[nextIndex];
+  renderInstallation(nextPlatform);
+  installPlatformTabs.querySelector(`[data-platform="${nextPlatform}"]`).focus();
+});
+
+installPanel.addEventListener('click', (event) => {
+  const copyButton = event.target.closest('[data-copy-install]');
+  if (copyButton) copyInstallCommands(copyButton);
+});
+
+/* ============================================
+   Category Filter
+   ============================================ */
+document.getElementById('skillCategories').addEventListener('click', (e) => {
+  if (!e.target.classList.contains('skills__cat-btn')) return;
+  document.querySelectorAll('.skills__cat-btn').forEach(b => b.classList.remove('skills__cat-btn--active'));
+  e.target.classList.add('skills__cat-btn--active');
+  renderSkills(e.target.dataset.category);
+});
+
+/* ============================================
+   Language Toggle
+   ============================================ */
+document.getElementById('langToggle').addEventListener('click', () => {
+  const next = currentLang === 'zh' ? 'en' : 'zh';
+  setLanguage(next);
+});
+
+/* ============================================
+   Navigation Scroll Effect
+   ============================================ */
+const nav = document.getElementById('nav');
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const currentScroll = window.scrollY;
+  if (currentScroll > 80) {
+    nav.classList.add('nav--scrolled');
+  } else {
+    nav.classList.remove('nav--scrolled');
+  }
+  lastScroll = currentScroll;
+}, { passive: true });
+
+navToggle.addEventListener('click', () => {
+  navLinks.classList.toggle('nav__links--open');
+});
+
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navLinks.classList.remove('nav__links--open');
+  });
+});
+
+/* ============================================
+   Scroll-triggered Fade Animations
+   ============================================ */
+function observeFadeElements() {
+  const elements = document.querySelectorAll('.fade-in:not(.fade-in--visible)');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in--visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  elements.forEach(el => observer.observe(el));
+}
+
+/* ============================================
+   Hero Canvas — Particle Constellation
+   ============================================ */
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  let particles = [];
+  let mouseX = -1000, mouseY = -1000;
+  let animationId;
+
+  const PARTICLE_COUNT = 80;
+  const CONNECTION_DIST = 140;
+  const MOUSE_RADIUS = 200;
+  const BASE_SPEED = 0.3;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    width = rect.width;
+    height = rect.height;
+    canvas.width = width * (window.devicePixelRatio || 1);
+    canvas.height = height * (window.devicePixelRatio || 1);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  }
+
+  function createParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * BASE_SPEED,
+        vy: (Math.random() - 0.5) * BASE_SPEED,
+        radius: Math.random() * 1.8 + 0.8,
+        opacity: Math.random() * 0.5 + 0.3
+      });
+    }
+  }
+
+  function draw(time) {
+    ctx.clearRect(0, 0, width, height);
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      const margin = 40;
+      if (p.x < -margin) p.x = width + margin;
+      if (p.x > width + margin) p.x = -margin;
+      if (p.y < -margin) p.y = height + margin;
+      if (p.y > height + margin) p.y = -margin;
+      const dx = p.x - mouseX;
+      const dy = p.y - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < MOUSE_RADIUS && dist > 0) {
+        const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS * 0.5;
+        p.vx += (dx / dist) * force * 0.1;
+        p.vy += (dy / dist) * force * 0.1;
+      }
+      p.vx *= 0.999;
+      p.vy *= 0.999;
+      const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (speed > 1.2) {
+        p.vx = (p.vx / speed) * 1.2;
+        p.vy = (p.vy / speed) * 1.2;
+      }
+    }
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i];
+        const b = particles[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const alpha = (1 - dist / CONNECTION_DIST) * 0.25;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(200, 150, 62, ${alpha})`;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232, 201, 122, ${p.opacity})`;
+      ctx.fill();
+    }
+    animationId = requestAnimationFrame(draw);
+  }
+
+  function init() {
+    resize();
+    createParticles();
+    draw(0);
+  }
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  });
+  canvas.addEventListener('mouseleave', () => { mouseX = -1000; mouseY = -1000; });
+  canvas.addEventListener('touchmove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.touches[0].clientX - rect.left;
+    mouseY = e.touches[0].clientY - rect.top;
+  }, { passive: true });
+  canvas.addEventListener('touchend', () => { mouseX = -1000; mouseY = -1000; });
+
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      resize();
+      for (const p of particles) {
+        p.x = Math.min(p.x, width);
+        p.y = Math.min(p.y, height);
+      }
+    }, 200);
+  });
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!prefersReducedMotion.matches) { init(); }
+  prefersReducedMotion.addEventListener('change', (e) => {
+    if (e.matches) {
+      cancelAnimationFrame(animationId);
+      ctx.clearRect(0, 0, width, height);
+    } else { init(); }
+  });
+})();
+
+/* ============================================
+   Initialize
+   ============================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Load saved language preference
+  let savedLang = 'zh';
+  try { savedLang = localStorage.getItem('nature-skills-lang') || 'zh'; } catch(e) {}
+  setLanguage(savedLang);
+  renderQuickstart();
+  observeFadeElements();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+name: Validate repository metadata
+
+on:
+  pull_request:
+    paths:
+      - 'README.md'
+      - 'README_EN.md'
+      - 'skills/**'
+      - 'scripts/validate-repository.py'
+      - 'scripts/validate-readmes.py'
+      - 'scripts/validate-readme-mirror.py'
+      - 'scripts/validate-skill-index.py'
+      - 'scripts/validate-skill-metadata.py'
+      - 'scripts/update-reference-tocs.py'
+      - 'scripts/generate-star-history.py'
+      - 'scripts/tests/test_generate_star_history.py'
+      - '.github/workflows/validate-repository.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'README.md'
+      - 'README_EN.md'
+      - 'skills/**'
+      - 'scripts/validate-repository.py'
+      - 'scripts/validate-readmes.py'
+      - 'scripts/validate-readme-mirror.py'
+      - 'scripts/validate-skill-index.py'
+      - 'scripts/validate-skill-metadata.py'
+      - 'scripts/update-reference-tocs.py'
+      - 'scripts/generate-star-history.py'
+      - 'scripts/tests/test_generate_star_history.py'
+      - '.github/workflows/validate-repository.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-repository:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Run repository validation
+        run: python3 scripts/validate-repository.py
+
+      - name: Test star history rendering
+        run: python3 -m unittest scripts/tests/test_generate_star_history.py
+
+      - name: Verify reference navigation is current
+        run: |
+          python3 scripts/update-reference-tocs.py
+          git diff --exit-code

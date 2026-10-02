@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Citation"
+  short_description: "Find and verify Nature and CNS supporting citations"
+  default_prompt: "Use $nature-citation to add verified Nature and CNS citations to this manuscript passage."

@@ -1,5 +1,23 @@
 # Method Writing Guide
 
+## Contents
+
+- [Goal](#goal)
+- [Pre-Writing Questions](#pre-writing-questions)
+- [Method Writing Steps](#method-writing-steps)
+- [Three Elements of a Pipeline Module](#three-elements-of-a-pipeline-module)
+- [Method Content Decomposition](#method-content-decomposition)
+- [How to Write Module Design](#how-to-write-module-design)
+- [How to Write Module Motivation](#how-to-write-module-motivation)
+- [How to Check Whether Method is Easy to Understand](#how-to-check-whether-method-is-easy-to-understand)
+- [Method Section Skeleton](#method-section-skeleton)
+- [Overview Subsection](#overview-subsection)
+- [Section 3.1 and Other Module Subsections](#section-31-and-other-module-subsections)
+- [Module Writing Pattern (Mermaid)](#module-writing-pattern-mermaid)
+- [Implementation Details](#implementation-details)
+- [Example Bank](#example-bank)
+
+
 ## Goal
 
 Write the Method section clearly by following this sequence:

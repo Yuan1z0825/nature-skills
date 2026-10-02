@@ -1,7 +1,0 @@
-interface:
-  display_name: "OpenClaw Medical Skills"
-  short_description: "Routes clinical and biomedical research workflows"
-  default_prompt: "Use $openclaw-medical-skills to route and execute a biomedical, clinical, drug discovery, genomics, or regulatory task."
-
-policy:
-  allow_implicit_invocation: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Experiment Log"
+  short_description: "Turn experiment notes and media into structured logs"
+  default_prompt: "Use $nature-experiment-log to turn these notes and media into a structured experiment log."

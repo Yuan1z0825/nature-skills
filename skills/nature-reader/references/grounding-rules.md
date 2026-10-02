@@ -6,9 +6,9 @@ When the user asks a follow-up question about the paper:
 
 1. Find the most relevant source blocks.
 2. Answer from those blocks first.
-3. Cite the exact page and block IDs.
+3. Cite exact page and block IDs when available. Otherwise cite a verified page, section, figure, or table from the supplied source; never invent source-map IDs or page numbers.
 4. Include the figure or table if it is part of the evidence.
-5. Say `原文未明确说明` if the paper does not support the claim.
+5. Say `原文未明确说明` if the paper does not support the claim. Request missing source material only when it is needed to answer; a missing reader artifact alone does not block a grounded answer.
 
 ## Good answer pattern
 

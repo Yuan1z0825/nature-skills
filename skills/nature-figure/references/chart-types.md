@@ -1,5 +1,20 @@
 # Chart Types — Nature Figure Making
 
+## Contents
+
+- [Radar / Polar Chart](#radar-polar-chart)
+- [3D Sphere / Conceptual Illustration](#3d-sphere-conceptual-illustration)
+- [Scatter Plot with Color-Coded Clusters](#scatter-plot-with-color-coded-clusters)
+- [Probability + Manifold Concept Panel](#probability-manifold-concept-panel)
+- [Ablation Line Panel with Reference Baselines](#ablation-line-panel-with-reference-baselines)
+- [Fill-Between Area Chart (Stacked trend)](#fill-between-area-chart-stacked-trend)
+- [Log-Scale Bar Chart](#log-scale-bar-chart)
+- [GridSpec Multi-Panel Layout](#gridspec-multi-panel-layout)
+- [Scientific Notation on Y-Axis](#scientific-notation-on-y-axis)
+- [Custom Spine Positioning](#custom-spine-positioning)
+- [Related files](#related-files)
+
+
 Specialized chart patterns beyond basic bars and trends.
 Each section includes the key code pattern extracted from production scripts.
 
@@ -191,6 +206,58 @@ def make_scatter(ax, x, y, labels_or_colors,
     ax.scatter(x, y, c=labels_or_colors, s=size,
                alpha=alpha, edgecolors=edgecolors)
     ax.set_axis_off()   # for conceptual diagrams; remove for data plots
+```
+
+---
+
+## Probability + Manifold Concept Panel
+
+Use when a manuscript needs a conceptual mechanism panel that links a probability
+shift to a geometric or latent-space explanation. Build the pair from the
+original pattern below: a 1D probability-density panel beside a contour/scatter
+manifold panel.
+
+**Pattern:**
+- Left panel: draw 2-3 probability curves with transparent fills; use one vertical
+  reference line and a single double-headed arrow to define the conceptual gap.
+- Right panel: sample points around smooth center curves, show low-alpha clouds,
+  contour density bands, and a small number of highlighted trajectory markers.
+- Keep axes only where they carry meaning. The manifold panel can be axis-free if
+  labels and arrows carry the explanation.
+- All math labels and manifold names must map to real manuscript concepts. Do not
+  reuse demo labels such as `VIG` or `DPO` unless they are the user's actual terms.
+
+```python
+fig, (ax_prob, ax_manifold) = plt.subplots(1, 2, figsize=(24, 6))
+plot_distribution(ax_prob)  # probability curves + conceptual gap arrow
+plot_manifold(ax_manifold)  # density contours + trajectory markers
+fig.tight_layout(pad=0.5)
+```
+
+---
+
+## Ablation Line Panel with Reference Baselines
+
+Use when an ablation compares data fraction, hyperparameters, or coupled metrics
+across a small set of methods. A robust original layout uses three horizontal
+panels: data fraction, one hyperparameter sweep, and a dual-axis coupled metric
+sweep.
+
+**Pattern:**
+- Use a dashed horizontal baseline for the simple/reference model.
+- Use a dotted horizontal line for a meaningful operating point, e.g. "ours at
+  25% data", only when that comparison is called out in the text.
+- Use `twinx()` sparingly. If two y-axes are needed, color each y label to match
+  the corresponding series and keep tick ranges narrow.
+- Put legends inside low-density regions of each panel; avoid one giant legend
+  if panel-specific series differ.
+
+```python
+fig, axes = plt.subplots(1, 3, figsize=(27, 6),
+                         gridspec_kw={"width_ratios": [1.1, 1, 1]})
+axes[0].plot(x, baseline, color="black", alpha=0.3, lw=4, ls="--")
+axes[0].plot(x, reference, color=hero_color, lw=3, ls=":")
+ax2 = axes[2].twinx()
 ```
 
 ---

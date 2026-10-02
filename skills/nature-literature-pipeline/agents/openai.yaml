@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Literature Pipeline"
+  short_description: "Run scored literature discovery and reading pipelines"
+  default_prompt: "Use $nature-literature-pipeline to build a scored literature discovery, reading, and archiving pipeline for this topic."

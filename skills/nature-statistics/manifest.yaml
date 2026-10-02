@@ -1,0 +1,31 @@
+name: nature-statistics
+version: 1.3.0
+description: >
+  Declarative manifest for the statistics-reporting workflow. SKILL.md uses
+  this to keep the always-needed reporting rules small while loading specialized
+  statistical risk checklists only when the manuscript section, figure legend,
+  or reviewer comment requires them.
+
+# Design note: nature-statistics is a conservative reporting/audit skill. The
+# default path always needs source hierarchy and minimum reporting requirements,
+# but heavier risk catalogs should stay on demand so a simple Statistical
+# analysis rewrite does not load every checklist.
+
+always_load:
+  - references/source-basis.md
+  - references/statistical-reporting.md
+
+references:
+  on_demand:
+    - condition: target is the flagship journal Nature, or the user requests an exact Nature Article statistical submission/readiness audit
+      path: references/nature-article-requirements.md
+    - condition: target is Nature Machine Intelligence, or exact NMI legend statistics, source-data, reporting-summary, data/code, initial-submission, or production requirements affect the audit
+      path: ../nature-shared/journal-formats/nature-machine-intelligence.md
+    - condition: nested data, pseudoreplication, repeated measures, many comparisons, correlations, regressions, outliers, small samples, or overstrong p-value language
+      path: references/common-failure-modes.md
+    - condition: checking figure legends, panel-level n, error bars, stars, box/violin plots, source-data notes, or statistical annotations
+      path: references/figure-statistics.md
+    - condition: final audit QA, severity labeling, reviewer-risk summary, or response-to-reviewer drafting
+      path: references/reviewer-checklist.md
+    - condition: the same statistic is reported in more than one place, or interval terminology is in question — one metric at two precisions across table and text, SD/Std and similar abbreviation drift, confidence interval used where prediction interval is meant, and overlapping error bars described as outperformance
+      path: ../nature-shared/core/consistency-sweep.md

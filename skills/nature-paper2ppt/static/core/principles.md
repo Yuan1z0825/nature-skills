@@ -4,7 +4,7 @@
 
 Transform a scientific paper or paper-derived notes into a complete Chinese, figure-integrated PPTX presentation package with a Nature-style reporting logic.
 
-The skill must not stop at an outline or script. The expected end product is a real `.pptx` deck. Keep supporting files minimal unless the user asks for more traceability.
+When the user requests a deck, deliver a real `.pptx` rather than stopping at an outline or script. If the user explicitly requests only an outline, explanation, or approval stage, honor that scope. Keep supporting files minimal unless the user asks for more traceability.
 
 Use this skill for papers across scientific fields, including life sciences and medicine; chemistry and materials science; environmental and earth sciences; physics and engineering; computational biology, AI, and methods papers; interdisciplinary Nature-family style research; and reviews, perspectives, resources, datasets, and benchmark papers.
 

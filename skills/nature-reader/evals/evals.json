@@ -18,6 +18,24 @@
       "prompt": "这是一篇扫描版论文。请先做 OCR，再生成全文中英文对照 Markdown，保留图注和正文的对应关系；凡是识别不稳的地方都要标低置信度。图表需要裁剪到 assets 并放在对应正文位置。",
       "expected_output": "An OCR-aware full-document Markdown reader with Original/中文 pairs, uncertainty labels, cropped figure/table assets, nearby bilingual captions, page navigation, and source-linked follow-up support.",
       "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "精读这篇含有大量公式的可检索 PDF。paper.md 里不要展示一行行的 LaTeX 源码；行内公式和独立公式都要直接渲染。每个独立公式要有 E 编号、页码、原论文公式编号和 source_map 记录，三个以上公式时增加公式索引。",
+      "expected_output": "A bilingual full-paper reader whose inline and display equations use renderable Markdown math, whose display equations have stable E IDs and source-map entries, and whose equation index links to each formula without exposing bare LaTeX in prose.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "这篇扫描论文的公式无法可靠 OCR。不要根据上下文猜公式：请把每个原始公式裁剪出来放进 assets/equations，在正文中显示原图；如果给 LaTeX 转写，必须标成低置信度并提示以原图为准。",
+      "expected_output": "An image-first equation workflow with E IDs, existing equation crop paths, explicit low-confidence transcription labels, no guessed symbols, and source-map linkage for every displayed equation.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "生成中英对照全文时，数学公式本体不要翻译或在中文段落里重写。显示公式只放一份；中文只解释含义。I_0、E_0、w_0、tau 等行内符号必须继续使用与英文相同的 LaTeX 和数学定界符，不能变成 (I_0)、(tau) 或普通文本。",
+      "expected_output": "A bilingual reader with one shared copy of each display equation, unchanged mathematical notation in Chinese prose, valid $...$/$$...$$ delimiters, no parenthesized pseudo-math, and a strict validator pass.",
+      "files": []
     }
   ]
 }

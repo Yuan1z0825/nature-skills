@@ -1,5 +1,16 @@
 # Experiments Writing Guide
 
+## Contents
+
+- [Goal](#goal)
+- [Three Core Questions](#three-core-questions)
+- [Experiment Planning](#experiment-planning)
+- [Experiment Section Decomposition](#experiment-section-decomposition)
+- [Figure/Table Writing Rules](#figuretable-writing-rules)
+- [Recommended Ablation Package](#recommended-ablation-package)
+- [Experimental Rigor Checklist](#experimental-rigor-checklist)
+
+
 ## Goal
 
 Convince reviewers with complete evidence on effectiveness, causality, and practical value.

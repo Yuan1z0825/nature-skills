@@ -461,6 +461,134 @@ class TestPubMedSearch:
         assert result["results"][1]["pmid"] == "222"
 
 
+class TestPubMedMeshLookup:
+    """Test MeSH ESearch + ESummary lookup and response validation."""
+
+    @pytest.mark.parametrize(
+        ("term", "entrez_uid", "name", "mesh_ui"),
+        [
+            ("heart failure", "68006333", "Heart Failure", "D006333"),
+            ("diabetes mellitus", "68003920", "Diabetes Mellitus", "D003920"),
+        ],
+    )
+    @patch("sources.pubmed.get_config")
+    @patch("sources.pubmed._get")
+    def test_lookup_mesh_returns_canonical_ui(
+        self, mock_get, mock_config, term, entrez_uid, name, mesh_ui
+    ):
+        mock_config.return_value = _make_pubmed_config()
+
+        esearch_resp = MagicMock()
+        esearch_resp.content = (
+            f"<?xml version='1.0'?><eSearchResult><IdList><Id>{entrez_uid}</Id>"
+            "</IdList></eSearchResult>"
+        ).encode("utf-8")
+        esummary_resp = MagicMock()
+        esummary_resp.json.return_value = {
+            "result": {
+                "uids": [entrez_uid],
+                entrez_uid: {
+                    "uid": entrez_uid,
+                    "ds_meshterms": [name, f"{name} synonym"],
+                    "ds_meshui": mesh_ui,
+                    "ds_recordtype": "descriptor",
+                },
+            }
+        }
+        mock_get.side_effect = [esearch_resp, esummary_resp]
+
+        from sources.pubmed import PubMedSource
+
+        result = PubMedSource().lookup_mesh(term)
+
+        assert result["term"] == term
+        assert result["results"] == [
+            {
+                "name": name,
+                "mesh_id": mesh_ui,
+                "ui": mesh_ui,
+                "entrez_uid": entrez_uid,
+            }
+        ]
+        assert re.fullmatch(r"[A-Z]\d{6,}", result["results"][0]["ui"])
+        assert mock_get.call_args_list[1].args[0] == "esummary.fcgi"
+        assert mock_get.call_args_list[1].args[1]["version"] == "2.0"
+
+    @patch("sources.pubmed.get_config")
+    @patch("sources.pubmed._get")
+    def test_lookup_mesh_nonexistent_term_returns_empty(self, mock_get, mock_config):
+        mock_config.return_value = _make_pubmed_config()
+        response = MagicMock()
+        response.content = (
+            b"<?xml version='1.0'?><eSearchResult><IdList></IdList></eSearchResult>"
+        )
+        mock_get.return_value = response
+
+        from sources.pubmed import PubMedSource
+
+        result = PubMedSource().lookup_mesh("no-such-mesh-term-xyz-987654")
+
+        assert result == {
+            "term": "no-such-mesh-term-xyz-987654",
+            "results": [],
+        }
+        assert mock_get.call_count == 1
+
+    def test_lookup_mesh_empty_term_raises(self):
+        from sources.pubmed import PubMedSource
+        from utils.errors import DataSourceError
+
+        with pytest.raises(DataSourceError, match="Empty MeSH lookup term"):
+            PubMedSource().lookup_mesh("")
+
+    @patch("sources.pubmed.get_config")
+    @patch("sources.pubmed._get")
+    def test_lookup_mesh_invalid_esummary_json_raises(self, mock_get, mock_config):
+        mock_config.return_value = _make_pubmed_config()
+        esearch_resp = MagicMock()
+        esearch_resp.content = (
+            b"<?xml version='1.0'?><eSearchResult><IdList><Id>68006333</Id>"
+            b"</IdList></eSearchResult>"
+        )
+        esummary_resp = MagicMock()
+        esummary_resp.json.side_effect = ValueError("not JSON")
+        mock_get.side_effect = [esearch_resp, esummary_resp]
+
+        from sources.pubmed import PubMedSource
+        from utils.errors import DataSourceError
+
+        with pytest.raises(DataSourceError, match="Invalid JSON.*ESummary"):
+            PubMedSource().lookup_mesh("heart failure")
+
+    @patch("sources.pubmed.get_config")
+    @patch("sources.pubmed._get")
+    def test_lookup_mesh_missing_ui_raises(self, mock_get, mock_config):
+        mock_config.return_value = _make_pubmed_config()
+        esearch_resp = MagicMock()
+        esearch_resp.content = (
+            b"<?xml version='1.0'?><eSearchResult><IdList><Id>68006333</Id>"
+            b"</IdList></eSearchResult>"
+        )
+        esummary_resp = MagicMock()
+        esummary_resp.json.return_value = {
+            "result": {
+                "uids": ["68006333"],
+                "68006333": {
+                    "uid": "68006333",
+                    "ds_meshterms": ["Heart Failure"],
+                    "ds_meshui": "",
+                },
+            }
+        }
+        mock_get.side_effect = [esearch_resp, esummary_resp]
+
+        from sources.pubmed import PubMedSource
+        from utils.errors import DataSourceError
+
+        with pytest.raises(DataSourceError, match="invalid MeSH UI"):
+            PubMedSource().lookup_mesh("heart failure")
+
+
 # ===================================================================
 # 3. arXiv tests
 # ===================================================================

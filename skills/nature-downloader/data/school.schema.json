@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SchoolConfig",
+  "description": "用户学校配置文件 schema，对应 ~/.config/lit-dl/school.json",
+  "type": "object",
+  "required": ["version", "school", "auth", "libraries"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "description": "配置版本号，用于后续迁移",
+      "const": 1
+    },
+    "school": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "description": "学校全称"
+        },
+        "code": {
+          "type": ["string", "null"],
+          "description": "学校代码/缩写"
+        },
+        "configured_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "配置时间 ISO 8601"
+        },
+        "source": {
+          "type": ["string", "null"],
+          "enum": ["preset", "manual", "resource_url", null],
+          "description": "配置来源：资源入口链接 / 预设库 / 手动填写"
+        }
+      }
+    },
+    "auth": {
+      "type": "object",
+      "required": ["type", "sso_domain"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["cas", "sso", "custom"],
+          "description": "认证类型"
+        },
+        "sso_domain": {
+          "type": "string",
+          "description": "统一身份认证域名，如 login.university.example"
+        },
+        "carsi_entry": {
+          "type": ["string", "null"],
+          "description": "CARSI 联邦认证入口 URL"
+        },
+        "carsi_sp_entity_id": {
+          "type": ["string", "null"],
+          "description": "CARSI SP EntityID（可选）"
+        }
+      }
+    },
+    "proxy": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": ["string", "null"],
+          "enum": ["ezproxy", null],
+          "description": "代理类型"
+        },
+        "ezproxy_url": {
+          "type": ["string", "null"],
+          "description": "EZproxy 登录地址"
+        }
+      }
+    },
+    "libraries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "description": "该校订阅的、走机构权限的数据库清单"
+    },
+    "discovery": {
+      "type": "object",
+      "properties": {
+        "web_of_science_url": {
+          "type": ["string", "null"],
+          "description": "Web of Science / 学术资源文献聚合访问服务入口"
+        },
+        "resource_entry_url": {
+          "type": ["string", "null"],
+          "description": "用户提供的图书馆电子资源入口"
+        },
+        "resource_portal_url": {
+          "type": ["string", "null"],
+          "description": "资源聚合门户入口"
+        },
+        "auth_service_host": {
+          "type": ["string", "null"],
+          "description": "认证回跳服务域名"
+        }
+      },
+      "additionalProperties": true
+    },
+    "notes": {
+      "type": "string",
+      "default": "",
+      "description": "特殊提示"
+    },
+    "_warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "校验时产生的警告（不阻塞写入）"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,5 +1,17 @@
 # Section Moves
 
+## Contents
+
+- [Introduction](#introduction)
+- [Literature Review](#literature-review)
+- [Methods](#methods)
+- [Results](#results)
+- [Discussion](#discussion)
+- [Conclusion](#conclusion)
+- [Abstract](#abstract)
+- [Title](#title)
+
+
 Use this file only after the main section logic has been decided in `SKILL.md`. This file is for phrase-level and move-level support derived from `Academic Phrasebank`, not for deciding the paper's overall writing strategy.
 
 ## Introduction

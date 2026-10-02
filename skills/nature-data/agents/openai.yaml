@@ -1,4 +1,4 @@
 interface:
   display_name: "Nature Data"
   short_description: "Draft bilingual-aware Nature data statements"
-  default_prompt: "Help me turn my Chinese or English data notes into a Nature-style Data Availability statement, repository plan, and FAIR metadata checklist."
+  default_prompt: "Use $nature-data to draft a Nature-ready Data Availability statement, repository plan, and FAIR checklist."

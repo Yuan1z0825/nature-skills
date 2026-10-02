@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Segment manuscript text, search strict Nature/CNS-family citation candidates, and export an
-EndNote file. By default the script writes only one output file in `.enw` format.
+Segment manuscript text, search strict Nature/CNS-family citation candidates, and export a
+reference-manager file. By default the script writes one inspectable `.ris` file.
 
 Optional review artifacts can still be generated, but they are opt-in.
 """
@@ -16,19 +16,21 @@ import json
 import re
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
-from xml.sax.saxutils import escape as xml_escape
-from xml.sax.saxutils import quoteattr
+import defusedxml.ElementTree as ET
+xml_escape = lambda data: data.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+quoteattr = lambda data: '"%s"' % xml_escape(data).replace('"', "&quot;")
 
 
 CROSSREF_API = "https://api.crossref.org/works"
+PUBMED_EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 USER_AGENT = "codex-nature-citation/1.0 (mailto:unknown@example.com)"
 EXPORT_FORMAT_CHOICES = ("enw", "ris", "zotero-rdf", "rdf")
-DEFAULT_EXPORT_FORMAT = "enw"
+DEFAULT_EXPORT_FORMAT = "ris"
 ZOTERO_RDF_NS = {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "z": "http://www.zotero.org/namespaces/export#",
@@ -191,6 +193,9 @@ class Candidate:
     type: str
     score: float
     source_query: str
+    pmid: str = ""
+    source_catalog: str = "Crossref"
+    author_warnings: list[str] = field(default_factory=list)
 
     @property
     def doi_url(self) -> str:
@@ -245,6 +250,7 @@ class Candidate:
             "family": self.family,
             "year": self.year,
             "doi": self.doi,
+            "pmid": self.pmid,
             "url": self.url,
             "doi_url": self.doi_url,
             "volume": self.volume,
@@ -257,6 +263,9 @@ class Candidate:
             "type": self.type,
             "score": self.score,
             "source_query": self.source_query,
+            "source_catalog": self.source_catalog,
+            "author_metadata_status": "complete" if not self.author_warnings else "incomplete",
+            "author_warnings": self.author_warnings,
             "citation_marker": self.citation_marker,
             "support_grade": "metadata-only candidate",
             "screening_note": "Inspect abstract/publisher page before citing this paper as support.",
@@ -273,7 +282,7 @@ def normalize_title(title: str) -> str:
 
 
 def stable_hash(value: str) -> str:
-    return hashlib.sha1(value.encode("utf-8")).hexdigest()[:12]
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
 
 
 def slugify(value: str) -> str:
@@ -382,6 +391,8 @@ def zotero_date_value(item: Candidate) -> str:
 
 
 def split_author_parts(name: str) -> tuple[str, str]:
+    if name.endswith(","):
+        return name[:-1].replace(",,", ",").strip(), ""
     if "," in name:
         family, given = name.split(",", 1)
         return family.strip(), given.strip()
@@ -477,12 +488,48 @@ def y1_from_item(item: dict[str, Any]) -> str:
     return f"{year}/{month}/{day}"
 
 
+def endnote_corporate_author(name: str) -> str:
+    """Return an EndNote-safe corporate author name.
+
+    EndNote requires a trailing comma to prevent a corporate name from being
+    inverted. Embedded commas are doubled so they remain part of the name.
+    """
+    normalized = clean_text(name).rstrip(",").strip()
+    if not normalized:
+        return ""
+    return f"{normalized.replace(',', ',,')},"
+
+
 def author_name(author: dict[str, Any]) -> str:
-    family = author.get("family", "").strip()
-    given = author.get("given", "").strip()
+    family = clean_text(str(author.get("family") or ""))
+    given = clean_text(str(author.get("given") or ""))
+    suffix = clean_text(str(author.get("suffix") or ""))
+    literal = clean_text(str(author.get("name") or ""))
+    if literal and not family and not given:
+        return endnote_corporate_author(literal)
     if family and given:
-        return f"{family}, {given}"
-    return family or given or author.get("name", "").strip()
+        parts = [family, given]
+        if suffix:
+            parts.append(suffix)
+        return ", ".join(parts)
+    return family or given or literal
+
+
+def crossref_author_warnings(raw_authors: list[dict[str, Any]], authors: list[str]) -> list[str]:
+    warnings: list[str] = []
+    if not raw_authors or not authors:
+        return ["No structured author list was supplied by the metadata source."]
+    for index, author in enumerate(raw_authors, 1):
+        family = clean_text(str(author.get("family") or ""))
+        given = clean_text(str(author.get("given") or ""))
+        literal = clean_text(str(author.get("name") or ""))
+        if literal and not family and not given:
+            continue
+        if not family or not given:
+            warnings.append(
+                f"Author {index} lacks a {'family name' if not family else 'given name or initials'} in structured metadata."
+            )
+    return warnings
 
 
 def pages(item: dict[str, Any]) -> tuple[str, str]:
@@ -599,7 +646,8 @@ def candidate_from_crossref(item: dict[str, Any], source_query: str) -> Candidat
         return None
     family = journal_family(journal) or ""
     start, end = pages(item)
-    authors = [author_name(author) for author in item.get("author", [])]
+    raw_authors = item.get("author", [])
+    authors = [author_name(author) for author in raw_authors]
     authors = [author for author in authors if author]
     return Candidate(
         title=clean_text(first(item.get("title"))),
@@ -619,6 +667,8 @@ def candidate_from_crossref(item: dict[str, Any], source_query: str) -> Candidat
         type=item.get("type", ""),
         score=float(item.get("score", 0.0) or 0.0),
         source_query=source_query,
+        source_catalog="Crossref",
+        author_warnings=crossref_author_warnings(raw_authors, authors),
     )
 
 
@@ -667,15 +717,207 @@ def fetch_crossref_doi(doi: str, mailto: str | None = None) -> dict[str, Any]:
     return payload.get("message", {})
 
 
-def dedupe(candidates: list[Candidate]) -> list[Candidate]:
-    seen: set[str] = set()
-    output: list[Candidate] = []
-    for candidate in candidates:
-        if not candidate.key or candidate.key in seen:
+MONTHS = {
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
+}
+
+
+def xml_text(element: ET.Element | None) -> str:
+    if element is None:
+        return ""
+    return clean_text("".join(element.itertext()))
+
+
+def pubmed_date(article: ET.Element) -> tuple[str, str]:
+    date_node = article.find("MedlineCitation/Article/Journal/JournalIssue/PubDate")
+    if date_node is None:
+        date_node = article.find("MedlineCitation/Article/ArticleDate")
+    year = xml_text(date_node.find("Year")) if date_node is not None else ""
+    if not year and date_node is not None:
+        match = re.search(r"\b(18|19|20|21)\d{2}\b", xml_text(date_node.find("MedlineDate")))
+        year = match.group(0) if match else ""
+    if not year:
+        return "", ""
+    month_text = xml_text(date_node.find("Month")) if date_node is not None else ""
+    if month_text.isdigit():
+        month = max(1, min(12, int(month_text)))
+    else:
+        month = MONTHS.get(month_text[:3].lower(), 1)
+    day_text = xml_text(date_node.find("Day")) if date_node is not None else ""
+    day = max(1, min(31, int(day_text))) if day_text.isdigit() else 1
+    return year, f"{int(year):04d}/{month:02d}/{day:02d}"
+
+
+def split_page_text(page: str) -> tuple[str, str]:
+    page = clean_text(page)
+    if not page:
+        return "", ""
+    if "-" in page:
+        start, end = page.split("-", 1)
+        return start.strip(), end.strip()
+    return page, ""
+
+
+def pubmed_authors(article: ET.Element) -> tuple[list[str], list[str]]:
+    authors: list[str] = []
+    warnings: list[str] = []
+    author_nodes = article.findall("MedlineCitation/Article/AuthorList/Author")
+    if not author_nodes:
+        return [], ["No structured author list was supplied by PubMed."]
+    for index, author in enumerate(author_nodes, 1):
+        collective = xml_text(author.find("CollectiveName"))
+        if collective:
+            authors.append(endnote_corporate_author(collective))
             continue
-        seen.add(candidate.key)
-        output.append(candidate)
+        family = xml_text(author.find("LastName"))
+        given = xml_text(author.find("ForeName")) or xml_text(author.find("Initials"))
+        suffix = xml_text(author.find("Suffix"))
+        if family and given:
+            name_parts = [family, given]
+            if suffix:
+                name_parts.append(suffix)
+            authors.append(", ".join(name_parts))
+            continue
+        incomplete = family or given
+        if incomplete:
+            authors.append(incomplete)
+        warnings.append(
+            f"Author {index} lacks a {'family name' if not family else 'given name or initials'} in PubMed metadata."
+        )
+    if not authors and not warnings:
+        warnings.append("No usable authors were found in PubMed metadata.")
+    return authors, warnings
+
+
+def candidate_from_pubmed(article: ET.Element) -> Candidate | None:
+    article_node = article.find("MedlineCitation/Article")
+    if article_node is None:
+        return None
+    pmid = xml_text(article.find("MedlineCitation/PMID"))
+    journal = xml_text(article_node.find("Journal/Title")) or xml_text(
+        article.find("MedlineCitation/MedlineJournalInfo/MedlineTA")
+    )
+    title = xml_text(article_node.find("ArticleTitle"))
+    if not title or not journal:
+        return None
+    year, y1 = pubmed_date(article)
+    start_page, end_page = split_page_text(xml_text(article_node.find("Pagination/MedlinePgn")))
+    doi = ""
+    for identifier in article.findall("PubmedData/ArticleIdList/ArticleId"):
+        if identifier.attrib.get("IdType", "").lower() == "doi":
+            doi = xml_text(identifier)
+            break
+    if not doi:
+        for identifier in article_node.findall("ELocationID"):
+            if identifier.attrib.get("EIdType", "").lower() == "doi":
+                doi = xml_text(identifier)
+                break
+    authors, warnings = pubmed_authors(article)
+    abstract = " ".join(
+        xml_text(node) for node in article_node.findall("Abstract/AbstractText") if xml_text(node)
+    )
+    return Candidate(
+        title=title,
+        journal=normalize_title(journal),
+        family=journal_family(journal) or "",
+        year=year,
+        y1=y1,
+        doi=doi,
+        url=f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else "",
+        volume=xml_text(article_node.find("Journal/JournalIssue/Volume")),
+        issue=xml_text(article_node.find("Journal/JournalIssue/Issue")),
+        start_page=start_page,
+        end_page=end_page,
+        issn=xml_text(article_node.find("Journal/ISSN")),
+        authors=authors,
+        abstract=abstract,
+        type=xml_text(article_node.find("PublicationTypeList/PublicationType")) or "journal-article",
+        score=0.0,
+        source_query=f"pmid:{pmid}",
+        pmid=pmid,
+        source_catalog="PubMed",
+        author_warnings=warnings,
+    )
+
+
+def fetch_pubmed(pmids: list[str], email: str | None = None) -> list[ET.Element]:
+    params = {
+        "db": "pubmed",
+        "id": ",".join(pmids),
+        "retmode": "xml",
+        "tool": "nature-citation",
+    }
+    if email:
+        params["email"] = email
+    request = Request(
+        f"{PUBMED_EFETCH}?{urlencode(params)}",
+        headers={"User-Agent": USER_AGENT if not email else f"codex-nature-citation/1.0 (mailto:{email})"},
+    )
+    with urlopen(request, timeout=45) as response:
+        root = ET.fromstring(response.read())
+    return list(root.findall("PubmedArticle"))
+
+
+def dedupe(candidates: list[Candidate]) -> list[Candidate]:
+    output: list[Candidate] = []
+    positions: dict[str, int] = {}
+    for candidate in candidates:
+        if not candidate.key:
+            continue
+        if candidate.key not in positions:
+            positions[candidate.key] = len(output)
+            output.append(candidate)
+            continue
+        existing_index = positions[candidate.key]
+        existing = output[existing_index]
+        existing_quality = (not existing.author_warnings, len(existing.authors), bool(existing.doi))
+        candidate_quality = (not candidate.author_warnings, len(candidate.authors), bool(candidate.doi))
+        if candidate_quality > existing_quality:
+            output[existing_index] = candidate
     return output
+
+
+def author_integrity_issues(candidates: list[Candidate]) -> list[str]:
+    issues: list[str] = []
+    for candidate in candidates:
+        identifier = candidate.doi or (f"PMID {candidate.pmid}" if candidate.pmid else candidate.title)
+        candidate_issues = list(candidate.author_warnings)
+        if not candidate.authors and not candidate_issues:
+            candidate_issues.append("No authors are present.")
+        for index, author in enumerate(candidate.authors, 1):
+            if "," not in author and not any(issue.startswith(f"Author {index} ") for issue in candidate_issues):
+                candidate_issues.append(
+                    f"Author {index} is not encoded as a complete personal name or an EndNote corporate author."
+                )
+        for issue in candidate_issues:
+            issues.append(f"{identifier}: {issue}")
+    return issues
+
+
+def validate_author_integrity(candidates: list[Candidate], allow_incomplete: bool = False) -> None:
+    issues = author_integrity_issues(candidates)
+    if not issues or allow_incomplete:
+        return
+    preview = "\n".join(f"  - {issue}" for issue in issues[:12])
+    remainder = f"\n  - ... and {len(issues) - 12} more issue(s)" if len(issues) > 12 else ""
+    raise ValueError(
+        "Author metadata integrity check failed. Export was stopped so surname-only, missing, or "
+        "otherwise incomplete author data is not presented as EndNote-ready. Refetch the affected "
+        "records with --pmid/--pmid-file or verify them against the publisher record. Use "
+        "--allow-incomplete-authors only when the limitation is intentional.\n"
+        f"{preview}{remainder}"
+    )
 
 
 def build_ris_record(item: Candidate) -> str:
@@ -702,16 +944,21 @@ def build_ris_record(item: Candidate) -> str:
         lines.append(f"EP  - {ris_escape(item.end_page)}")
     if item.doi:
         lines.append(f"DO  - {ris_escape(item.doi)}")
+    if item.pmid:
+        lines.append(f"AN  - PMID:{ris_escape(item.pmid)}")
     if item.doi_url:
         lines.append(f"UR  - {ris_escape(item.doi_url)}")
     if item.issn:
         lines.append(f"SN  - {ris_escape(item.issn)}")
+    for warning in item.author_warnings:
+        lines.append(f"N1  - Author metadata warning: {ris_escape(warning)}")
     lines.append("N1  - Metadata-only candidate. Inspect abstract or publisher page before citing as support.")
     lines.append("ER  -")
     return "\n".join(lines)
 
 
-def write_ris(candidates: list[Candidate], path: Path) -> None:
+def write_ris(candidates: list[Candidate], path: Path, allow_incomplete_authors: bool = False) -> None:
+    validate_author_integrity(candidates, allow_incomplete=allow_incomplete_authors)
     lines: list[str] = []
     for item in candidates:
         lines.append(build_ris_record(item))
@@ -742,12 +989,15 @@ def build_enw_record(item: Candidate) -> str:
         lines.append(f"%@ {ris_escape(item.issn)}")
     if item.doi:
         lines.append(f"%R {ris_escape(item.doi)}")
+    if item.pmid:
+        lines.append(f"%M PMID:{ris_escape(item.pmid)}")
     if item.doi_url:
         lines.append(f"%U {ris_escape(item.doi_url)}")
     return "\n".join(lines)
 
 
-def write_enw(candidates: list[Candidate], path: Path) -> None:
+def write_enw(candidates: list[Candidate], path: Path, allow_incomplete_authors: bool = False) -> None:
+    validate_author_integrity(candidates, allow_incomplete=allow_incomplete_authors)
     lines: list[str] = []
     for item in candidates:
         lines.append(build_enw_record(item))
@@ -780,7 +1030,7 @@ def build_zotero_rdf_article(item: Candidate) -> str:
     date_value = zotero_date_value(item)
     if date_value:
         lines.append(f"        <dc:date>{xml_escape(date_value)}</dc:date>")
-    lines.append("        <z:libraryCatalog>Crossref</z:libraryCatalog>")
+    lines.append(f"        <z:libraryCatalog>{xml_escape(item.source_catalog)}</z:libraryCatalog>")
     if item.identifier_url:
         lines.append("        <dc:identifier>")
         lines.append("            <dcterms:URI>")
@@ -826,7 +1076,8 @@ def build_zotero_rdf_document(candidates: list[Candidate]) -> str:
     return "\n".join(section for section in sections if section)
 
 
-def write_zotero_rdf(candidates: list[Candidate], path: Path) -> None:
+def write_zotero_rdf(candidates: list[Candidate], path: Path, allow_incomplete_authors: bool = False) -> None:
+    validate_author_integrity(candidates, allow_incomplete=allow_incomplete_authors)
     path.write_text(build_zotero_rdf_document(candidates), encoding="utf-8")
 
 
@@ -867,6 +1118,29 @@ def read_dois(args: argparse.Namespace) -> list[str]:
         if doi:
             cleaned.append(doi)
     return cleaned
+
+
+def read_pmids(args: argparse.Namespace) -> list[str]:
+    raw_pmids: list[str] = []
+    if args.pmid:
+        raw_pmids.extend(args.pmid)
+    if args.pmid_file:
+        for line in Path(args.pmid_file).read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                raw_pmids.append(line)
+    pmids: list[str] = []
+    seen: set[str] = set()
+    for value in raw_pmids:
+        normalized = re.sub(r"^PMID\s*:\s*", "", value.strip(), flags=re.IGNORECASE)
+        normalized = re.sub(r"^https?://pubmed\.ncbi\.nlm\.nih\.gov/", "", normalized, flags=re.IGNORECASE)
+        normalized = normalized.strip("/ ")
+        if not re.fullmatch(r"\d+", normalized):
+            raise ValueError(f"Invalid PMID: {value}")
+        if normalized not in seen:
+            seen.add(normalized)
+            pmids.append(normalized)
+    return pmids
 
 
 def build_segments(args: argparse.Namespace) -> list[Segment]:
@@ -953,14 +1227,15 @@ def write_export_checkpoint(
     base_path: Path,
     export_format: str,
     references: list[Candidate],
+    allow_incomplete_authors: bool = False,
 ) -> Path:
     partial_output = make_partial_path(base_path)
     if export_format == "enw":
-        write_enw(references, partial_output)
+        write_enw(references, partial_output, allow_incomplete_authors=allow_incomplete_authors)
     elif export_format == "ris":
-        write_ris(references, partial_output)
+        write_ris(references, partial_output, allow_incomplete_authors=allow_incomplete_authors)
     else:
-        write_zotero_rdf(references, partial_output)
+        write_zotero_rdf(references, partial_output, allow_incomplete_authors=allow_incomplete_authors)
     return partial_output
 
 
@@ -1010,12 +1285,23 @@ def process_segment_batches(
         mapping.extend(batch_mapping)
         references = dedupe([*references, *batch_references])
         errors.extend(batch_errors)
-        partial_output = write_export_checkpoint(outdir, base_path, args.format, references)
+        try:
+            partial_output = write_export_checkpoint(
+                outdir,
+                base_path,
+                args.format,
+                references,
+                allow_incomplete_authors=args.allow_incomplete_authors,
+            )
+        except ValueError as exc:
+            partial_output = None
+            print(f"  Checkpoint not written: {str(exc).splitlines()[0]}", file=sys.stderr)
         print(
             f"  Batch {batch_index} done: {sum(len(entry['references']) for entry in batch_mapping)} candidates, "
             f"cumulative {len(references)} unique refs."
         )
-        print(f"  Checkpoint saved: {partial_output}")
+        if partial_output:
+            print(f"  Checkpoint saved: {partial_output}")
     return mapping, references, errors
 
 
@@ -1039,6 +1325,33 @@ def fetch_doi_candidates(dois: list[str], args: argparse.Namespace) -> tuple[lis
     return dedupe(candidates), errors
 
 
+def fetch_pubmed_candidates(pmids: list[str], args: argparse.Namespace) -> tuple[list[Candidate], list[dict[str, str]]]:
+    candidates: list[Candidate] = []
+    errors: list[dict[str, str]] = []
+    for offset in range(0, len(pmids), 100):
+        batch = pmids[offset : offset + 100]
+        try:
+            articles = retry_with_backoff(
+                lambda: fetch_pubmed(batch, email=args.ncbi_email or args.mailto),
+                max_retries=args.max_retries,
+            )
+        except Exception as exc:  # noqa: BLE001
+            errors.append({"pmids": ",".join(batch), "error": str(exc)})
+            continue
+        returned: set[str] = set()
+        for article in articles:
+            candidate = candidate_from_pubmed(article)
+            if candidate:
+                candidates.append(candidate)
+                if candidate.pmid:
+                    returned.add(candidate.pmid)
+        for missing in set(batch) - returned:
+            errors.append({"pmid": missing, "error": "PubMed returned no usable journal-article metadata."})
+        if args.sleep and offset + 100 < len(pmids):
+            time.sleep(args.sleep)
+    return dedupe(candidates), errors
+
+
 def mapping_to_json(mapping: list[dict[str, Any]], references: list[Candidate], args: argparse.Namespace, errors: list[dict[str, str]]) -> dict[str, Any]:
     return {
         "scope": args.scope,
@@ -1058,7 +1371,8 @@ def mapping_to_json(mapping: list[dict[str, Any]], references: list[Candidate], 
         "references": [candidate.as_dict() for candidate in references],
         "errors": errors,
         "notes": [
-            "Candidates are filtered from Crossref metadata and require abstract/full-text screening before citation.",
+            "Candidates are retrieved from Crossref and/or PubMed metadata and require abstract/full-text screening before citation.",
+            "Author metadata passes a strict integrity gate unless --allow-incomplete-authors is explicitly set.",
             "Supported reference-manager exports: ENW, RIS, and Zotero RDF.",
         ],
     }
@@ -1078,6 +1392,7 @@ def write_mapping_tsv(mapping: list[dict[str, Any]], path: Path) -> None:
         "family",
         "year",
         "doi",
+        "pmid",
         "doi_url",
         "authors",
         "score",
@@ -1115,6 +1430,7 @@ def write_mapping_tsv(mapping: list[dict[str, Any]], path: Path) -> None:
                         "family": candidate.family,
                         "year": candidate.year,
                         "doi": candidate.doi,
+                        "pmid": candidate.pmid,
                         "doi_url": candidate.doi_url,
                         "authors": "; ".join(candidate.authors[:10]),
                         "score": candidate.score,
@@ -1139,7 +1455,8 @@ def write_report(
         f"- Scope: `{scope}`",
         f"- Segments: {len(mapping)}",
         f"- Unique references exported: {reference_count}",
-        "- Source: Crossref metadata search",
+        "- Sources: Crossref metadata search and optional PubMed PMID retrieval",
+        "- Author integrity: incomplete or surname-only structured names are blocked by default.",
         "- Support grade: all rows are `metadata-only candidate` until abstract/full text is checked.",
         "",
         "## Segment-to-Reference Map",
@@ -1169,8 +1486,8 @@ def write_report(
             "",
             f"- Output file: `{output_name}`",
             f"- Format: `{export_format}` ({export_label(export_format)})",
-            "- ENW is suitable for EndNote tagged import.",
-            "- RIS can be imported into EndNote, Zotero, and most reference managers.",
+            "- RIS is the default inspectable exchange format and imports into EndNote with Reference Manager (RIS).",
+            "- ENW is suitable for EndNote tagged import when explicitly selected.",
             "- Zotero RDF is suitable for direct Zotero import.",
         ]
     )
@@ -1637,7 +1954,7 @@ def write_html(
 <body>
   <header>
     <h1>Nature Citation Browser</h1>
-    <p class="subhead">Scholar-style browsing for strict Nature/CNS-family candidates. Filter by year, compare related hits, choose the references you actually want, then download them as ENW, RIS, or Zotero RDF.</p>
+    <p class="subhead">Scholar-style browsing for strict Nature/CNS-family candidates. Filter by year, compare related hits, choose the references you actually want, then download them as RIS, ENW, or Zotero RDF.</p>
   </header>
   <nav class="toolbar">
     <div class="filters">
@@ -1663,8 +1980,8 @@ def write_html(
       <button id="openSummary" type="button">Guide</button>
       <label for="downloadFormat">Format</label>
       <select id="downloadFormat">
-        <option value="enw">ENW</option>
         <option value="ris">RIS</option>
+        <option value="enw">ENW</option>
         <option value="zotero-rdf">Zotero RDF</option>
       </select>
       <a class="primary" id="downloadSelected" href="{export_link}" download="{export_file_label}">Download selected / all</a>
@@ -1719,7 +2036,7 @@ def write_html(
     const selectedMap = new Map();
     let currentDownloadUrl = null;
 
-    downloadFormat.value = data.defaultExportFormat || 'enw';
+    downloadFormat.value = data.defaultExportFormat || 'ris';
 
     function showModal() {{
       if (modal) {{
@@ -1925,6 +2242,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--claim-file", help="UTF-8 text file with one claim per line.")
     parser.add_argument("--doi", action="append", help="Known DOI to fetch and export. Can be repeated.")
     parser.add_argument("--doi-file", help="UTF-8 text file with one DOI per line.")
+    parser.add_argument("--pmid", action="append", help="Known PubMed PMID to fetch and export. Can be repeated.")
+    parser.add_argument("--pmid-file", help="UTF-8 text file with one PMID per line.")
     parser.add_argument("--scope", choices=["cns", "nature", "science", "cell", "flagship"], default="cns")
     parser.add_argument("--output-file", help="Reference output file path, typically ending in .enw, .ris, or .rdf.")
     parser.add_argument("--outdir", help="Optional directory for outputs. If omitted, uses the output file parent or current directory.")
@@ -1941,6 +2260,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--from-year", type=int, help="Earliest publication year.")
     parser.add_argument("--to-year", type=int, help="Latest publication year.")
     parser.add_argument("--mailto", help="Email for Crossref polite pool.")
+    parser.add_argument("--ncbi-email", help="Contact email sent to NCBI E-utilities for PMID requests.")
+    parser.add_argument(
+        "--allow-incomplete-authors",
+        action="store_true",
+        help="Export despite missing/surname-only author metadata. Disabled by default to protect EndNote imports.",
+    )
     parser.add_argument("--sleep", type=float, default=0.3, help="Seconds between Crossref requests.")
     return parser.parse_args(argv)
 
@@ -1949,8 +2274,16 @@ def main(argv: list[str]) -> int:
     args = parse_args(argv)
     segments = build_segments(args)
     dois = read_dois(args)
-    if not segments and not dois:
-        print("Provide --text, --text-file, --claim, --claim-file, --doi, or --doi-file.", file=sys.stderr)
+    try:
+        pmids = read_pmids(args)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    if not segments and not dois and not pmids:
+        print(
+            "Provide --text, --text-file, --claim, --claim-file, --doi, --doi-file, --pmid, or --pmid-file.",
+            file=sys.stderr,
+        )
         return 2
 
     output_path = Path(args.output_file).expanduser().resolve() if args.output_file else None
@@ -1974,15 +2307,26 @@ def main(argv: list[str]) -> int:
     mapping, references, errors = process_segment_batches(segments, args, outdir, output_path)
     doi_candidates, doi_errors = fetch_doi_candidates(dois, args)
     errors.extend(doi_errors)
-    references = dedupe([*references, *doi_candidates])[: args.max_candidates]
+    pubmed_candidates, pubmed_errors = fetch_pubmed_candidates(pmids, args)
+    errors.extend(pubmed_errors)
+    references = dedupe([*references, *doi_candidates, *pubmed_candidates])[: args.max_candidates]
 
-    # 最终导出
-    if args.format == "enw":
-        write_enw(references, output_path)
-    elif args.format == "ris":
-        write_ris(references, output_path)
-    else:
-        write_zotero_rdf(references, output_path)
+    if (dois or pmids) and not references:
+        print("No requested DOI/PMID records could be retrieved; no export was written.", file=sys.stderr)
+        for error in errors[:5]:
+            print(f"  - {error}", file=sys.stderr)
+        return 4
+
+    try:
+        if args.format == "enw":
+            write_enw(references, output_path, allow_incomplete_authors=args.allow_incomplete_authors)
+        elif args.format == "ris":
+            write_ris(references, output_path, allow_incomplete_authors=args.allow_incomplete_authors)
+        else:
+            write_zotero_rdf(references, output_path, allow_incomplete_authors=args.allow_incomplete_authors)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 3
 
     if args.with_artifacts:
         artifact_base = outdir / name_base if name_base else outdir / "citation"
@@ -2002,8 +2346,9 @@ def main(argv: list[str]) -> int:
     print(f"Unique references exported: {len(references)}")
     if skipped_segments:
         print(f"Segments skipped: {skipped_segments}")
-    if errors and args.with_artifacts:
-        print(f"Encountered {len(errors)} retrieval error(s); see segment_reference_map.json.", file=sys.stderr)
+    if errors:
+        detail = "; see the JSON artifact for details" if args.with_artifacts else ""
+        print(f"Encountered {len(errors)} retrieval error(s){detail}.", file=sys.stderr)
     return 0
 
 

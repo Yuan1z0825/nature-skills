@@ -11,7 +11,7 @@ python scripts/nature_citation.py \
   --text "PASTE MANUSCRIPT TEXT HERE" \
   --scope cns \
   --outdir /tmp/nature-citation \
-  --format enw \
+  --format ris \
   --with-artifacts
 ```
 
@@ -20,14 +20,17 @@ python scripts/nature_citation.py \
 - `--text-file manuscript.txt`: read long text from a file.
 - `--claim "CLAIM TEXT"` or `--claim-file claims.txt`: treat each claim as a segment.
 - `--doi 10.xxxx/xxxxx` or `--doi-file dois.txt`: export known DOI records after screening.
+- `--pmid 12345678` or `--pmid-file pmids.txt`: fetch the complete ordered author list and journal metadata directly from PubMed. Prefer this route for biomedical records when Crossref lacks given names or a consortium author.
 - `--scope nature`: Nature Portfolio-style journals only.
 - `--scope flagship`: Nature, Science, and Cell only.
 - `--from-year 2018 --to-year 2026`: constrain publication dates.
 - `--rows 40`: raise for broad searches; keep top candidates manageable.
 - `--per-segment 3`: number of citation candidates to keep per segment.
 - `--max-retries 2`: retry transient Crossref failures before skipping a query.
-- `--format enw|ris|zotero-rdf`: export format. If omitted and `--output-file` is set, infer from suffix.
+- `--format ris|enw|zotero-rdf`: export format. RIS is the default. If omitted and `--output-file` is set, infer from suffix.
 - `--mailto you@example.com`: use Crossref's polite pool.
+- `--ncbi-email you@example.com`: identify repeated PubMed E-utilities requests.
+- `--allow-incomplete-authors`: bypass the default author-integrity block. Use only when an incomplete record is intentional; warning notes remain in the export.
 - `--batch-size 10`: process segments in batches of N. Each batch writes an incremental export file.
 - `--max-segments 20`: only process the first N segments. Useful for testing or section-by-section workflows.
 - `--sleep 0.3`: seconds between Crossref requests. Default is 0.3; raise to 1.0 if rate-limited.
@@ -54,3 +57,17 @@ When the input text is longer than roughly 3000 characters (about 10+ segments),
 | 26+ | Split by section. Run script per section with `--batch-size 10`. Compact summary + HTML only. |
 
 For long texts, prefer the HTML browser for review and selection instead of relying only on inline notes.
+
+## Repairing incomplete author metadata
+
+If the script reports an author-integrity failure, do not manually expand initials or guess names. Supply a PMID instead:
+
+```bash
+python scripts/nature_citation.py \
+  --pmid-file pmids.txt \
+  --format ris \
+  --output-file references.ris \
+  --ncbi-email you@example.com
+```
+
+The PubMed path retains personal given names or initials, suffixes, and collective authors. If PubMed is unavailable or the record is not indexed, verify the complete ordered author list against the publisher page before export.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Polishing"
+  short_description: "Polish academic prose while preserving factual meaning"
+  default_prompt: "Use $nature-polishing to revise this passage into concise Nature-leaning English without changing its factual meaning."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Statistics"
+  short_description: "Audit statistical design, analysis, and reporting"
+  default_prompt: "Use $nature-statistics to audit the study design, analysis choices, and statistical reporting in this manuscript."

@@ -1,4 +1,7 @@
 latex2mathml>=3.77.0
+mammoth>=1.6.0
+matplotlib>=3.8.0
 Pillow>=10.0.0
 pypdf>=4.0.0
 python-docx>=1.1.0
+python-pptx>=0.6.21

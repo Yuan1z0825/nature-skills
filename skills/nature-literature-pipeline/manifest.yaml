@@ -1,0 +1,34 @@
+name: nature-literature-pipeline
+version: 1.0.1
+description: >
+  Declarative manifest for the automated literature-discovery pipeline. SKILL.md
+  uses this to keep the default cron/search/deliver/archive workflow concise
+  while loading scoring, gap-analysis, digest, and archival details only when
+  the task reaches that stage.
+
+# Design note: the pipeline has stable stages (search -> coarse filter -> fine
+# read -> deliver -> archive). Configuration and examples are large enough to be
+# loaded on demand instead of for every invocation.
+
+always_load:
+  - SKILL.md
+
+templates:
+  on_demand:
+    - condition: configuring keywords, scoring weights, delivery target, archive path, or a reusable daily push profile
+      path: templates/literature-push-template.md
+
+references:
+  on_demand:
+    - condition: ranking candidates, checking score arithmetic, changing dimension weights, or explaining the six-dimension scoring system
+      path: references/scoring-system.md
+    - condition: identifying research gaps, building a review map, or turning discoveries into a research direction
+      path: references/gap-analysis.md
+    - condition: writing or validating archived literature notes with YAML frontmatter
+      path: references/note-template.md
+    - condition: formatting daily digest messages for Feishu, Telegram, email, or chat delivery
+      path: references/push-format.md
+    - condition: creating, updating, debugging, or documenting the recurring cron job
+      path: references/cron-setup.md
+    - condition: compiling multiple daily notes into a literature review, related-work section, or concentrated reading report
+      path: references/review-compilation-workflow.md

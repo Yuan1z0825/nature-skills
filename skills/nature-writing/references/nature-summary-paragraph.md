@@ -1,5 +1,17 @@
 # Nature Summary Paragraph Guide
 
+## Contents
+
+- [What this reference is for](#what-this-reference-is-for)
+- [Core principle](#core-principle)
+- [Canonical sentence-level structure](#canonical-sentence-level-structure)
+- [Word-count and compression principle](#word-count-and-compression-principle)
+- [How to read the annotated example in the image](#how-to-read-the-annotated-example-in-the-image)
+- [Practical writing rules for this skill](#practical-writing-rules-for-this-skill)
+- [Frequent failure modes](#frequent-failure-modes)
+- [Relationship to other references in this skill](#relationship-to-other-references-in-this-skill)
+
+
 ## What this reference is for
 
 This file distills the widely circulated annotated `Nature` example on how to construct a summary paragraph for a broad-audience paper. In `Nature`-style journals, this "summary paragraph" usually refers to the abstract-like opening summary that must let a non-specialist reader understand:

@@ -1,5 +1,16 @@
 # Article Architecture
 
+## Contents
+
+- [Full-paper argument](#full-paper-argument)
+- [Abstract](#abstract)
+- [Introduction](#introduction)
+- [Results](#results)
+- [Discussion](#discussion)
+- [Conclusion](#conclusion)
+- [Title](#title)
+
+
 Use this reference when writing or rebuilding manuscript sections. The patterns
 come from curated Nature and Nature Communications examples across materials,
 energy, construction decarbonization and machine learning. They are structural

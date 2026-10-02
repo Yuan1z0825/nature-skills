@@ -1,5 +1,5 @@
 name: nature-reader
-version: 2.0.0
+version: 2.1.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given paper-reading request. The main
@@ -8,7 +8,7 @@ description: >
 
 always_load:
   # Shared layer — common to the nature-* skills
-  - ../_shared/core/terminology-ledger.md
+  - ../nature-shared/core/terminology-ledger.md
   # Skill-local core
   - static/core/principles.md
   - static/core/workflow.md
@@ -39,6 +39,8 @@ references:
       path: references/figure-extraction.md
     - condition: exact paper.md / source_map.json field schema and block shapes
       path: references/output-spec.md
+    - condition: equations, mathematical expressions, chemical formulae, custom LaTeX macros, or image-only formulae
+      path: references/equation-handling.md
     - condition: answering follow-up questions with source-grounded citations
       path: references/grounding-rules.md
     - condition: labelling the argumentative function of each section (gap/contribution/result/limits) and genre tells as a reading aid

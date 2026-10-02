@@ -1,21 +1,36 @@
 name: nature-writing
-version: 1.0.0
+version: 1.5.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
-  decide which fragments to load for a given drafting or restructuring request.
+  decide which fragments to load for a drafting, restructuring, or
+  initial-submission request.
 
 always_load:
   # Shared layer — common to nature-polishing and nature-writing
-  - ../_shared/core/reader-workflow.md
-  - ../_shared/core/paper-type-taxonomy.md
-  - ../_shared/core/ethics.md
-  - ../_shared/core/terminology-ledger.md
+  - ../nature-shared/core/reader-workflow.md
+  - ../nature-shared/core/paper-type-taxonomy.md
+  - ../nature-shared/core/ethics.md
+  - ../nature-shared/core/terminology-ledger.md
   # Skill-local core
   - static/core/stance.md
   - static/core/workflow.md
   - static/core/output-format.md
 
 axes:
+  task:
+    detect: |
+      Use submission-package when the user requests first-submission or
+      pre-submission materials such as an initial cover letter, title page,
+      highlights, author contributions, availability/declaration statements,
+      reviewer suggestions, or a complete submission checklist. Use manuscript
+      for manuscript sections and argument development. Revision correspondence
+      after an editor decision belongs to nature-response, not this skill.
+    values:
+      manuscript:          static/fragments/task/manuscript.md
+      submission-package: static/fragments/task/submission-package.md
+    default: manuscript
+    multi: false
+
   paper_type:
     detect: |
       Decide what kind of paper or section is being drafted. Default to research.
@@ -61,18 +76,33 @@ axes:
 
   journal:
     detect: |
-      Use the journal value the user names. If the user says "Nature-family"
-      generically or names a Nature subjournal, use nature. If they name
-      Nature Communications, use nat-comms. Otherwise generic.
+      Use nature only for the flagship journal Nature. Use nat-comms for Nature
+      Communications. Use nat-mach-intell when the user names Nature Machine
+      Intelligence or NMI. If the user says "Nature-family" generically or
+      names a different Nature Portfolio subjournal, use nature-family and
+      check that journal's current instructions before applying exact numbers.
+      Otherwise use generic.
     values:
       nature:         static/fragments/journal/nature.md
+      nature-family:  static/fragments/journal/nature-family.md
       nat-comms:      static/fragments/journal/nat-comms.md
+      nat-mach-intell: static/fragments/journal/nat-mach-intell.md
       generic:        static/fragments/journal/generic.md
     default: generic
     multi: false
 
 references:
   on_demand:
+    - condition: task is manuscript and the user is drafting, restructuring, or compressing Results or full main text; deciding what belongs in main text versus captions or SI; preventing revision accretion; reducing statistical or claim repetition; or building the shortest sufficient evidence chain
+      path: ../nature-shared/core/main-text-discipline.md
+    - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is drafting or restructuring Results, Discussion, or their boundary; testing claim escalation; deciding whether local interpretation or robustness advances the claim; or separating necessary recap from redundant re-demonstration
+      path: ../nature-shared/core/nature-results-discussion.md
+    - condition: drafting, restructuring, or auditing any scientific Discussion; choosing the opening anchor and reverse-funnel movement; positioning findings against prior work; calibrating modal verbs or hedging; writing claim-specific limitations; or deriving future work from a named uncertainty
+      path: ../nature-shared/core/discussion-argument-language.md
+    - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is drafting or restructuring the Introduction or whole-manuscript narrative; building a fast problem funnel, exact knowledge gap, literature tension, question-first novelty, compact study roadmap, or Introduction–Results alignment
+      path: ../nature-shared/core/nature-introduction.md
+    - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is drafting or restructuring the abstract; compressing the manuscript into a discovery-centred evidence chain; selecting one main claim, one or two decisive supports, optional core numbers, or a bounded field-level payoff
+      path: ../nature-shared/core/nature-abstract.md
     - condition: needs section-level structure, argument order, or published-article patterns
       path: references/article-architecture.md
     - condition: genre-aware 2025 Nat Commun empirical structure, quantified connector/diction preferences, or research/review/perspective/comment/benchmark differences
@@ -95,6 +125,14 @@ references:
       path: references/paragraph-flow.md
     - condition: final manuscript self-review, rejection-risk audit, claim-evidence alignment
       path: references/paper-review.md
+    - condition: initial cover letter, title page, highlights, declarations, suggested reviewers, complete first-submission package, or submission-readiness audit
+      path: references/submission-package.md
+    - condition: flagship Nature Article formatting, initial-submission package, submission-readiness audit, stage classification, or exact title/text/display/reference limits
+      path: ../nature-shared/journal-formats/nature.md
+    - condition: Nature Machine Intelligence article-type selection, exact word/display limits, initial-submission package, stage classification, data/code duties, or production preflight
+      path: ../nature-shared/journal-formats/nature-machine-intelligence.md
+    - condition: human or animal ethics, clinical research, reporting summaries, image integrity, structures, chemistry, taxonomy, geological, archaeological, or palaeontological compliance is involved
+      path: ../nature-shared/core/research-compliance.md
     - condition: deeper Chinese-author repair patterns beyond the language fragment
       path: references/chinese-author-workflow.md
     - condition: user wants concrete abstract/introduction/method examples

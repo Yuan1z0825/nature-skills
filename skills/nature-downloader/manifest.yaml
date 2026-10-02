@@ -1,0 +1,30 @@
+name: nature-downloader
+version: 2.1.0
+description: >
+  Download academic full text through publisher APIs, lawful open-access
+  fallbacks, CNKI, or a user's institution-authorized browser session, with
+  secure credential storage and an auditable per-paper manifest.
+
+always_load:
+  - SKILL.md
+
+references:
+  on_demand:
+    - condition: user needs first-run school/library resource configuration
+      path: README.md
+    - condition: configuring known school presets, resource URL inference, or health checks
+      path: scripts/configure_school.py
+    - condition: configuring or validating Elsevier, Springer Nature, or IEEE API credentials
+      path: scripts/configure_credentials.py
+    - condition: batch DOI/title/topic downloads through Web of Science or open-access sources
+      path: scripts/batch_download.mjs
+    - condition: publisher API routing, OA fallback, and provider-specific full-text status
+      path: scripts/lib/publisher-providers.mjs
+    - condition: browser-authenticated PDF fetching and PDF signature checks
+      path: scripts/browser_pdf_downloader.mjs
+    - condition: canonical download statuses and manifest status semantics
+      path: scripts/lib/status-codes.mjs
+    - condition: lawful OA and applicable publisher APIs are exhausted and the task needs Web of Science, an institution-authorized browser session, publisher verification, authentication handoff, or browser-context PDF transfer
+      path: references/institutional-browser-workflow.md
+    - condition: Supporting Information was requested, downloaded files need final verification and naming, or an access attempt reaches a typed failure or retry state
+      path: references/delivery-verification-and-failures.md

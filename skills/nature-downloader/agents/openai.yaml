@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Downloader"
+  short_description: "Retrieve lawful full text and supporting information"
+  default_prompt: "Use $nature-downloader to retrieve this paper and its requested supporting information through lawful access routes."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Reviewer"
+  short_description: "Simulate tiered, mutually blind pre-submission reviews"
+  default_prompt: "Use $nature-reviewer to run three mutually blind pre-submission reviews with tiered Major and Minor comments."

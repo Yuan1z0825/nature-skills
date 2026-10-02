@@ -3,14 +3,14 @@ version: 2.0.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a literature-search request. The main axis
-  is the workflow: the user's need maps to one of five coordinated workflows,
+  is the workflow: the user's need maps to one of six coordinated workflows,
   each already a self-contained file.
 
-# Note on axis paths: the five workflow files live in references/workflows/ and
+# Note on axis paths: the workflow files live in references/workflows/ and
 # cross-reference the shared modules with ../ relative links. The workflow axis
 # therefore points at them in place rather than moving them into
 # static/fragments/, which would break those internal links. nature-academic-
-# search does not use the prose-oriented _shared layer.
+# search does not use the prose-oriented nature-shared layer.
 
 always_load:
   - static/core/tools.md
@@ -26,12 +26,15 @@ axes:
         mesh-strategy         — build a MeSH/PubMed search strategy
         citation-file-mgmt    — convert/manage .nbib/.ris/.bib citation files
         reference-mgmt        — BibTeX, related-article discovery, ID conversion
+        strict-other-citation-impact-audit — audit strict independent citations,
+                             influential citers, and citation context
     values:
       multi-source-search:   references/workflows/wf1-multi-source-search.md
       citation-verification: references/workflows/wf2-citation-verification.md
       mesh-strategy:         references/workflows/wf3-mesh-strategy.md
       citation-file-mgmt:    references/workflows/wf4-citation-file-mgmt.md
       reference-mgmt:        references/workflows/wf5-reference-mgmt.md
+      strict-other-citation-impact-audit: references/workflows/wf6-strict-other-citation-impact-audit.md
     multi: true
 
 references:
@@ -44,6 +47,8 @@ references:
       path: references/citation-parser.md
     - condition: query construction, source selection, and result ranking
       path: references/search-strategy.md
+    - condition: strict other-citation, high-profile citer, and citation-context audit workflow
+      path: references/workflows/wf6-strict-other-citation-impact-audit.md
     - condition: RIS/BibTeX format specifications and field mappings
       path: references/ris-bibtex-format.md
     - condition: no-MCP fallback discovery search (OpenAlex, stdlib) when the MCP server is unavailable

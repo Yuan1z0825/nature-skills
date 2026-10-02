@@ -1,97 +1,59 @@
 # `nature-response` 技能
 
-`nature-response` 用于起草、审查和修改逐点回复审稿人的 response letter，适用于 Nature 系列和其他高影响力期刊的返修场景。
+[English](README_EN.md)
 
-该技能支持中英文输入。它可以接收中文或英文审稿意见、编辑决定信、作者修改说明和 rebuttal 草稿，并生成英文回复包；需要作者确认的信息会用中文提示。
+`nature-response` 用于起草、审查和修改返修通信材料，包括互相隔离的逐点 reviewer response、revision cover letter、标红修改稿摘录和可编辑 LaTeX 模板。
 
-## 功能
+## 适合用它做什么
 
-- 将审稿意见拆分为稳定编号，例如 `R1.1`、`R1.2`、`R2.1`。
-- 按类型、严重程度、所需行动、证据需求和风险对每条意见分类。
-- 在正式起草前生成 response strategy summary。
-- 根据任务需要路由到起草、审查、修改、只做分诊或类似 appeal 的处理。
-- 如果决定信包含编辑要求，先生成 `E.1` 等 editor instruction ID，再处理 reviewer ID。
-- 起草编辑可读的逐点回复信。
-- 将每条回复映射到手稿修改动作、修改位置或缺失信息标记。
-- 把防御性或含糊的作者笔记改写成专业回复语言。
-- 处理困难情况，例如超出范围的实验、审稿人事实错误、审稿人意见冲突、统计质疑和合规问题。
-- 标记缺失实验、分析、行号、引用、图版和手稿改动，不能编造这些内容。
+- 解析编辑部决定信、返修邮件和 reviewer reports。
+- 先确认是 Major Revision（大修）还是 Minor Revision（小修），再采用对应的返修策略。
+- 将意见拆成稳定编号，例如 `E.1`、`R1.1`、`R2.3`。
+- 默认将不同审稿人视为互盲。内部保留总表，给每位审稿人的回复独立成文，不泄露其他审稿人的意见、编号、建议或回复内容。
+- 多位审稿人提出相同问题时分别完整回答。意见冲突只在内部或给编辑的总表中协调，不向某位审稿人提及另一位审稿人的要求。
+- 为每条意见制定回应策略、手稿修改动作和证据需求。
+- 分开记录“采用什么回应动作”“任务做到哪一步”“整个回复包能否提交”，并要求完成状态有可核验材料。
+- 起草正式、克制、可提交的英文逐点回复和 cover letter。
+- 审查 rebuttal 草稿中的遗漏回复、防御性语气、无支撑声称和行号缺口。
+- 审稿人没有看到原文已有内容时，将其视为表达不够清楚，主动补充说明或调整位置，而不是回复“文中已经写过”。
+- 回复信完整回应审稿人，但手稿修改只保留读者理解中央结论所必需的内容；每次新增主文句子都检查能否替换、压缩或移至 SI，防止返修累积。
+- 对 LaTeX 返修包自动核对回复信引用、意见与回复数量，以及清稿和标红稿的正文一致性。
 
-## 适用场景
+## 典型请求
 
-- 准备 Nature、Nature Portfolio、Springer Nature 或类似高影响力期刊返修。
-- 回复大修或小修意见。
-- 将审稿意见转化为手稿修改清单。
-- 审查 rebuttal 草稿中遗漏回复、语气问题或无支撑声称。
-- 将中文作者笔记转成可提交的英文逐点回复。
-- 判断如何礼貌反驳审稿人，或解释研究范围边界。
+- “这是编辑邮件和审稿意见，帮我生成逐点回复框架。”
+- “把我的中文修改说明改成英文 reviewer response。”
+- “检查这份 rebuttal 是否漏回、语气是否太强、有没有缺证据。”
 
-## 默认返回内容
+## 你需要提供
 
-除非用户要求其他格式，技能会返回：
+- 编辑决定信、审稿意见、返修要求或已有 rebuttal 草稿。
+- 若决定信未明确说明，请告知这是 Major Revision（大修）还是 Minor Revision（小修）。
+- 已完成或计划完成的实验、分析、图表、行号和手稿修改位置。
+- 目标期刊、稿件号、题名和提交材料要求。
 
-1. response strategy summary
-2. comment-response tracker
-3. draft point-by-point response letter
-4. manuscript change checklist
-5. missing information / risk flags
-6. 用户使用中文时的中文确认说明
+## 产出
 
-## 核心规则
+- Response strategy summary。
+- 给每位审稿人分别生成的逐点回复信、返修 cover letter 或 LaTeX response package。
+- 供作者或编辑核对的总表，明确标记为不面向审稿人。
+- 手稿修改清单、缺失信息清单和风险提示。
+- 带任务状态、所需输入、预期产物和是否阻塞最终提交的逐条 tracker。
+- 可选标红修改稿摘录；原文修改必须基于作者提供的文本。
+- 返修包机械一致性报告；编译页码、颜色、引用和参考文献仍需在最终 PDF 中核验。
 
-- 回复前必须忠实保留审稿意见。
-- 每条意见都要得到回应、交叉引用或标记为未解决。
-- 每条回复必须映射到具体动作，例如 `ACCEPT_TEXT`、`ACCEPT_ANALYSIS`、`SOFTEN_CLAIM`、`DISAGREE` 或 `AUTHOR_INPUT_NEEDED`。
-- 不得编造实验、分析、引用、行号、图版、补充材料、审稿人身份、编辑要求或手稿修改。
-- 使用合作、证据优先、非防御性的语言。
-- 将 response letter 视为给编辑核查的验证文件，而不只是礼貌文本。
+## 边界
 
-## 来源层级
+- 不会编造实验、分析、行号、图版、统计结果或编辑要求。
+- 不会在某位审稿人的回复中写“另一位审稿人也提出了”或“见我们对 Reviewer 2 的回复”等交叉信息。
+- 不会用“我们已经在文章中说明”责备审稿人，而会直接回答、进一步澄清并标明修改后的具体位置。
+- 不会把主文写成预防性 reviewer response，也不会把非核心稳健性和解释性递归不断追加到 Results。
+- 对需要作者确认的信息会用中文标记，而不是直接写成事实。
+- 如果任务是模拟投稿前审稿意见，优先使用 `nature-reviewer`。
 
-- 目标期刊说明与决定信要求。
-- Nature / Nature Portfolio / Springer Nature 返修和同行评审流程说明。
-- Springer Nature 关于 rebuttal letter 的编辑建议。
-- 作者提供的本地手稿事实。
+## 相关技能
 
-来源依据汇总在 `references/source-basis.md` 中，包含 URL、规则摘要和来源类型标签。
-
-## 文件结构
-
-该技能采用 router/static-dynamic 结构：`SKILL.md` 负责短路由，`manifest.yaml` 加载常驻 core 和按需 references。`nature-response` 是线性工作流，没有内容轴。
-
-```text
-nature-response/
-├── README.md
-├── SKILL.md                     # 短路由
-├── manifest.yaml                # always_load core + 按需 references
-├── static/
-│   └── core/                    # 始终加载
-│       ├── stance.md            # 目的、默认立场、红线、来源层级
-│       └── workflow.md          # 输入类型、10 步工作流、输出格式
-├── references/
-│   ├── source-basis.md
-│   ├── response-structure.md
-│   ├── comment-taxonomy.md
-│   ├── action-mapping.md
-│   ├── tone-and-stance.md
-│   ├── chinese-author-alignment.md
-│   ├── difficult-cases.md
-│   ├── intake-and-routing.md
-│   └── qa-checklist.md
-├── tests/
-    ├── conflicting-reviewers.md
-    ├── defensive-draft-audit.md
-    ├── evaluation-summary.md
-    ├── minor-revision.md
-    ├── major-revision-missing-evidence.md
-    ├── impossible-experiment.md
-    └── rubric.md
-└── examples/
-    ├── conflicting-reviewers.md
-    ├── major-revision-with-missing-evidence.md
-    └── minor-revision.md
-```
-
-## 状态
-
-Beta。当前行为由合成 Markdown fixtures 和示例定义。只有在经过真实匿名返修包、且获得作者许可的验证后，才应提升到 Stable。
+- `nature-reviewer`：投稿前模拟审稿人意见。
+- `nature-polishing`：回复信和 cover letter 的英文语气打磨。
+- `nature-statistics`：处理统计相关审稿意见。
+- `nature-ref-verifier`：核查参考文献错误类意见。

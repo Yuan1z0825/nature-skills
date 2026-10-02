@@ -14,9 +14,13 @@ Prefer **unified method families across all panels** over maximal hue separation
 - Keep the background white for plots and diagrams; switch to black only for microscopy / volume-rendering image plates.
 - Prefer direct labels over legends when categories are spatially fixed or the legend would force unnecessary eye travel.
 - Keep one restrained palette per figure: usually one neutral family, one signal family, and one accent family.
+- Treat perceptual separation as necessary but not sufficient: verify that the intended hero series is more salient than baselines after rendering, and do not reuse a sequential light-to-dark scale as unrelated categorical colors.
 - Treat statistics, `n`, error-bar definitions, source-data traceability, and image-integrity notes as part of the figure, not as optional caption cleanup.
+- When panels show comparable seed/fold/split aggregates, use the same uncertainty definition in every comparable panel or state why a panel is exempt.
+- Preserve canonical model capitalization in display labels. Legend entries use display-style initial capitalization; prose follows normal sentence grammar. Never apply blind `.title()` transformations to names such as `XGBoost`, `DeepSeek`, `GPT-5.2`, or `RF`.
+- Require the render-time alignment gate for every multi-panel layout, followed by a final-size, panel-by-panel visual inspection. Source validation cannot prove color hierarchy, label clearance, legend spacing, or complete uncertainty coverage.
 - When the user asks for broad `Nature` style rather than ML/NMI-specific style, read `references/nature-2026-observations.md` before choosing layout.
-- When the user references `figures4papers` or the older `scientific-figure-making` skill, treat this skill as the successor and open `references/demos.md` for bundled Python demo scripts.
+- When the user references `figures4papers` or the older `scientific-figure-making` skill, treat this skill as the successor and open `references/demos.md` for the third-party demo map, copyright boundary, and original reimplementation guidance.
 
 ## User-facing privacy rule
 

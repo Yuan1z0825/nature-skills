@@ -6,6 +6,12 @@
 
 ## Procedure
 
+If the user supplied complete citation records and requests only local format conversion, read
+[RIS and BibTeX Format](../ris-bibtex-format.md), convert those records, and check record count,
+author order, identifiers, and escaping. Do not fetch metadata or run network preflight unless
+verification or missing fields require it. The downloader examples below apply to retrieval by
+identifier or query; `--input refs.txt` accepts identifier/query lines, not arbitrary citation files.
+
 1. **Identify papers** — by PMID, DOI, arXiv ID, or search query.
 2. **Download** via format-converter:
    ```bash

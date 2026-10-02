@@ -1,7 +1,24 @@
 # Nature Figure Design Theory
 
-Derived from scripts in the [figures4papers](https://github.com/ChenLiu-1996/figures4papers) repository
-(published in *Nature Machine Intelligence* and top ML/bioinformatics venues).
+## Contents
+
+- [1) Typography](#1-typography)
+- [2) Axes & Spines](#2-axes-spines)
+- [3) Color Palette](#3-color-palette)
+- [4) Layout and Composition](#4-layout-and-composition)
+- [5) Bar Chart Rules](#5-bar-chart-rules)
+- [6) Line / Trend Plots](#6-line-trend-plots)
+- [7) Heatmap Rules](#7-heatmap-rules)
+- [8) Radar / Polar Charts](#8-radar-polar-charts)
+- [9) Export Policy](#9-export-policy)
+- [10) Multi-Panel Information Architecture](#10-multi-panel-information-architecture)
+- [11) Reproduction Checklist](#11-reproduction-checklist)
+
+
+This file is an original synthesis of publication-figure typography, color,
+composition, and export rules. External repositories may be consulted only as
+visual references after their license and reuse terms have been verified; see
+[demos.md](demos.md).
 
 ---
 
@@ -28,6 +45,8 @@ Derived from scripts in the [figures4papers](https://github.com/ChenLiu-1996/fig
 When targeting the final dimensions of a two-column `Nature` figure page, start smaller than
 slide-sized preview figures. The sampled 2026 papers routinely landed in the `7–9 pt` final-text
 regime for dense composites.
+
+The submission floor applies to rendered glyphs, not only source-level parent sizes. Mathtext often scales scripts to about `0.7×`; a 7 pt `$R^2$` can therefore contain a 4.9 pt superscript. Prefer a supported Unicode glyph such as `R²` when appropriate, or raise the parent size and verify the exported PDF with `scripts/audit_pdf_text.py`. Also compare each long label's rendered bounding-box width with its allocated slot width in millimetres.
 
 ---
 
@@ -121,6 +140,8 @@ Rules:
 3. Reserve green/red for arrows, gains, drops, thresholds, or signed biological direction.
 4. Never remap the same method to a different hue family in another panel.
 5. If in doubt, reduce saturation before adding more categories.
+6. Validate pairwise separation and white-background contrast, then inspect rendered salience. A neutral baseline must not dominate the hero method merely because it is darker.
+7. Sequential light-to-dark scales encode order or magnitude; do not treat their steps as unrelated categories.
 
 ### Modality-specific palette discipline from sampled 2026 Nature figures
 
@@ -195,6 +216,8 @@ archetypes:
 - Prefer one shared legend strip above a row rather than repeating legends inside several axes.
 - Dense categorical area plots often read better with embedded text than with a detached legend.
 - If a legend exists, it should usually be frameless and visually quieter than the data.
+- Measure legend/panel and legend-row spacing from their rendered tight bounding boxes. Do not infer spacing from a full raster row when the objects occupy different horizontal positions.
+- Check long model names at final size against the width allocated to each group. Widen the layout or reduce text size while keeping every PDF glyph at least 5 pt.
 
 ### X-tick suppression
 When bars represent methods and the legend already names them:
@@ -275,6 +298,7 @@ error_kw = {
   # build LineCollection with per-segment alpha
   ```
 - `fill_between` for uncertainty bands (keep alpha low: 0.1–0.2).
+- If comparable panels summarize the same seed/fold/split process, show the same spread definition in all of them. After adding uncertainty, remove arrows or brackets that duplicate the same visual gap and collide with the interval geometry.
 - Reference baseline as dashed horizontal line: `ax.axhline(y=..., linestyle='--', alpha=0.3, linewidth=4)`.
 - No grid; sparse y-ticks guide the eye.
 
@@ -353,11 +377,15 @@ be set before any `savefig` call.
 
 ---
 
-## 11) Multi-Panel Information Architecture
+## 10) Multi-Panel Information Architecture
 
 ### Rule: Every panel must answer a unique scientific question
 
-In a multi-panel figure, each panel should be independently informative. Covering one panel must leave a gap that cannot be recovered from the others.
+In a multi-panel figure, each panel should be independently necessary but need
+not tell an independent story. Covering one panel must remove a distinct
+inferential step that cannot be recovered from the others. For figure-level
+claim design, evidence-role selection, placement decisions and manuscript
+figure progression, load `multipanel-evidence-architecture.md`.
 
 **Recommended three-level progression**:
 
@@ -417,7 +445,7 @@ Label quadrants ("Immune-hot / low tumor", "Immune-desert / high tumor", …) wi
 
 ---
 
-## 10) Reproduction Checklist
+## 11) Reproduction Checklist
 
 To match Nature publication standards:
 
@@ -425,12 +453,15 @@ To match Nature publication standards:
 - [ ] **Save as SVG** (primary). PNG dpi=300 as optional raster preview.
 - [ ] Top and right spines off; frameless legend
 - [ ] Figure architecture chosen intentionally: grid, schematic-led composite, image plate, or asymmetric hero layout
-- [ ] Font size ≥ 16 base; 24 for large bar panels; 32–54 for axis labels on large panels
+- [ ] Journal-final source fonts usually 7–9 pt, and every exported PDF glyph including scripts is ≥ 5 pt
 - [ ] Colors from blue-green-red-neutral semantic palette
+- [ ] Rendered salience hierarchy matches the evidence hierarchy; neutral baselines do not dominate hero evidence
 - [ ] Black background used only for imaging plates, not for ordinary plots
 - [ ] Legends omitted or shared when direct labels or one legend strip read better
 - [ ] Y-limits tightened to data range (not 0–100 when values are 80–95)
 - [ ] X-ticks hidden when methods are named in legend
 - [ ] Legend in dedicated panel or `frameon=False`
+- [ ] Every comparable stochastic aggregate panel has the intended uncertainty definition
+- [ ] Rotated text uses anchor placement; labels clear data and uncertainty without opaque masks
 - [ ] `tight_layout(pad=2)` before save
 - [ ] `plt.close(fig)` after save

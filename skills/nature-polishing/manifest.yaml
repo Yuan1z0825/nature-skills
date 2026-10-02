@@ -1,15 +1,15 @@
 name: nature-polishing
-version: 6.1.0
+version: 6.6.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given polishing request.
 
 always_load:
   # Shared layer — common to nature-polishing and nature-writing
-  - ../_shared/core/reader-workflow.md
-  - ../_shared/core/paper-type-taxonomy.md
-  - ../_shared/core/ethics.md
-  - ../_shared/core/terminology-ledger.md
+  - ../nature-shared/core/reader-workflow.md
+  - ../nature-shared/core/paper-type-taxonomy.md
+  - ../nature-shared/core/ethics.md
+  - ../nature-shared/core/terminology-ledger.md
   # Skill-local core
   - static/core/stance.md
   - static/core/failure-modes.md
@@ -57,18 +57,30 @@ axes:
 
   journal:
     detect: |
-      Use the journal value the user names. If the user says "Nature-family"
-      generically or names a Nature subjournal, use nature. If they name
-      Nature Communications, use nat-comms. Otherwise generic.
+      Use nature only for the flagship journal Nature. Use nat-comms for Nature
+      Communications and nat-mach-intell for Nature Machine Intelligence or
+      NMI. If the user says "Nature-family" generically or names another Nature
+      Portfolio subjournal, use generic and check that title's current guide.
     values:
       nature:         static/fragments/journal/nature.md
       nat-comms:      static/fragments/journal/nat-comms.md
+      nat-mach-intell: static/fragments/journal/nat-mach-intell.md
       generic:        static/fragments/journal/generic.md
     default: generic
     multi: false
 
 references:
   on_demand:
+    - condition: polishing, restructuring, or shortening Results or full main text; deciding what belongs in main text versus captions or SI; preventing revision accretion; reducing statistical or claim repetition; or applying a paragraph necessity test
+      path: ../nature-shared/core/main-text-discipline.md
+    - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is polishing or restructuring Results, Discussion, or their boundary; testing claim escalation; deciding whether local interpretation or robustness advances the claim; or separating necessary recap from redundant re-demonstration
+      path: ../nature-shared/core/nature-results-discussion.md
+    - condition: polishing, restructuring, or auditing any scientific Discussion; repairing its reverse-funnel movement or function sequence; distinguishing interpretation from Results replay; calibrating modal verbs or hedging; making limitations claim-specific; or converting generic future work into uncertainty-resolving next tests
+      path: ../nature-shared/core/discussion-argument-language.md
+    - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is polishing or restructuring the Introduction or whole-manuscript narrative; building a fast problem funnel, exact knowledge gap, literature tension, question-first novelty, compact study roadmap, or Introduction–Results alignment
+      path: ../nature-shared/core/nature-introduction.md
+    - condition: target is flagship Nature, Nature Communications, Nature Machine Intelligence, or another Nature Portfolio title and the user is polishing or restructuring the abstract; compressing the manuscript into a discovery-centred evidence chain; selecting one main claim, one or two decisive supports, optional core numbers, or a bounded field-level payoff
+      path: ../nature-shared/core/nature-abstract.md
     - condition: needs Nature/Nature Communications article-level patterns for abstracts, intros, Results openings, Discussion, conclusions, titles
       path: references/published-article-patterns.md
     - condition: empirical 2025 Nat Commun diction calibration — connector frequencies, the significantly red line, hedge/booster/tense word choices
@@ -79,7 +91,11 @@ references:
       path: references/phrasebank-playbook.md
     - condition: needs academic style, register, article use, or mechanics checks
       path: references/style-guardrails.md
+    - condition: whole-manuscript consistency audit, or local discrepancies suggest wider terminology/unit/number drift, inconsistent counts, or claims contradicted by the paper's own tables; do not restart a full sweep merely because another editing round occurs
+      path: ../nature-shared/core/consistency-sweep.md
     - condition: needs deeper writing-strategy principles
       path: references/writing-strategy.md
     - condition: needs LaTeX layout/typesetting help (排版) — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, "Float too large", multi-panel figure arrangement, or Supplementary Information that looks empty
       path: references/latex-layout.md
+    - condition: target is Nature Machine Intelligence and exact content-type, word/display, data/code, initial-submission, or production requirements affect the polish
+      path: ../nature-shared/journal-formats/nature-machine-intelligence.md

@@ -18,7 +18,7 @@
   - papers should `reach a conclusion of interest to an interdisciplinary readership`
 - Peer-review entry criteria used by editors:
   - results seem `novel`
-  - results are `arresting` — illuminating, unexpected, or surprising
+  - results are `arresting`, meaning illuminating, unexpected, or surprising
   - work has `immediate and far-reaching implications`
   - this initial decision is `not a reflection on technical validity` or field-local importance
 - Readability expectation relevant to reviewer assessment:
@@ -56,13 +56,21 @@
 
 ## Conservative implementation choices
 
-- The skill returns exactly `3 reviewer reports + 1 cross-review synthesis` by default.
+- The skill returns exactly `3 mutually blind reviewer reports + 1 post-review synthesis` by default.
   - This is a repo-level implementation choice, not a direct source requirement.
-- The three reviewers differ only by `emphasis`, not by invented identity, seniority, institution, demographic profile, or narrow specialty role.
+- The three reviewers receive the same immutable source packet but work in mutually blind contexts with preassigned emphasis briefs; they do not receive shared concerns or other reports.
+  - Mutual blindness is a repo-level simulation integrity rule, not a claim about every journal workflow.
+- Reviewer differences must not rely on invented identity, seniority, institution, demographic profile, or narrow specialty role.
   - This is a conservative anti-hallucination rule derived from the limited source basis.
 - The output includes an explicit `Risk / unsupported claims` section.
   - This is a local QA device, not an official Nature format requirement.
-- The skill uses explicit section labels such as `Review setup`, `Reviewer 1`, and `Cross-review synthesis`.
+- The skill uses a 12-axis technical concern taxonomy as an internal coverage checklist.
+  - This is a repo-level organizational device, not an official Nature taxonomy and not a claim about concern prevalence in historical reviews.
+- Each substantive concern carries a claim pointer and evidence pointer.
+  - This is a local traceability rule; it must never cause the skill to invent locations or manuscript facts.
+- Pairwise reviewer concern overlap is measured only after reports are frozen.
+  - It is descriptive evidence for synthesis, never a target used to redistribute concerns or manufacture diversity.
+- The skill uses explicit section labels such as `Review setup`, `Reviewer 1`, and `Cross-review synthesis (post-review; not shown to reviewers)`.
   - This is a formatting contract for usability, not a source claim.
 
 ## Implementation implications

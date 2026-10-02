@@ -32,7 +32,7 @@ python scripts/nature_citation.py \
   --text "PASTE MANUSCRIPT TEXT HERE" \
   --scope cns \
   --outdir /tmp/nature-citation \
-  --format enw \
+  --format ris \
   --with-artifacts
 ```
 
@@ -54,7 +54,17 @@ Never cite a `metadata-only candidate` as support without checking the abstract 
 
 Default behavior: write one reference-manager file; support publication time filters with `--from-year` and `--to-year`; for long or ambiguous texts, use `--with-artifacts` so the HTML browser is available.
 
-Default file is `references.enw` (EndNote tagged export). Optionally `references.ris` (if the user requests RIS) or `references.rdf` (Zotero RDF). If the user asks to choose the download format, treat `ENW`, `RIS`, and `Zotero RDF` as the supported options and return only one export file unless they explicitly ask for multiple. Do not invent missing fields: if DOI, pages, volume, or issue are missing, leave them absent. See `references/ris-endnote.md` for format details.
+Default file is `references.ris`. Optionally write `references.enw` for EndNote tagged import or `references.rdf` for Zotero RDF. If the user asks to choose the download format, treat `RIS`, `ENW`, and `Zotero RDF` as the supported options and return only one export file unless they explicitly ask for multiple. Do not invent missing fields. If DOI, pages, volume, or issue are missing, leave them absent.
+
+Before writing any reference-manager file, run the author-integrity gate.
+
+- Use the complete ordered author list from structured Crossref, PubMed, or publisher metadata. Never derive `AU` fields from a display citation, an `et al.` string, or a surname-only list.
+- Write one `AU` line per person in `Family, Given` form and retain initials, suffixes, particles, and ordering supplied by the source.
+- Encode a consortium or institutional author as a corporate author with a trailing comma so EndNote does not invert it.
+- If any personal author lacks a family name or given name/initials, stop the export. Refetch by DOI or PMID and compare against the publisher record. Do not label the file EndNote-ready while the author list is incomplete.
+- Permit `--allow-incomplete-authors` only as an explicit emergency override, and keep warnings in the exported record.
+
+See `references/ris-endnote.md` for format details and the EndNote import option.
 
 ## 6. Optional review artifacts
 
@@ -78,10 +88,10 @@ S001: [source segment]
   - 插入建议: [e.g. after sentence / after clause]
 
 导出文件
-- [absolute path to references.enw / references.ris / references.rdf]
+- [absolute path to references.ris / references.enw / references.rdf]
 
 风险和缺口
 - [missing full-text check, contradictory evidence, no direct CNS literature, etc.]
 ```
 
-Put the HTML browser path FIRST, above everything else, so the user can immediately open and browse candidates. If no suitable CNS/Nature-series paper exists, say so plainly and suggest the best nearby options from non-CNS literature only if the user wants broader coverage. If the text is long, mention the batch strategy used, especially when you limited the run with `--batch-size` or `--max-segments`.
+When HTML review artifacts were generated, put the existing browser path first so the user can browse candidates. Otherwise omit the browser block; do not create extra artifacts or report a nonexistent path merely to fill the template. If no suitable CNS/Nature-series paper exists, say so plainly and suggest the best nearby options from non-CNS literature only if the user wants broader coverage. If the text is long, mention the batch strategy used, especially when you limited the run with `--batch-size` or `--max-segments`.

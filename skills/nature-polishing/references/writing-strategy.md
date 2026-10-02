@@ -1,5 +1,17 @@
 # Writing Strategy
 
+## Contents
+
+- [Core stance](#core-stance)
+- [Hourglass structure](#hourglass-structure)
+- [Writing order is not reading order](#writing-order-is-not-reading-order)
+- [Claim, evidence, boundary](#claim-evidence-boundary)
+- [Section responsibilities](#section-responsibilities)
+- [Citation as positioning](#citation-as-positioning)
+- [Fairness to earlier work](#fairness-to-earlier-work)
+- [Overclaim control](#overclaim-control)
+
+
 Use this file when the user is not just asking for cleaner English, but for better scientific writing logic. This is the layer that should govern all paragraph- and section-level rewriting.
 
 ## Core stance

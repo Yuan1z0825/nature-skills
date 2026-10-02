@@ -1,5 +1,21 @@
 # Design and layout
 
+## Contents
+
+- [Plan the visual rhythm before authoring](#plan-the-visual-rhythm-before-authoring)
+- [On-slide text budget](#on-slide-text-budget)
+- [Evidence hierarchy on a slide](#evidence-hierarchy-on-a-slide)
+- [Layout adaptation rule](#layout-adaptation-rule)
+- [Anti-template design rule](#anti-template-design-rule)
+- [Slide archetype defaults](#slide-archetype-defaults)
+- [Title writing rule](#title-writing-rule)
+- [Visual density rule](#visual-density-rule)
+- [Text-fitting implementation rules](#text-fitting-implementation-rules)
+- [Alignment and spacing rules](#alignment-and-spacing-rules)
+- [Chinese academic expression and de-template rules](#chinese-academic-expression-and-de-template-rules)
+- [Style rules](#style-rules)
+
+
 Open this reference when planning visual rhythm (step 3), writing slide content (step 6), or building the PPTX (step 7). It holds the full composition, layout, typography, and anti-template rules.
 
 ## Plan the visual rhythm before authoring
@@ -84,6 +100,59 @@ When authoring with python-pptx or similar tooling:
 - Keep text box margins conservative; avoid tiny text boxes with long Chinese-English mixed strings.
 - If using auto-fit, still verify the rendered or estimated text size and document the fallback.
 - Never accept a slide where text is expected to overflow, be clipped, or require manual resizing by the user.
+
+## Alignment and spacing rules
+
+Build every slide on a small set of visual guides instead of placing objects by eye. At minimum, keep stable guides for:
+
+- title left edge and title baseline,
+- main figure left/right edge,
+- caption or source strip edge,
+- interpretation rail edge,
+- bottom note or takeaway band.
+
+Near-miss alignment is worse than intentional asymmetry. If two elements are meant to align, make their left/top edges identical. If they are not meant to align, separate them enough that the difference reads as intentional, not as a few-pixel mistake.
+
+Before final delivery, inspect every result slide for:
+
+- figure edge, caption, and source label sharing a visible relationship,
+- source labels attached to the figure rather than floating alone,
+- bottom notes and footers using one consistent baseline,
+- gutters that are consistent within the slide,
+- no orphan text block stranded far from the figure it explains.
+
+Use `scripts/audit_pptx_quality.py` after deck generation to catch shape bounds, repeated near-miss alignment, and text overload. The script is not a substitute for visual review, but any high-severity finding should trigger revision.
+
+## Chinese academic expression and de-template rules
+
+Write Chinese as if the presenter will say it aloud in a serious group meeting. Use source-specific claims and concrete evidence. Avoid slogans, meta-commentary, and common AI summary frames.
+
+Do not use these phrases in slide titles, takeaways, bullets, or speaker notes unless they appear verbatim in the source and are being quoted:
+
+- `一句话总结`
+- `最有价值的后续方向`
+- `不是……而是……`
+- `不只是……更是……`
+- `值得注意的是`
+- `总的来说`
+- `从某种意义上`
+- `提供了新的视角`
+- `具有重要意义`
+- `未来可以进一步探索`
+
+Replace template wording with evidence-bound language:
+
+```text
+Weak: 一句话总结：该方法具有重要意义。
+Better: 该方法把检索、证据补全和答案生成拆成可审计流程，降低了遗漏关键文献的风险。
+```
+
+```text
+Weak: 这不是简单的性能提升，而是范式转变。
+Better: 消融实验显示，主动检索模块主要提升了长尾问题的可回答率。
+```
+
+If a sentence sounds like it could fit any paper, rewrite it until it names the method, dataset, mechanism, figure evidence, or limitation from this paper.
 
 ## Style rules
 

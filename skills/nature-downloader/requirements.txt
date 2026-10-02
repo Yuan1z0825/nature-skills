@@ -1,0 +1,4 @@
+pdfplumber>=0.11.0
+pypdf>=4.0.0
+PyYAML>=6.0.0
+jsonschema>=4.0.0

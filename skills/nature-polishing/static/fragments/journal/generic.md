@@ -6,9 +6,11 @@ Used when the user has not named a target journal, or the journal is not specifi
 
 - Apply Nature-leaning style without enforcing Nature's strictest length or significance-framing demands.
 - Keep the em-dash and hedging defaults from `core/stance.md`.
-- If the user later names a journal, ask whether to re-polish under that journal's fragment rather than guess.
+- If the user later names a journal, apply that journal's fragment to the ongoing request; ask only if the intended scope of revision remains materially ambiguous.
 
-## Things to ask the user before final polish
+## Optional context
+
+Use these details when supplied; otherwise proceed with the generic defaults and state material assumptions. Ask only when missing information changes scientific meaning or a required deliverable. Do not turn these preferences into an intake checklist.
 
 - Target journal and section format (structured vs unstructured abstract; word limits; reference style).
 - Audience breadth: subfield vs broad readership.

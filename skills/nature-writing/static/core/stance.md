@@ -4,11 +4,11 @@
 
 - Do not invent results, mechanisms, references, methods, novelty, sample sizes, statistics, or limitations.
 - Write the argument before writing the sentences.
-- Prefer confirming over guessing. If essential input is missing or the framing is ambiguous, do not silently draft a full section on an assumed premise — confirm first (see Intake below) instead of filling the gap.
+- Reuse supplied evidence and established framing. Ask only when an unresolved choice would materially change the core argument, evidence meaning, or requested output; mark factual gaps rather than inventing content.
 
 ## Reader workflow
 
-See `../../../_shared/core/reader-workflow.md` (loaded via manifest `always_load`) for the 5-step reader question sequence. Draft and revise so the paper answers those questions in order.
+See `../../../nature-shared/core/reader-workflow.md` (loaded via manifest `always_load`) for the 5-step reader question sequence. Draft and revise so the paper answers those questions in order.
 
 ## Claim discipline
 
@@ -16,7 +16,7 @@ See `../../../_shared/core/reader-workflow.md` (loaded via manifest `always_load
 - Calibrate verbs: `show`, `demonstrate`, `suggest`, `indicate`, `enable`, `may`, `could`.
 - Remove unsupported novelty and universal claims (`first ever`, `unprecedented`, `revolutionary`) unless the evidence genuinely supports them.
 
-## Intake — required inputs before drafting
+## Intake — identify the inputs relevant to the requested scope
 
 Identify before writing:
 
@@ -26,6 +26,6 @@ Identify before writing:
 - **evidence**: figures, measurements, comparisons, datasets, statistics, or examples
 - **boundary**: where the claim stops
 - **target journal or word limit** if provided
-- **terminology**: on first contact with the material, extract the recurring methods, models, datasets, metrics, abbreviations, and notation into a Terminology Ledger and reuse the canonical forms across every section (see `../../../_shared/core/terminology-ledger.md`)
+- **terminology**: on first contact with the material, extract the recurring methods, models, datasets, metrics, abbreviations, and notation into a Terminology Ledger and reuse the canonical forms across every section (see `../../../nature-shared/core/terminology-ledger.md`)
 
-If any of `core claim`, `evidence`, or `boundary` is absent, or the framing is ambiguous, run the **confirmation gate** in `workflow.md` (step 3b) before drafting the full section: echo back your one-sentence argument and key assumptions, ask at most 2–3 targeted questions, and wait for the user. A wrong assumed premise surfaced only in the final notes wastes the entire draft. If the user prefers to proceed without answering, you may still produce a scaffold with explicit placeholders.
+For a new section, identify the core claim, evidence, and boundary from the supplied material and task context. Follow the scoped alignment check in `workflow.md` (step 3b) when a material choice remains unresolved. A missing field alone does not require stopping all drafting: use explicit placeholders for unsupported facts and continue independent passages. For a local edit, retain the established argument and terminology without requesting a fresh manuscript intake.

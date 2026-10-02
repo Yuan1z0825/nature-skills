@@ -1,0 +1,2 @@
+id	project	title	doi	year	venue	publisher	status	source_url	current_url	next_action	notes
+1	example-project	Example ScienceDirect article	10.xxxx/example	2026	Example Journal	ScienceDirect	sciencedirect_robot_check	https://www.sciencedirect.com/science/article/pii/...	https://www.sciencedirect.com/...	user_complete_publisher_verification	Do not auto-click the challenge; continue from the same tab after user verification.

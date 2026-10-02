@@ -38,6 +38,7 @@
 
 ## Weighting guidance for the three reports
 
+- Assign these emphasis briefs before any reviewer receives the manuscript, and do not change them in response to another report.
 - `Reviewer 1` should usually foreground `technical soundness / technical failings`.
 - `Reviewer 2` should usually foreground `originality` plus `scientific importance / significance`.
 - `Reviewer 3` should usually foreground `interdisciplinary readership interest` plus `readability for nonspecialists`.

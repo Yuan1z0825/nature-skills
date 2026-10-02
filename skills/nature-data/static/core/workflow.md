@@ -2,6 +2,11 @@
 
 ## Workflow
 
+Use the complete workflow for a new data-sharing plan, full statement, or submission audit.
+For a local wording edit or bounded statement audit, apply only relevant checks to the supplied
+dataset identifiers, access conditions, and claims. Do not infer that the whole study is FAIR
+or submission-ready from checking one statement.
+
 1. Identify the target journal and article type. If journal-specific instructions conflict with this skill, follow the journal.
 2. Inventory every dataset needed to support the main and supplementary results: generated raw data, processed data, figure source data, secondary data, software outputs, models, tables, images, and files underlying statistical analysis.
 3. Classify each dataset into one access route: `public repository`, `controlled access repository`, `within paper or supplement`, `reused public source`, `third-party restricted`, `available on justified request`, or `not applicable`.

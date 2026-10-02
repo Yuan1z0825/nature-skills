@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Academic Search"
+  short_description: "Search and verify scholarly literature across sources"
+  default_prompt: "Use $nature-academic-search to search for relevant literature and verify every citation across independent sources."

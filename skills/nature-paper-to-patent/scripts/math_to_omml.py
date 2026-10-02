@@ -46,14 +46,14 @@ def _script(target, node, kind: str) -> None:
     if children:
         _append_mathml(expression, children[0])
     if len(children) > 1:
-        _append_mathml(sub, children[1])
+        _append_mathml(sup if kind == "sSup" else sub, children[1])
     if len(children) > 2:
         _append_mathml(sup, children[2])
     result.append(expression)
     if kind in {"sSub", "sSubSup"}:
         result.append(sub)
     if kind in {"sSup", "sSubSup"}:
-        result.append(sup if kind == "sSubSup" else sub)
+        result.append(sup)
     target.append(result)
 
 

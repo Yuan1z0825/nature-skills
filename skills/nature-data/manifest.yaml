@@ -1,5 +1,5 @@
 name: nature-data
-version: 2.0.0
+version: 2.2.0
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a data-availability request.
@@ -10,18 +10,23 @@ description: >
 # language — is handled at runtime by inline rules and the on-demand references,
 # not by loading different large content bodies. There is therefore no content
 # axis; the split is core (always loaded) plus on-demand references. nature-data
-# does not use the prose-oriented _shared layer (it governs data-availability
+# does not use the prose-oriented nature-shared layer (it governs data-availability
 # policy, with its own source basis).
 
 always_load:
   - static/core/stance.md
-  - static/core/chinese-mode.md
   - static/core/workflow.md
 
 references:
   on_demand:
+    - condition: the user writes Chinese or requests Chinese guidance
+      path: static/core/chinese-mode.md
     - condition: governing Nature/Springer Nature data-sharing rules or edge-case policy logic
       path: references/policy-principles.md
+    - condition: target is the flagship journal Nature, or exact Nature Article data, code, materials, mandatory-deposition, reviewer-access, or statement-placement rules are needed
+      path: references/nature-article-requirements.md
+    - condition: target is Nature Machine Intelligence, or exact NMI Data Availability, Code availability, repository, reviewer-access, central-code, software-checklist, or statement-placement rules are needed
+      path: ../nature-shared/journal-formats/nature-machine-intelligence.md
     - condition: the user writes in Chinese, needs bilingual wording, or provides Chinese availability notes
       path: references/chinese-author-alignment.md
     - condition: ready-to-adapt Data Availability statement patterns

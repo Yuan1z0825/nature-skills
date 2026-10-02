@@ -1,0 +1,38 @@
+{
+  "name": "nature-skills",
+  "version": "0.1.0",
+  "description": "Reusable research, literature, writing, review, data, citation, and figure workflows for AI scholars.",
+  "author": {
+    "name": "Yizhe Yuan and Nature Skills contributors",
+    "url": "https://github.com/Yuan1z0825"
+  },
+  "homepage": "https://yuan1z0825.github.io/nature-skills/",
+  "repository": "https://github.com/Yuan1z0825/nature-skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "research",
+    "academic-writing",
+    "literature-review",
+    "citations",
+    "scientific-figures"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Nature Skills",
+    "shortDescription": "Research and academic writing workflows",
+    "longDescription": "A collection of reusable research workflows for literature discovery, paper reading and writing, citation checking, reviewer responses, data analysis, and scientific figures.",
+    "developerName": "Yizhe Yuan and Nature Skills contributors",
+    "category": "Research",
+    "capabilities": [
+      "Research workflows",
+      "Academic writing",
+      "Citation verification"
+    ],
+    "websiteURL": "https://yuan1z0825.github.io/nature-skills/",
+    "defaultPrompt": [
+      "Show me the research workflows included in Nature Skills.",
+      "Help me review and improve this research manuscript.",
+      "Build a literature and citation workflow for this topic."
+    ]
+  }
+}

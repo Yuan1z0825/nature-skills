@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Image2PPT"
+  short_description: "Rebuild slide images and scans as editable PowerPoint objects"
+  default_prompt: "Use $nature-image2ppt to reconstruct these slide images as a high-fidelity editable PowerPoint and complete rendered QA."

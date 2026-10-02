@@ -1,0 +1,10 @@
+# macOS metadata
+.DS_Store
+
+# Python caches and test artifacts
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Local generated outputs
+/output/

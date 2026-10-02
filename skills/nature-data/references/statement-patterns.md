@@ -1,5 +1,22 @@
 # Statement Patterns
 
+## Contents
+
+- [Public repository, single dataset](#public-repository-single-dataset)
+- [Public repository, multiple datasets](#public-repository-multiple-datasets)
+- [Data in paper and supplementary files only](#data-in-paper-and-supplementary-files-only)
+- [Reused public data](#reused-public-data)
+- [Mixed generated and reused data](#mixed-generated-and-reused-data)
+- [Controlled-access human or sensitive data](#controlled-access-human-or-sensitive-data)
+- [Third-party or licensed data](#third-party-or-licensed-data)
+- [Commercially restricted data](#commercially-restricted-data)
+- [Embargoed data](#embargoed-data)
+- [Request-based access with justified restriction](#request-based-access-with-justified-restriction)
+- [No datasets generated or analysed](#no-datasets-generated-or-analysed)
+- [Anti-patterns to revise](#anti-patterns-to-revise)
+- [Audit questions](#audit-questions)
+
+
 Use these patterns as starting points. Replace bracketed fields with verified information. Delete
 any sentence that does not apply.
 

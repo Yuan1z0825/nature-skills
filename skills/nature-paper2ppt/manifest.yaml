@@ -9,7 +9,7 @@ description: >
 
 always_load:
   # Shared layer — common to the nature-* skills
-  - ../_shared/core/terminology-ledger.md
+  - ../nature-shared/core/terminology-ledger.md
   # Skill-local core
   - static/core/principles.md
   - static/core/toolchain.md
@@ -46,5 +46,10 @@ references:
       path: references/design-and-layout.md
     - condition: selecting, extracting, cropping, and quality-checking figure/table assets
       path: references/figure-assets.md
-    - condition: running the self-review/corrective revision loop, severity grading, programmatic python-pptx checks, rendered-preview policy, final verification
+    - condition: running the self-review/corrective revision loop, severity grading, programmatic PPTX/XML checks, rendered-preview policy, final verification
       path: references/self-review.md
+
+quality_tools:
+  pptx_audit_script: scripts/audit_pptx_quality.py
+  use_when: after the first PPTX draft and again after revision whenever a real .pptx exists
+  purpose: detect shape bounds, text overload, AI-template wording, image crop flags, small evidence images, and alignment near-misses from PPTX XML

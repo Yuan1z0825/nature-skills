@@ -16,7 +16,7 @@ If any element is missing, the module reads as a black box. Flag the gap.
 
 ## Pre-writing checklist
 
-Before drafting Method, confirm with the user:
+Before drafting Method, identify the following from supplied material and task context. Ask only about unresolved facts needed for the requested passage; do not reconfirm established choices:
 
 - Task formulation: inputs, outputs, scope.
 - Overview figure / pipeline diagram: does one exist? It anchors the section.

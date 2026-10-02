@@ -1,5 +1,26 @@
 # Common Patterns — Nature Figure Making
 
+## Contents
+
+- [Pattern 1: Ultra-wide multi-metric bar panel](#pattern-1-ultra-wide-multi-metric-bar-panel)
+- [Pattern 2: Dedicated legend panel](#pattern-2-dedicated-legend-panel)
+- [Pattern 3: Categorical bars without x-tick labels](#pattern-3-categorical-bars-without-x-tick-labels)
+- [Pattern 4: Dynamic y-axis tightening](#pattern-4-dynamic-y-axis-tightening)
+- [Pattern 5: Alpha-graduated ablation bars (same color, varying opacity)](#pattern-5-alpha-graduated-ablation-bars-same-color-varying-opacity)
+- [Pattern 6: Hatch encoding for print-safe grayscale](#pattern-6-hatch-encoding-for-print-safe-grayscale)
+- [Pattern 7: Semantic or family color mapping](#pattern-7-semantic-or-family-color-mapping)
+- [Pattern 8: In-bar text with luminance-aware color](#pattern-8-in-bar-text-with-luminance-aware-color)
+- [Pattern 9: Fill-between trend with hatch (print-safe)](#pattern-9-fill-between-trend-with-hatch-print-safe)
+- [Pattern 10: Annotate events on trend lines](#pattern-10-annotate-events-on-trend-lines)
+- [Pattern 11: Grouped bars across multiple datasets (grouped-within-grouped)](#pattern-11-grouped-bars-across-multiple-datasets-grouped-within-grouped)
+- [Pattern 12: Schematic hero panel with supporting quant row](#pattern-12-schematic-hero-panel-with-supporting-quant-row)
+- [Pattern 13: Dark image plate with repeated views](#pattern-13-dark-image-plate-with-repeated-views)
+- [Pattern 14: Clinical triptych](#pattern-14-clinical-triptych)
+- [Pattern 15: Asymmetric hero panel](#pattern-15-asymmetric-hero-panel)
+- [Pattern 16: Direct labels inside filled regions](#pattern-16-direct-labels-inside-filled-regions)
+- [Related files](#related-files)
+
+
 Reusable layout and encoding patterns used across publication-grade scripts.
 
 ---
@@ -347,4 +368,4 @@ Rules:
 - [nature-2026-observations.md](nature-2026-observations.md) — Real Nature page archetypes behind these patterns
 - [tutorials.md](tutorials.md) — End-to-end walkthroughs
 - [chart-types.md](chart-types.md) — Radar, 3D, scatter patterns
-- [demos.md](demos.md) — Bundled figures4papers scripts and previews
+- [demos.md](demos.md) — Third-party demo map, copyright-aware reference use, and original reimplementation guidance

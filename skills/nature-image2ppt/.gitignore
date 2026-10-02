@@ -1,0 +1,42 @@
+# Python caches and build output
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local environments
+.venv/
+venv/
+env/
+
+# Local secrets and machine-specific configuration
+.env
+.env.*
+config.yaml
+config.local.yaml
+*.local.yaml
+
+# Generated conversion runs and scratch artifacts
+output/
+runs/
+test_output/
+tmp/
+temp/
+
+# Source-repository documentation and nested CI are intentionally not
+# redistributed in the Nature Skills package.
+assets/readme/
+.github/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~

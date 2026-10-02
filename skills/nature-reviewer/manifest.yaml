@@ -1,0 +1,37 @@
+name: nature-reviewer
+version: 1.5.0
+description: >
+  Declarative manifest for the Nature-style reviewer assessment workflow. It
+  keeps the referee-facing SKILL.md compact while loading source basis, axes,
+  domain gates, report structure, role boundaries, and QA checks only when the
+  review stage requires them.
+
+# Design note: reviewer simulation should remain grounded, mutually blind,
+# and non-inventive.
+# The official/local criteria and QA checks are always relevant to final reports,
+# but domain-specific gates should only load for manuscripts in covered domains.
+
+always_load:
+  - references/editorial criteria and processes.md
+  - references/source-basis.md
+
+references:
+  on_demand:
+    - condition: executing the full isolated-review workflow, preparing immutable reviewer inputs, or resolving assessment order
+      path: references/reviewer-workflow.md
+    - condition: weighting originality, scientific importance, interdisciplinary readership, technical soundness, or readability
+      path: references/review-axes.md
+    - condition: building the internal concern ledger, calibrating Major/Minor severity and Blocking status, checking technical coverage, or anchoring concerns to manuscript claims and evidence locations
+      path: references/technical-concern-taxonomy.md
+    - condition: manuscript is clearly in chemistry, engineering, materials, atmospheric science, climate-ecology, hydrology, or remote sensing
+      path: references/domain-specific-review-gates.md
+    - condition: composing or auditing mutually blind reviewer reports with Major Concerns, Minor Comments, Blocking flags, and a post-review synthesis
+      path: references/report-structure.md
+    - condition: enforcing reviewer mutual blindness or preventing invented identities, editor decisions, or inappropriate reviewer-role claims
+      path: references/role-boundaries.md
+    - condition: final reviewer-isolation, severity, blocking, groundedness, non-invention, coverage, and reviewer-risk QA before delivery
+      path: references/qa-checklist.md
+    - condition: running the mandatory post-review forensic audit of arithmetic, metric bounds, aggregation level, prose-table or prose-figure contradictions, duplicate displays, dispersion anomalies, provenance, leakage, or reproduction gates
+      path: references/forensic-consistency-audit.md
+    - condition: checking the manuscript against itself — headline counts that do not reconcile with the Methods, a metric reported at two precisions, superlatives contradicted by the paper's own tables, overlapping error bars presented as an advantage, and internal summaries that disagree; these are the cheapest findings a referee can make and belong in Major or Minor Concerns with the contradicting table cited
+      path: ../nature-shared/core/consistency-sweep.md

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Paul-Jeo/nature-skills/nature-image2ppt/page-manifest-v2.schema.json",
+  "title": "Image2PPT page manifest v2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "slide",
+    "content_box",
+    "source",
+    "page_strategy",
+    "text_inventory",
+    "visual_inventory",
+    "background_strategy",
+    "quality_checks",
+    "quality_evidence",
+    "text_boxes",
+    "shapes",
+    "images",
+    "asset_provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "slide": {"type": "object"},
+    "content_box": {"type": "object"},
+    "source": {
+      "type": "object",
+      "required": ["width_px", "height_px"],
+      "properties": {
+        "path": {"type": "string"},
+        "width_px": {"type": "number", "exclusiveMinimum": 0},
+        "height_px": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "page_strategy": {"type": ["string", "object"]},
+    "text_inventory": {"type": "array"},
+    "visual_inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "representation"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {
+            "enum": ["background", "foreground-asset", "native-structure", "formula"]
+          },
+          "representation": {
+            "enum": [
+              "native",
+              "asset-sheet-separated",
+              "source-preserving-local-cleanup",
+              "imagegen",
+              "latex-rendered-formula"
+            ]
+          },
+          "path": {"type": "string"}
+        }
+      }
+    },
+    "background_strategy": {"type": "object"},
+    "quality_checks": {
+      "type": "object",
+      "required": [
+        "font_size_calibrated",
+        "visual_inventory_matched",
+        "background_strategy_checked",
+        "shape_corner_geometry_checked"
+      ],
+      "properties": {
+        "font_size_calibrated": {"const": true},
+        "visual_inventory_matched": {"const": true},
+        "background_strategy_checked": {"const": true},
+        "shape_corner_geometry_checked": {"const": true}
+      }
+    },
+    "quality_evidence": {
+      "type": "object",
+      "required": [
+        "font_size_calibrated",
+        "visual_inventory_matched",
+        "background_strategy_checked",
+        "shape_corner_geometry_checked"
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["observation"],
+        "properties": {
+          "observation": {"type": "string", "minLength": 12},
+          "artifact": {"type": "string"}
+        }
+      }
+    },
+    "text_boxes": {"type": "array"},
+    "shapes": {"type": "array"},
+    "images": {"type": "array"},
+    "asset_provenance": {"type": "array"},
+    "formula_inventory": {"type": "array"},
+    "image2ppt_region_decomposition": {"type": "object"}
+  },
+  "additionalProperties": true
+}

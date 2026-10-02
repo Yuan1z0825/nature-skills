@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pdf
+*.docx
+*.xlsx
+downloaded/
+downloads/
+extracted_text/
+manifest.local.*
+CX_tmp_*
+.workbuddy/
+.DS_Store

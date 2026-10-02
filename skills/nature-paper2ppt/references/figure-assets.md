@@ -52,3 +52,36 @@ Check every selected figure/table asset for:
 - low-resolution or blurry rendering.
 
 Revise the crop before placing it in the PPTX when any scientific context is cut off. A figure crop that loses a title, y-axis label, legend, or panel label is a defect, not an acceptable tradeoff.
+
+## Crop QA hard gate
+
+Treat figure crops as evidence, not decoration. A crop is not acceptable until it passes all applicable checks below:
+
+- panel letters are present when the slide refers to a panel letter,
+- x/y axes, axis titles, tick labels, color bars, legends, scale bars, and table headers are preserved when they are needed to read the evidence,
+- method labels, condition names, group labels, and sample labels remain visible,
+- the crop has a small safety margin around the scientific content rather than cutting exactly at the ink boundary,
+- the planned slide placement still leaves the figure readable without asking the audience to zoom,
+- no caption, source note, or callout covers original scientific labels.
+
+If any item fails, fix the asset before authoring the slide. Use one of these repairs:
+
+1. expand the crop rectangle,
+2. split the source figure across two slides,
+3. use a full-width hero figure slide,
+4. recreate a simple table/chart natively when values are explicit,
+5. replace the crop with a higher-resolution source image.
+
+Record the pass/fail result in `output/asset_manifest.md`. Use compact fields such as:
+
+```text
+asset: fig2b_main_result.png
+source: Fig. 2b, p. 5
+slide: 7
+method: pdf page render at 300 dpi, manual crop
+crop_qa: pass
+preserved: panel label, axes, legend, colorbar
+notes: split from Fig. 2 because full figure was unreadable at slide scale
+```
+
+If the crop is a deliberate partial crop, state exactly what was omitted and why it is not needed for the slide's claim.

@@ -1,0 +1,32 @@
+name: nature-experiment-log
+version: 1.0.2
+description: >
+  Declarative manifest for the experiment-log workflow. SKILL.md uses this to
+  route raw images, voice transcripts, and text notes into standardized
+  Obsidian-compatible experiment records while loading examples and templates
+  only when they are needed.
+
+# Design note: the core workflow is short and operational. The heavier example
+# logs and vault templates are supporting resources and should stay on demand so
+# routine logging does not preload every sample document.
+
+always_load:
+  - SKILL.md
+
+templates:
+  on_demand:
+    - condition: creating or refreshing the experiment index dashboard
+      path: templates/experiment-index.md
+    - condition: logging an anomaly, failed run, contamination, unexpected device behavior, or deviation from protocol
+      path: templates/anomaly-log.md
+    - condition: setting up shared equipment, reagent, or consumable tracking in the vault
+      path: templates/equipment-tracking.md
+
+references:
+  on_demand:
+    - condition: user needs a complete corrosion, soaking, or general materials experiment log example
+      path: references/example-log.md
+    - condition: electrochemical characterization, CV, SWV, EIS, electrode setup, or electrochemical window logging
+      path: references/example-electrochemical.md
+    - condition: thermal stability, heating, furnace, muffle furnace, tube furnace, or temperature-program experiment logging
+      path: references/example-thermal-stability.md

@@ -34,6 +34,13 @@ itself — *"tRNA-Glu of E. coli (PDB: 2DER chain C). 76 nt, RMSD: 2.88 Å."*;
 *"Grey boxes designate what is defined by the benchmark, and orange boxes
 indicate what is unique to each solution."*
 
+## Display-label capitalization
+
+- Treat in-figure legend entries as display labels. Start ordinary descriptive labels with an uppercase letter, for example `Tuned XGBoost`, `Tuned RF`, `+ Semantic guidance`, and `+ Causal guidance`.
+- Preserve canonical product/model spelling exactly, including internal capitals, hyphens, periods, and abbreviations such as `XGBoost`, `DeepSeek`, `GPT-5.2`, and `RF`.
+- In prose legend sentences, use normal sentence grammar rather than forcing every term into display case.
+- Do not apply `.title()` or equivalent automatic title-casing because it corrupts canonical names.
+
 ## Advanced: the claim-closing sentence
 
 A legend's final sentence may advance an argument rather than only describe —
@@ -56,9 +63,20 @@ Methods — *"Table 1 | … Detailed specifications are provided in the Methods
 section."* Benchmark/framework papers lean on tables (multi-metric results) more
 than figures.
 
-## Length & title limits (consistency with style-guardrails)
+## Length and journal gate
 
-- Keep a Nature-style legend `<= 300` words.
+- This file's corpus evidence is from Nature Communications and does not set a
+  universal Nature Portfolio word limit.
+- For the flagship journal Nature, load `nature-article-requirements.md` and
+  keep each complete figure legend below 250 words.
+- For Nature Machine Intelligence, load the shared NMI contract. Its current
+  live pages give no standalone per-legend number, while its official 2018
+  brief guide said to keep each figure legend below 300 English words. Count
+  the complete title-plus-panels legend, not each panel; aim for 150–250 words
+  and use below 300 as a historical advisory ceiling unless the live submission
+  system or editor gives a newer instruction.
+- For Nature Communications or another subjournal, verify the current journal
+  and article-type instructions before enforcing a numerical cap.
 - Keep the `Fig. N |` title short and nominal; no numbers/results in the figure
   *title* line (numbers live in the panels and stats).
 
@@ -67,5 +85,6 @@ than figures.
 - 结构铁律:`图 N | 加粗名词短语总题` → `a/b/c` 现在时电报式分面 → 统计(n、误差、检验)写进图注 → "Source data are provided as a Source Data file." 套语。
 - 时态:视觉事实用现在时,制作方法用过去时。
 - 自足:颜色/形状映射、样本量、关键数值(PDB/RMSD/单位)都写进图注,使其脱离正文可读。
+- 图内图例按展示标签处理,普通描述首字母大写,同时保留 `XGBoost`、`DeepSeek`、`GPT-5.2`、`RF` 等规范拼写;正文仍按句法大小写,不要盲目自动 title case。
 - 进阶:图注末句可给一句推断结论,但须确有面板支撑。
 - 综述图注:聚合他人系统时逐子图一句话定性,并标注"adapted with permission from refs… by Springer Nature"授权。

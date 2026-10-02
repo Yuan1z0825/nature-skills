@@ -34,10 +34,10 @@ Response strategy summary
 ## Expected tracker
 
 ```markdown
-| ID | Reviewer concern | Type | Severity | Proposed action | Readiness | Missing author input |
-|---|---|---|---|---|---|---|
-| R1.1 | Define cross-domain calibration | Editorial / presentation | Minor | ACCEPT_TEXT | draft_with_placeholders | Line or section location |
-| R1.2 | Explain Figure 2 colour scale | Editorial / figure | Minor | ACCEPT_FIGURE | draft_with_placeholders | Line or legend location |
+| ID | Reviewer concern | Type | Severity | Proposed action | Work status | Required input | Expected output | Blocks finalization? |
+|---|---|---|---|---|---|---|---|---|
+| R1.1 | Define cross-domain calibration | Editorial / presentation | Minor | ACCEPT_TEXT | REPORTED_DONE_UNVERIFIED | Revised passage and location | Verified Introduction definition | Yes |
+| R1.2 | Explain Figure 2 colour scale | Editorial / figure | Minor | ACCEPT_FIGURE | REPORTED_DONE_UNVERIFIED | Revised legend and location | Verified Figure 2 legend | Yes |
 ```
 
 ## Response style

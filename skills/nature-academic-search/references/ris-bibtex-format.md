@@ -1,5 +1,14 @@
 # RIS and BibTeX Format Specifications
 
+## Contents
+
+- [RIS Format](#ris-format)
+- [BibTeX Format](#bibtex-format)
+- [ENW (EndNote Tagged) Format](#enw-endnote-tagged-format)
+- [Text Escaping (ris_escape)](#text-escaping-ris_escape)
+- [Format Selection Guide](#format-selection-guide)
+
+
 ## RIS Format
 
 RIS is the standard import format for EndNote, Zotero, and most reference managers.

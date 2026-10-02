@@ -1,22 +1,13 @@
 ---
 name: nature-polishing
-description: Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Academic Phrasebank. Use whenever the user asks to polish a manuscript paragraph, abstract, introduction, results, discussion, conclusion, title, methods section, or Chinese academic draft for publication-quality English. Also covers LaTeX layout/typesetting (排版) fixes — loose or sparse pages, stranded section headings, figures that don't fill the page or split across pages, "Float too large", multi-panel figure arrangement, and Supplementary Information that looks empty — via references/latex-layout.md. Also trigger on general academic/scientific writing requests even without the word "Nature", including academic writing, scientific writing, SCI/paper writing, English manuscript polishing, language editing, proofreading, and Chinese phrasings such as 学术写作、科研写作、论文润色、写paper、SCI写作、英文论文润色、语言润色、润色、改写、学术英语、英文写作.
-version: 6.1.0
-author: Yuan1z skill, refactored into static/dynamic layers
+description: Polish, translate, or tighten existing academic prose while preserving facts, terminology, and evidence boundaries. Use for 论文润色、学术翻译、正文精简, or manuscript LaTeX layout fixes. Use nature-writing when the main task is drafting new sections or rebuilding the manuscript argument.
 ---
 
 # Nature-Style Academic Polishing — Router
 
-This skill is split into two layers:
-
-- A **static layer** under `static/` that holds versioned, reusable content fragments (core principles, paper-type playbooks, per-section guidance, language-specific rules, per-journal style).
-- A **dynamic layer** (this file plus `manifest.yaml`) that detects the request's axes and loads only the fragments needed for the current job.
-
-Do not try to apply the polishing logic from memory or from this router. Always load fragments from disk as described below.
-
 ## Routing protocol
 
-Follow these five steps every time the skill is invoked.
+For a new polishing task, follow the routing below. For follow-up edits, reuse established task choices and already loaded guidance; read additional fragments only when the requested scope changes.
 
 ### 1. Load the manifest and the core layer
 
@@ -31,9 +22,12 @@ For each axis in the manifest, decide the value using the manifest's `detect:` h
 - `paper_type` — research / methods / hypothesis / algorithmic / review. Default: research.
 - `section` — abstract / intro / results / discussion / conclusion / title / methods. May be multiple. Ask the user if it is ambiguous and matters for the polish.
 - `language` — en or zh-to-en. Detect from the draft itself.
-- `journal` — nature / nat-comms / generic. Default: generic. If the user names a Nature subjournal, treat it as `nature`.
+- `journal` — nature / nat-comms / nat-mach-intell / generic. Default:
+  generic. Use `nature` only for flagship Nature, `nat-comms` for Nature
+  Communications and `nat-mach-intell` for Nature Machine Intelligence (NMI).
+  Do not route another Nature Portfolio title through flagship Nature rules.
 
-State the detected axis values in one short line to the user before proceeding, so they can correct you cheaply.
+State the detected axis values in one short line to the user before proceeding, so they can correct you cheaply. This is a progress update, not an approval gate; continue unless a necessary decision remains unresolved.
 
 ### 3. Load the matching fragments
 
@@ -53,9 +47,45 @@ Apply the loaded fragments in this priority order, matching the `paper type -> s
 
 If a paragraph's structural problem cannot be fixed without inventing content, flag it instead of papering over it.
 
+For Results, full-main-text compression, main-versus-SI allocation, or prose
+added during revision, load `../nature-shared/core/main-text-discipline.md`
+before sentence polishing. Classify each result, retain the shortest sufficient
+evidence chain, and require every addition to trigger a deletion or replacement
+check across the affected paragraph.
+
+For flagship Nature, Nature Communications, Nature Machine Intelligence, or
+another Nature Portfolio title, load the matching shared Nature-style corpus
+guidance:
+
+- Results or Discussion →
+  `../nature-shared/core/nature-results-discussion.md`
+- Introduction or whole-manuscript narrative →
+  `../nature-shared/core/nature-introduction.md`
+- Abstract → `../nature-shared/core/nature-abstract.md`
+
+Preserve claim escalation, the fast question funnel, Introduction–Results
+alignment, discovery-centred abstract compression, evidence-bound local
+interpretation, and cross-Results synthesis. These defaults were initially
+distilled from published NMI papers; treat them as corpus-derived guidance, not
+official policy, and obey the target journal's current rules when they differ.
+
+For any Discussion polish or restructuring job, also load
+`../nature-shared/core/discussion-argument-language.md`. Use its function labels
+to remove Results replay, repair the movement from specific findings to bounded
+implications, calibrate modal and reporting verbs to evidence strength, and make
+limitations and future work resolve named claim boundaries. Treat it as general
+writing guidance, not journal policy.
+
 ### 5. Reach for references only when needed
 
 The files under `references/` are deep references, not defaults. Open them on demand per the `references.on_demand` table in the manifest, for example when the user explicitly asks for phrasebank-style alternatives or a stricter style audit.
+
+When the target is Nature Machine Intelligence and exact limits, availability
+sections, conference-extension disclosure or production checks affect the
+revision, load
+`../nature-shared/journal-formats/nature-machine-intelligence.md`.
+
+For a whole-manuscript consistency audit or evidence of drift across passages, load `../nature-shared/core/consistency-sweep.md`. Local follow-up edits require checking the affected terms, numbers, and claims, not restarting a full audit solely because this is another editing round. After corrections, recheck affected occurrences and dependent claims; broaden the sweep when new discrepancies warrant it.
 
 **Layout/typesetting (排版) requests are different.** If the user asks to fix
 *placement* rather than wording — loose/sparse pages, stranded headings, figures
@@ -66,9 +96,3 @@ file is self-contained: it carries the diagnosis workflow (render → contact-sh
 read the log), the float-glue and `[H]`/`\clearpage`/`placeins` patterns, and the
 "regenerate wide figures taller at the source" rule. Always compile and visually
 inspect rendered pages before and after — never judge layout from the `.tex` alone.
-
-## Why this split
-
-- The static layer is versioned and reviewable. Adding a new journal style or paper type is one new file plus one manifest line.
-- The dynamic layer keeps each invocation cheap: only the fragments relevant to this draft enter context, instead of the full 1000-line monolith.
-- The router itself is short on purpose. Update fragments, not this file, when adding scope.

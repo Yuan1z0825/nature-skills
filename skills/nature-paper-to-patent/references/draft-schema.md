@@ -1,5 +1,11 @@
 # Structured Draft Schema
 
+## Contents
+
+- [Purpose](#purpose)
+- [Rules](#rules)
+
+
 ## Purpose
 
 Populate a UTF-8 JSON file with this structure before rendering a DOCX. Empty optional arrays are allowed. Preserve `[TO CONFIRM: ...]` markers where facts remain unresolved.

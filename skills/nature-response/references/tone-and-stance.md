@@ -1,5 +1,16 @@
 # Tone and stance
 
+## Contents
+
+- [Core posture](#core-posture)
+- [Recommended sentence patterns](#recommended-sentence-patterns)
+- [Weak or forbidden patterns](#weak-or-forbidden-patterns)
+- [Disagreement pattern](#disagreement-pattern)
+- [Reviewer misunderstanding pattern](#reviewer-misunderstanding-pattern)
+- [Out-of-scope pattern](#out-of-scope-pattern)
+- [Claim-strength verbs](#claim-strength-verbs)
+
+
 Use this file when drafting response prose, rewriting defensive author notes, or deciding how to disagree.
 
 ## Core posture
@@ -39,10 +50,20 @@ As everyone knows...
 We believe this is sufficient.
 We have revised accordingly.
 Thank you for the comment.
+As Reviewer 2 also noted...
+Please see our response to Reviewer 1...
+The other reviewer requested the opposite...
+We already stated this in the manuscript...
+This was already explained in the original submission...
+As clearly described in the original manuscript...
 ```
 
 It is acceptable to thank reviewers, but thanks cannot be the response. Each reply still needs a
 direct answer, action, location, or unresolved flag.
+
+Cross-reviewer phrasing is forbidden in reviewer-facing files. If reviewers repeat or conflict on
+an issue, coordinate the shared manuscript action in the internal/editor master and explain it
+independently to each reviewer.
 
 ## Disagreement pattern
 
@@ -64,12 +85,20 @@ that [revised text or placeholder].
 
 ## Reviewer misunderstanding pattern
 
-Do not write that the reviewer misunderstood. Treat the misunderstanding as a presentation signal:
+Do not write that the reviewer misunderstood or should have noticed existing text. Treat the
+missed point as a presentation signal. Answer the question directly, acknowledge that the original
+presentation was not sufficiently clear, revise the wording or placement when supported, and give
+the final manuscript location.
 
 ```text
-We agree that the original text did not make this distinction sufficiently clear. We have revised
-the [section] to clarify that [specific distinction].
+We appreciate the reviewer raising this point. We agree that the original presentation did not
+make [specific point] sufficiently clear. We have therefore revised [section or location] to state
+that [revised text or faithful summary].
 ```
+
+If the author has not supplied a revised passage or approved a change, keep the proposed
+clarification visible as `AUTHOR_INPUT_NEEDED`. Do not convert existing text into an invented
+claim that the manuscript has already been revised.
 
 ## Out-of-scope pattern
 

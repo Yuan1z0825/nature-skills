@@ -1,5 +1,15 @@
 # Self-review and verification
 
+## Contents
+
+- [The loop](#the-loop)
+- [Self-review checklist](#self-review-checklist)
+- [Severity rules](#severity-rules)
+- [Programmatic checks when using python-pptx](#programmatic-checks-when-using-python-pptx)
+- [Rendered preview policy](#rendered-preview-policy)
+- [Step 9 — final verification](#step-9-final-verification)
+
+
 Open this reference for step 8 (self-review/corrective revision loop) and step 9 (final verification).
 
 ## The loop
@@ -65,7 +75,28 @@ Use `low` for cosmetic issues that do not affect comprehension:
 
 ## Programmatic checks when using python-pptx
 
-When generating with python-pptx, perform a lightweight audit in code after the first draft and again after revision:
+When generating with python-pptx, perform a lightweight audit in code after the first draft and again after revision. Run the bundled audit script whenever a real PPTX exists:
+
+```bash
+python skills/nature-paper2ppt/scripts/audit_pptx_quality.py \
+  output/final_presentation_cn.pptx \
+  --report output/pptx_audit.md \
+  --fail-on high
+```
+
+If the script reports high-severity findings, treat the deck as not ready. Fix the deck, regenerate, and run the script again. Copy the final audit summary into `output/qa_report.md`.
+
+The script checks common structural and language issues directly from PPTX XML:
+
+- shapes outside the slide canvas,
+- suspicious image crop settings,
+- main evidence images that are too small for presentation use,
+- repeated near-miss alignment between objects,
+- text-heavy shapes likely to overflow,
+- AI-template phrases such as `一句话总结`, `最有价值的后续方向`, and `不是……而是……`,
+- slide count, media count, and notes count.
+
+Also perform these checks in code or manually when the generation stack allows it:
 
 - reopen the PPTX with `Presentation(output_path)`,
 - count slides and embedded media,
@@ -86,10 +117,10 @@ Render slide previews when a reliable headless renderer is readily available. If
 
 If rendered preview reveals defects, revise and regenerate the PPTX. Do not deliver a deck with obvious visual defects merely because the package validates.
 
-If no reliable renderer is available, still complete the self-review loop using: crop/contact-sheet inspection for selected assets; python-pptx structural checks; slide-by-slide text and shape inspection; and a clear note in `output/qa_report.md` that rendered preview was unavailable.
+If no reliable renderer is available, still complete the self-review loop using: crop/contact-sheet inspection for selected assets; `audit_pptx_quality.py`; slide-by-slide text and shape inspection; and a clear note in `output/qa_report.md` that rendered preview was unavailable.
 
 ## Step 9 — final verification
 
-After revision, perform lightweight verification: reopen the PPTX with the generation library when possible; check slide count; check embedded media count; check speaker notes presence when notes were planned; check obvious shape bounds if tooling supports it; create a contact sheet from selected extracted assets when figures were cropped.
+After revision, perform lightweight verification: reopen the PPTX with the generation library when possible; check slide count; check embedded media count; check speaker notes presence when notes were planned; run `audit_pptx_quality.py`; check obvious shape bounds if tooling supports it; create or inspect a contact sheet from selected extracted assets when figures were cropped.
 
 Do not stop at "PPTX opens" if the self-review found high-severity issues. Correct them first, then verify again. Document any remaining limitation in `output/qa_report.md`.

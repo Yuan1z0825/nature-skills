@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Proposal Writer (ResearchWrite)"
+  short_description: "Draft evidence-grounded scientific research proposals"
+  default_prompt: "Use $researchwrite to draft an evidence-grounded research proposal from these materials."

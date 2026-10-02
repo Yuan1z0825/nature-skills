@@ -1,0 +1,2 @@
+# 国知局公布公告站检索（scripts/disclosure/cnipa_epub_search.py / cnipa_epub_crawler.py）依赖；与仓库根目录 requirements.txt 独立
+playwright>=1.40.0

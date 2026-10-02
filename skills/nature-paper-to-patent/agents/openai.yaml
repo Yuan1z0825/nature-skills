@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nature Paper to Patent"
+  short_description: "Convert research materials into patent-ready drafts"
+  default_prompt: "Use $nature-paper-to-patent to convert these research materials into a source-grounded patent draft."

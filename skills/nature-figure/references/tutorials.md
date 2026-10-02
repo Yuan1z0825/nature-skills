@@ -1,8 +1,17 @@
 # Tutorials — Nature Figure Making
 
+## Contents
+
+- [Tutorial 1: Grouped bar chart (multi-metric comparison)](#tutorial-1-grouped-bar-chart-multi-metric-comparison)
+- [Tutorial 2: Ablation bar chart (alpha-graduated, horizontal)](#tutorial-2-ablation-bar-chart-alpha-graduated-horizontal)
+- [Tutorial 3: Multi-panel trend with shared legend](#tutorial-3-multi-panel-trend-with-shared-legend)
+- [Tutorial 4: Heatmap with dual colormaps (positive/negative columns)](#tutorial-4-heatmap-with-dual-colormaps-positivenegative-columns)
+- [Related files](#related-files)
+
+
 End-to-end walkthroughs for the most common publication figure types.
 All examples use helpers from [api.md](api.md) and patterns from [common-patterns.md](common-patterns.md).
-For real production scripts and output previews from figures4papers, open [demos.md](demos.md).
+For the retained third-party demo map, copyright boundary, and original reimplementation guidance, open [demos.md](demos.md).
 
 ---
 

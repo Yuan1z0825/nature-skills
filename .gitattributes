@@ -1,0 +1,2 @@
+# Keep Markdown stable across GitHub's web editor, macOS, Linux, and Windows.
+*.md text eol=lf
