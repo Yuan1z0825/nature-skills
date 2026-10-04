@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 import importlib.util
 import unittest
 from pathlib import Path
@@ -97,6 +98,44 @@ class StarHistoryFetchingTests(unittest.TestCase):
         self.assertEqual(request.call_count, 401)
         self.assertEqual(total, 40_001)
         self.assertEqual(len(items), 40_001)
+
+    def test_transient_graphql_error_is_retried(self) -> None:
+        error = json.dumps({"errors": [{"message": "Something went wrong while executing your query"}]})
+        ok = json.dumps(graphql_page(1, ["2026-01-01T00:00:00Z"], has_next=False, end_cursor=None))
+        replies = [error, ok]
+
+        class Response:
+            def __init__(self, body):
+                self.body = body
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def read(self):
+                return self.body.encode()
+
+        with mock.patch.object(MODULE.urllib.request, "urlopen", side_effect=lambda *a, **k: Response(replies.pop(0))), mock.patch.object(MODULE.time, "sleep"):
+            payload = MODULE.github_graphql(MODULE.STARGAZERS_QUERY, {}, "token", 2)
+
+        self.assertEqual(payload["data"]["repository"]["stargazerCount"], 1)
+
+    def test_persistent_transient_error_shrinks_page_size(self) -> None:
+        sizes = []
+
+        def respond(query, variables, token, retries):
+            sizes.append(variables["first"])
+            if variables["first"] > 25:
+                raise MODULE.TransientGraphQLError("boom")
+            return graphql_page(1, ["2026-01-01T00:00:00Z"], has_next=False, end_cursor=None)
+
+        with mock.patch.object(MODULE, "github_graphql", side_effect=respond):
+            total, _ = MODULE.fetch_stargazers("owner/repo", "token", 1, 0)
+
+        self.assertEqual(sizes, [100, 50, 25])
+        self.assertEqual(total, 1)
 
     def test_missing_token_fails_with_actionable_message(self) -> None:
         with self.assertRaisesRegex(MODULE.StarHistoryUnavailable, "requires GITHUB_TOKEN"):
