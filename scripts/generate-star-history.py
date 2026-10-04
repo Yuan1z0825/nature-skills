@@ -23,13 +23,13 @@ GITHUB_API = "https://api.github.com"
 GITHUB_GRAPHQL_API = f"{GITHUB_API}/graphql"
 
 STARGAZERS_QUERY = """
-query StarHistory($owner: String!, $name: String!, $cursor: String, $first: Int!) {
+query StarHistory($owner: String!, $name: String!, $cursor: String, $first: Int!, $direction: OrderDirection!) {
   repository(owner: $owner, name: $name) {
     stargazerCount
     stargazers(
       first: $first
       after: $cursor
-      orderBy: {field: STARRED_AT, direction: ASC}
+      orderBy: {field: STARRED_AT, direction: $direction}
     ) {
       edges {
         starredAt
@@ -87,6 +87,14 @@ def parse_args() -> argparse.Namespace:
         "--output",
         default="assets/star-history.svg",
         help="Output SVG path.",
+    )
+    parser.add_argument(
+        "--cache",
+        default="assets/star-history-data.json",
+        help=(
+            "JSON file holding per-day new-star counts so later runs only fetch "
+            "new stars. Pass an empty string to always do a full fetch."
+        ),
     )
     parser.add_argument(
         "--cache-bust-readme",
@@ -251,7 +259,13 @@ def fetch_stargazers(
         try:
             payload = github_graphql(
                 STARGAZERS_QUERY,
-                {"owner": owner, "name": name, "cursor": cursor, "first": page_size},
+                {
+                    "owner": owner,
+                    "name": name,
+                    "cursor": cursor,
+                    "first": page_size,
+                    "direction": "ASC",
+                },
                 token,
                 retries,
             )
@@ -331,6 +345,138 @@ def fetch_stargazers(
     return len(items), items
 
 
+CACHE_VERSION = 1
+MAX_INCREMENTAL_PAGES = 50
+# Allowed drift between cached counts and GitHub's total (un-starred repos).
+CACHE_DRIFT_TOLERANCE = 100
+
+
+def load_daily_cache(path: pathlib.Path, repo: str) -> dict[dt.date, int] | None:
+    """Load per-day new-star counts, or None when absent/unusable."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data["version"] != CACHE_VERSION or data["repo"] != repo:
+            return None
+        daily = {
+            dt.date.fromisoformat(day): int(count)
+            for day, count in data["daily"].items()
+        }
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        return None
+    if not daily or any(count < 0 for count in daily.values()):
+        return None
+    return daily
+
+
+def save_daily_cache(path: pathlib.Path, repo: str, daily: dict[dt.date, int]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "version": CACHE_VERSION,
+        "repo": repo,
+        "daily": {day.isoformat(): daily[day] for day in sorted(daily)},
+    }
+    path.write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8")
+
+
+def fetch_recent_star_dates(
+    repo: str,
+    token: str | None,
+    retries: int,
+    since: dt.date,
+) -> tuple[int, list[dt.date]]:
+    """Fetch newest-first stargazer dates until reaching a day before ``since``.
+
+    Returns GitHub's current total and every star date >= ``since``. Only the
+    newest few pages are read, so this avoids expensive deep pagination.
+    """
+    owner, name = repo.split("/", 1)
+    cursor: str | None = None
+    recent: list[dt.date] = []
+    total_stars = 0
+
+    for _ in range(MAX_INCREMENTAL_PAGES):
+        payload = github_graphql(
+            STARGAZERS_QUERY,
+            {
+                "owner": owner,
+                "name": name,
+                "cursor": cursor,
+                "first": PAGE_SIZE,
+                "direction": "DESC",
+            },
+            token,
+            retries,
+        )
+        try:
+            repo_info = payload["data"]["repository"]
+            total_stars = int(repo_info["stargazerCount"])
+            connection = repo_info["stargazers"]
+            edges = connection["edges"]
+            page_info = connection["pageInfo"]
+            dates = [
+                dt.datetime.fromisoformat(edge["starredAt"].replace("Z", "+00:00")).date()
+                for edge in edges
+            ]
+        except (KeyError, TypeError, ValueError, AttributeError) as exc:
+            raise StarHistoryUnavailable(
+                "Malformed GitHub GraphQL response during incremental fetch"
+            ) from exc
+
+        recent.extend(day for day in dates if day >= since)
+        reached_cached_range = any(day < since for day in dates)
+        if reached_cached_range or not page_info.get("hasNextPage"):
+            return total_stars, recent
+
+        next_cursor = page_info.get("endCursor")
+        if not isinstance(next_cursor, str) or not next_cursor or next_cursor == cursor:
+            raise StarHistoryUnavailable("Incremental pagination did not advance its cursor")
+        cursor = next_cursor
+
+    raise StarHistoryUnavailable(
+        f"Incremental fetch exceeded {MAX_INCREMENTAL_PAGES} pages without reaching the cache"
+    )
+
+
+def merge_recent_into_daily(
+    daily: dict[dt.date, int],
+    recent: list[dt.date],
+    since: dt.date,
+) -> dict[dt.date, int]:
+    """Replace every day >= ``since`` with freshly counted values."""
+    merged = {day: count for day, count in daily.items() if day < since}
+    merged.update(collections.Counter(recent))
+    return merged
+
+
+def update_daily_incrementally(
+    repo: str,
+    token: str | None,
+    retries: int,
+    daily: dict[dt.date, int],
+) -> dict[dt.date, int] | None:
+    """Return refreshed counts, or None when a full refresh is needed."""
+    since = max(daily)
+    try:
+        total_stars, recent = fetch_recent_star_dates(repo, token, retries, since)
+    except StarHistoryUnavailable as exc:
+        print(f"Incremental update unavailable ({exc}); falling back to full fetch.", file=sys.stderr)
+        return None
+    merged = merge_recent_into_daily(daily, recent, since)
+    drift = sum(merged.values()) - total_stars
+    if abs(drift) > CACHE_DRIFT_TOLERANCE:
+        print(
+            f"Cached history differs from GitHub's total by {drift:+,}; "
+            "falling back to full fetch.",
+            file=sys.stderr,
+        )
+        return None
+    print(
+        f"Incremental update: {len(recent):,} star(s) since {since}; "
+        f"history now {sum(merged.values()):,} (GitHub reports {total_stars:,})"
+    )
+    return merged
+
+
 def build_daily_points(items: list[dict], expected_total: int) -> list[tuple[dt.date, int]]:
     dates = []
     missing_timestamps = 0
@@ -359,10 +505,15 @@ def build_daily_points(items: list[dict], expected_total: int) -> list[tuple[dt.
             "Check the API Accept header and token permissions."
         )
 
-    dates.sort()
-    start = dates[0]
-    end = dates[-1]
-    by_day = collections.Counter(dates)
+    return points_from_daily(collections.Counter(dates))
+
+
+def points_from_daily(by_day: collections.Counter | dict[dt.date, int]) -> list[tuple[dt.date, int]]:
+    """Turn per-day new-star counts into a cumulative, gap-free series."""
+    if not by_day:
+        return []
+    start = min(by_day)
+    end = max(by_day)
     points = []
     running = 0
     day = start
@@ -591,12 +742,27 @@ def main() -> int:
     if "/" not in args.repo:
         raise SystemExit("--repo must be in owner/name form")
 
-    total_stars, items = fetch_stargazers(args.repo, args.token, args.workers, args.retries)
-    try:
-        points = build_daily_points(items, total_stars)
-    except StarHistoryUnavailable as exc:
-        print(f"Warning: {exc}", file=sys.stderr)
-        return 0
+    cache_path = pathlib.Path(args.cache) if args.cache else None
+    daily = load_daily_cache(cache_path, args.repo) if cache_path else None
+    if daily is not None:
+        daily = update_daily_incrementally(args.repo, args.token, args.retries, daily)
+
+    if daily is None:
+        total_stars, items = fetch_stargazers(args.repo, args.token, args.workers, args.retries)
+        try:
+            points = build_daily_points(items, total_stars)
+        except StarHistoryUnavailable as exc:
+            print(f"Warning: {exc}", file=sys.stderr)
+            return 0
+        daily = {}
+        previous = 0
+        for day, cumulative in points:
+            daily[day] = cumulative - previous
+            previous = cumulative
+    else:
+        points = points_from_daily(daily)
+    if cache_path and daily:
+        save_daily_cache(cache_path, args.repo, daily)
     output = pathlib.Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     generated_at = dt.datetime.now(dt.timezone.utc)
