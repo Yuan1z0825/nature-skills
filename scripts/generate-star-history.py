@@ -23,11 +23,11 @@ GITHUB_API = "https://api.github.com"
 GITHUB_GRAPHQL_API = f"{GITHUB_API}/graphql"
 
 STARGAZERS_QUERY = """
-query StarHistory($owner: String!, $name: String!, $cursor: String) {
+query StarHistory($owner: String!, $name: String!, $cursor: String, $first: Int!) {
   repository(owner: $owner, name: $name) {
     stargazerCount
     stargazers(
-      first: 100
+      first: $first
       after: $cursor
       orderBy: {field: STARRED_AT, direction: ASC}
     ) {
@@ -47,6 +47,29 @@ query StarHistory($owner: String!, $name: String!, $cursor: String) {
   }
 }
 """
+
+
+PAGE_SIZE = 100
+MIN_PAGE_SIZE = 25
+
+
+class TransientGraphQLError(RuntimeError):
+    """GitHub reported a retryable server-side GraphQL failure."""
+
+
+def is_transient_graphql_error(errors: object) -> bool:
+    """Deep stargazer pages on large repos often fail with a generic server error."""
+    if not isinstance(errors, list):
+        return False
+    for error in errors:
+        message = str(error.get("message", "") if isinstance(error, dict) else error).lower()
+        kind = str(error.get("type", "") if isinstance(error, dict) else "").upper()
+        if kind in {"RATE_LIMITED", "TIMEOUT"} or any(
+            marker in message
+            for marker in ("something went wrong", "timeout", "timed out", "try again")
+        ):
+            return True
+    return False
 
 
 class StarHistoryUnavailable(RuntimeError):
@@ -176,6 +199,19 @@ def github_graphql(
             raise RuntimeError("GitHub GraphQL returned a non-object response")
         errors = payload.get("errors")
         if errors:
+            if is_transient_graphql_error(errors):
+                last_error = TransientGraphQLError(
+                    f"GitHub GraphQL returned errors: {errors}"
+                )
+                if attempt < retries:
+                    delay = min(60, 2 ** attempt)
+                    print(
+                        f"GraphQL returned a transient error; retrying in {delay}s",
+                        file=sys.stderr,
+                    )
+                    time.sleep(delay)
+                    continue
+                raise last_error
             raise RuntimeError(f"GitHub GraphQL returned errors: {errors}")
         return payload
 
@@ -209,13 +245,24 @@ def fetch_stargazers(
     expected_pages: int | None = None
     total_stars = 0
 
+    page_size = PAGE_SIZE
+
     while True:
-        payload = github_graphql(
-            STARGAZERS_QUERY,
-            {"owner": owner, "name": name, "cursor": cursor},
-            token,
-            retries,
-        )
+        try:
+            payload = github_graphql(
+                STARGAZERS_QUERY,
+                {"owner": owner, "name": name, "cursor": cursor, "first": page_size},
+                token,
+                retries,
+            )
+        except TransientGraphQLError:
+            # A persistently failing page is usually too expensive for GitHub;
+            # the cursor stays valid, so retry the same position with fewer rows.
+            if page_size <= MIN_PAGE_SIZE:
+                raise
+            page_size = max(MIN_PAGE_SIZE, page_size // 2)
+            print(f"Reducing GraphQL page size to {page_size}", file=sys.stderr)
+            continue
         data = payload.get("data")
         if not isinstance(data, dict):
             raise RuntimeError("GitHub GraphQL response is missing data")
@@ -240,7 +287,7 @@ def fetch_stargazers(
         if expected_pages is None:
             if total_stars == 0:
                 print(f"No stars found for {repo}; writing an empty history.")
-            expected_pages = max(1, math.ceil(total_stars / 100))
+            expected_pages = max(1, math.ceil(total_stars / PAGE_SIZE))
             print(
                 f"Fetching {total_stars:,} stars from {repo} via GraphQL "
                 f"cursor pagination ({expected_pages} pages expected)"
