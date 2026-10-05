@@ -5,7 +5,7 @@
   <p>
     <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-2ea44f"></a>
     <a href="#5-installation"><img alt="Install" src="https://img.shields.io/badge/install-Claude%20Code%20%7C%20Codex%20%7C%20OpenClaw%20%7C%20OpenCode%20%7C%20Hermes-111827"></a>
-    <a href="#6-skill-index"><img alt="Skills" src="https://img.shields.io/badge/skills-19-0ea5e9"></a>
+    <a href="#6-skill-index"><img alt="Skills" src="https://img.shields.io/badge/skills-20-0ea5e9"></a>
     <a href="README.md"><img alt="Language" src="https://img.shields.io/badge/language-English%20%7C%20中文-1f6feb"></a>
   </p>
   <p>
@@ -574,6 +574,7 @@ The current `skills/` directory contains the following triggerable skills.
 | [`nature-data`](skills/nature-data/README_EN.md) | Draft | Prepare Data Availability statements, data repository plans, and FAIR checks | "Data Availability", "data availability", "repository", "FAIR metadata" | [Details](skills/nature-data/README_EN.md) |
 | [`nature-statistics`](skills/nature-statistics/README_EN.md) | Draft | Audit, revise, or draft statistical reporting, covering experimental units, replicates, p values, multiple comparisons, effect sizes, confidence intervals, figure statistics, and cross-section numeric consistency | "Nature statistics", "statistical analysis", "p value", "sample size", "replicates", "multiple comparisons", "figure statistics", "statistics review" | [Details](skills/nature-statistics/README_EN.md) |
 | [`nature-reader`](skills/nature-reader/README_EN.md) | Beta | Generate full-paper Markdown readers with source anchors, figure-text alignment, rendered equations, and Chinese-English side-by-side translation | "nature reader", "full Markdown", "source-aligned text", "figure-text alignment", "rendered equations", "full translation" | [Details](skills/nature-reader/README_EN.md) |
+| [`nature-paper-trans`](skills/nature-paper-trans/README_EN.md) | Beta | Translate a full English paper PDF or selected pages into a Simplified Chinese image-based A4 PDF with a page-by-page check note | "paper translation", "translate paper PDF", "nature paper trans" | [Details](skills/nature-paper-trans/README_EN.md) |
 | [`nature-paper-card`](skills/nature-paper-card/README_EN.md) | Beta | Deep-read one paper into a source-grounded Sections 01–16 Paper Card covering method logic, experiment-to-claim evidence, conclusion boundaries, critical analysis, and testable research ideas | "nature paper card", "deep-read paper", "Paper Card", "evidence chain", "conclusion boundaries" | [Details](skills/nature-paper-card/README_EN.md) |
 | [`nature-response`](skills/nature-response/README_EN.md) | Beta | Parse revision emails; create separate mutually blind reviewer responses, cover letters, red-marked manuscripts, LaTeX templates, and revision-package consistency checks | "response to reviewers", "rebuttal letter", "cover letter", "major revision", "revision email", "reviewer-comment response", "LaTeX template" | [Details](skills/nature-response/README_EN.md) |
 | [`nature-paper2ppt`](skills/nature-paper2ppt/README_EN.md) | Beta | Generate Chinese PPTX journal-club or paper-presentation decks from research papers | "paper PPT", "journal club", "paper to slides", "paper presentation" | [Details](skills/nature-paper2ppt/README_EN.md) |
