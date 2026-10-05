@@ -1,5 +1,20 @@
 # QA checklist
 
+## Contents
+
+- [Reviewer-isolation checks](#reviewer-isolation-checks)
+- [Grounding checks](#grounding-checks)
+- [Technical coverage checks](#technical-coverage-checks)
+- [Forensic consistency checks](#forensic-consistency-checks)
+- [Severity and blocking checks](#severity-and-blocking-checks)
+- [Coverage checks](#coverage-checks)
+- [Boundary checks](#boundary-checks)
+- [Style checks](#style-checks)
+- [Non-invention checks](#non-invention-checks)
+- [Consistency checks](#consistency-checks)
+- [Overlap checks](#overlap-checks)
+- [Final release rule](#final-release-rule)
+
 ## Reviewer-isolation checks
 
 - Reviewer emphasis briefs were fixed before any report was generated.

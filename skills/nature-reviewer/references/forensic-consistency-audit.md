@@ -1,5 +1,15 @@
 # Forensic consistency and numerical audit
 
+## Contents
+
+- [Purpose](#purpose)
+- [Isolation rule](#isolation-rule)
+- [Evidence statuses](#evidence-statuses)
+- [Audit layers](#audit-layers)
+- [Required audit record](#required-audit-record)
+- [Synthesis handling](#synthesis-handling)
+- [Avoid](#avoid)
+
 ## Purpose
 
 Use this reference after all individual reviewer reports are frozen and before the synthesis is written. Its role is to catch deterministic internal failures that independent reviewers may miss during claim-level assessment.

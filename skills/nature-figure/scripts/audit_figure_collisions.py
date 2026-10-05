@@ -720,6 +720,15 @@ def main(argv: list[str] | None = None) -> int:
         print("error: --min-overlap-ratio must be between 0 and 1", file=sys.stderr)
         return 2
     try:
+        with args.pdf.open("rb") as handle:
+            is_pdf = b"%PDF-" in handle.read(1024)  # the spec allows junk before the header
+    except OSError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    if not is_pdf:
+        print(f"error: not a PDF file (missing %PDF- header): {args.pdf}", file=sys.stderr)
+        return 2
+    try:
         result = audit_pdf(
             args.pdf,
             text_inset_pt=args.text_inset_pt,
