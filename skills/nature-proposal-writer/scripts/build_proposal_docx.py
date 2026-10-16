@@ -110,6 +110,11 @@ def table(headers, rows):
     doc.add_paragraph()
 
 
+def is_table_separator(line):
+    cells = line.strip().strip('|').split('|')
+    return bool(cells) and all(re.fullmatch(r'\s*:?-{3,}:?\s*', cell) for cell in cells)
+
+
 # Parse markdown
 with open(inpath, encoding='utf-8') as f:
     lines = f.readlines()
@@ -189,15 +194,16 @@ while i < len(lines):
         i += 1
         continue
 
-    if line.strip().startswith('|') and not line.strip().startswith('|---'):
+    if line.strip().startswith('|') and not is_table_separator(line):
         tbl_lines = [line]
         j = i + 1
-        if j < len(lines) and '|---' in lines[j]:
+        has_separator = j < len(lines) and is_table_separator(lines[j])
+        if has_separator:
             j += 1
         while j < len(lines) and lines[j].strip().startswith('|'):
             tbl_lines.append(lines[j].rstrip('\n'))
             j += 1
-        if len(tbl_lines) >= 2:
+        if len(tbl_lines) >= 2 or has_separator:
             headers = [c.strip() for c in tbl_lines[0].split('|')[1:-1]]
             rows = [[c.strip() for c in l.split('|')[1:-1]] for l in tbl_lines[1:]]
             table(headers, rows)
