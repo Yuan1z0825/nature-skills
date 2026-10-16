@@ -1,8 +1,11 @@
 # Journal Scope
 
-The skill's default journal-family boundary is intentionally practical rather than exhaustive. Use it
-to find likely Nature/CNS-family candidates, then verify exact journal status on official pages if the
-author needs a strict portfolio definition.
+The script accepts explicit journal names, never a `Nature ` or `npj ` prefix alone.
+Its local lists are conservative, not an exhaustive or permanently current portfolio directory.
+Verify missing or renamed titles on the publisher's official pages before updating the lists.
+The npj snapshot is in `data/npj-journals.json`, sourced from the
+[official npj Series directory](https://www.nature.com/nature-portfolio/about-journals/npj-series)
+on 2026-10-16. Unknown names remain outside the automated scope until verified.
 
 ## Default families
 
@@ -11,11 +14,10 @@ author needs a strict portfolio definition.
 Include:
 
 - `Nature`
-- journals beginning with `Nature `, such as `Nature Medicine`, `Nature Biotechnology`,
+- explicitly listed Nature journals, such as `Nature Medicine`, `Nature Biotechnology`,
   `Nature Methods`, `Nature Materials`, `Nature Genetics`, `Nature Communications`
-- `Communications` journals, such as `Communications Biology`, `Communications Chemistry`,
-  `Communications Materials`, `Communications Earth & Environment`, `Communications Medicine`
-- `npj` journals
+- verified `Communications` journals when added to the local exact-title list
+- explicitly listed `npj` journals
 - `Scientific Reports`
 
 Be careful with unrelated titles that include the common word "nature".

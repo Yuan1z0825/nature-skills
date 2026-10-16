@@ -44,6 +44,20 @@ ZOTERO_RDF_NS = {
 
 NATURE_EXACT = {
     "Nature",
+    # Research titles verified against the publisher's research-journals directory.
+    "Nature Aging",
+    "Nature Astronomy",
+    "Nature Biomedical Engineering",
+    "Nature Catalysis",
+    "Nature Chemical Engineering",
+    "Nature Cities",
+    "Nature Health",
+    "Nature Mechanical Engineering",
+    "Nature Mental Health",
+    "Nature Sensors",
+    "Nature Sustainability",
+    "Nature Synthesis",
+    "Nature Water",
     "Nature Biotechnology",
     "Nature Cancer",
     "Nature Cardiovascular Research",
@@ -95,6 +109,11 @@ NATURE_EXACT = {
     "Nature Structural & Molecular Biology",
     "Scientific Reports",
 }
+
+
+# Explicit names from the publisher's npj Series directory, checked 2026-10-16.
+# https://www.nature.com/nature-portfolio/about-journals/npj-series
+NPJ_EXACT = set(json.loads((Path(__file__).resolve().parents[1] / "data" / "npj-journals.json").read_text(encoding="utf-8")))
 
 
 SCIENCE_EXACT = {
@@ -431,7 +450,7 @@ def journal_family(journal: str) -> str | None:
     journal = normalize_title(journal)
     if not journal:
         return None
-    if journal in NATURE_EXACT or journal.startswith("Nature ") or journal.startswith("npj "):
+    if journal in NATURE_EXACT or journal in NPJ_EXACT:
         return "Nature Portfolio"
     if journal in SCIENCE_EXACT:
         return "Science family"
