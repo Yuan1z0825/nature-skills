@@ -9,6 +9,7 @@ on:
       - 'skills/nature-figure/**'
       - 'skills/nature-image2ppt/**'
       - 'skills/nature-paper-card/**'
+      - 'skills/nature-proposal-writer/**'
       - 'skills/nature-paper-to-patent/**'
       - 'skills/nature-response/**'
       - 'skills/nature-reviewer/**'
@@ -31,6 +32,7 @@ on:
       - 'skills/nature-figure/**'
       - 'skills/nature-image2ppt/**'
       - 'skills/nature-paper-card/**'
+      - 'skills/nature-proposal-writer/**'
       - 'skills/nature-paper-to-patent/**'
       - 'skills/nature-response/**'
       - 'skills/nature-reviewer/**'
@@ -103,6 +105,10 @@ jobs:
 
       - name: Test nature-paper-card
         working-directory: skills/nature-paper-card
+        run: python -m pytest -q tests
+
+      - name: Test nature-proposal-writer
+        working-directory: skills/nature-proposal-writer
         run: python -m pytest -q tests
 
       - name: Test nature-paper-to-patent

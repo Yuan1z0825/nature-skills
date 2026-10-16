@@ -11,14 +11,17 @@ Formatting standard for academic proposals:
 - Tables: 10pt, Table Grid style
 """
 import sys
+from pathlib import Path
 from docx import Document
 from docx.shared import Pt, Cm, RGBColor, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 import re
 
-inpath = sys.argv[1]
-outpath = sys.argv[2] if len(sys.argv) > 2 else inpath.replace('.md', '.docx')
+inpath = Path(sys.argv[1])
+outpath = Path(sys.argv[2]) if len(sys.argv) > 2 else inpath.with_suffix('.docx')
+if inpath.resolve() == outpath.resolve() or (outpath.exists() and inpath.samefile(outpath)):
+    raise SystemExit('Output must not overwrite the source Markdown file')
 
 doc = Document()
 
