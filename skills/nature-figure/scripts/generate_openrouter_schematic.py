@@ -5,12 +5,14 @@ from __future__ import annotations
 
 import argparse
 import base64
+import ipaddress
 import json
 import mimetypes
 import os
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -112,6 +114,20 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
     return payload
 
 
+def _require_downloadable_url(url: str, source: str) -> None:
+    """Response-supplied URLs must be plain http(s) to non-local hosts before download."""
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        raise SystemExit(f"Refusing non-http(s) {source}: {url}")
+    hostname = (parsed.hostname or "").lower()
+    try:
+        ip = ipaddress.ip_address(hostname)
+    except ValueError:
+        ip = None
+    if hostname == "localhost" or (ip is not None and (ip.is_private or ip.is_loopback or ip.is_link_local)):
+        raise SystemExit(f"Refusing local {source} host: {url}")
+
+
 def media_extension(media_type: str | None, output_format: str | None) -> str:
     if media_type == "image/svg+xml":
         return ".svg"
@@ -183,6 +199,7 @@ def save_outputs(response: dict[str, Any], payload: dict[str, Any], args: argpar
             outpath.write_bytes(decode_b64_image(item["b64_json"]))
             saved.append(str(outpath))
         elif "url" in item:
+            _require_downloadable_url(item["url"], f"image URL in response item {index}")
             try:
                 with urllib.request.urlopen(item["url"], timeout=args.timeout) as image_response:
                     outpath.write_bytes(image_response.read())

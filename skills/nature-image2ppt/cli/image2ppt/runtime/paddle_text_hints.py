@@ -16,10 +16,12 @@ default; this script is the content-aware alternative.
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import json
 import os
 import sys
 import time
+import urllib.parse
 from pathlib import Path
 
 import requests
@@ -44,6 +46,21 @@ USAGE_NOTE = (
     "Recognition text may contain occasional wrong characters — trust your own "
     "reading of the source for the final text content."
 )
+
+
+def _require_public_result_url(status: dict) -> None:
+    """The completed job's result URL must be plain http(s) to a non-local host before it is fetched."""
+    url = status["resultUrl"]["jsonUrl"]
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        raise RuntimeError(f"PaddleOCR returned a non-http(s) result URL: {url}")
+    hostname = (parsed.hostname or "").lower()
+    try:
+        ip = ipaddress.ip_address(hostname)
+    except ValueError:
+        ip = None
+    if hostname == "localhost" or (ip is not None and (ip.is_private or ip.is_loopback or ip.is_link_local)):
+        raise RuntimeError(f"PaddleOCR returned a local result URL host: {url}")
 
 
 def submit_and_fetch(file_path: Path, token: str, model: str, timeout: int) -> list[dict]:
@@ -75,6 +92,7 @@ def submit_and_fetch(file_path: Path, token: str, model: str, timeout: int) -> l
             raise RuntimeError(f"PaddleOCR job timed out after {timeout}s (state={state})")
         time.sleep(5)
 
+    _require_public_result_url(status)
     jsonl = requests.get(status["resultUrl"]["jsonUrl"], timeout=60)
     jsonl.raise_for_status()
     pages = []
