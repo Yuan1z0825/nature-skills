@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
 import zipfile
@@ -132,20 +133,79 @@ def crop_info(node: ET.Element) -> tuple[bool, dict[str, int] | None]:
     return any(value != 0 for value in values.values()), values
 
 
+IDENTITY = (1, 0, 0, 1, 0, 0)
+
+
+def compose(parent, child):
+    """Compose affine transforms, applying child coordinates before parent."""
+    a, b, c, d, e, f = parent
+    g, h, i, j, k, l = child
+    return (a*g+c*h, b*g+d*h, a*i+c*j, b*i+d*j, a*k+c*l+e, b*k+d*l+f)
+
+
+def orientation(xfrm, left, top, width, height):
+    if xfrm is None:
+        return IDENTITY
+    angle = math.radians(int(xfrm.get("rot", "0")) / 60000)
+    flip_x = -1 if xfrm.get("flipH") in {"1", "true"} else 1
+    flip_y = -1 if xfrm.get("flipV") in {"1", "true"} else 1
+    a, b = math.cos(angle)*flip_x, math.sin(angle)*flip_x
+    c, d = -math.sin(angle)*flip_y, math.cos(angle)*flip_y
+    x, y = left + width/2, top + height/2
+    return (a, b, c, d, x-a*x-c*y, y-b*x-d*y)
+
+
+def group_transform(node):
+    xfrm = node.find("./p:grpSpPr/a:xfrm", NS)
+    if xfrm is None:
+        return IDENTITY
+    off, ext = xfrm.find("a:off", NS), xfrm.find("a:ext", NS)
+    child_off, child_ext = xfrm.find("a:chOff", NS), xfrm.find("a:chExt", NS)
+    if any(value is None for value in (off, ext, child_off, child_ext)):
+        return IDENTITY
+    x, y = int(off.get("x", "0")), int(off.get("y", "0"))
+    w, h = int(ext.get("cx", "0")), int(ext.get("cy", "0"))
+    cw, ch = int(child_ext.get("cx", "0")), int(child_ext.get("cy", "0"))
+    sx, sy = w/cw if cw else 1, h/ch if ch else 1
+    mapping = (sx, 0, 0, sy, x-sx*int(child_off.get("x", "0")), y-sy*int(child_off.get("y", "0")))
+    return compose(orientation(xfrm, x, y, w, h), mapping)
+
+
+def transformed_bounds(bounds, transform):
+    left, top, width, height = bounds
+    a, b, c, d, e, f = transform
+    points = [(a*x+c*y+e, b*x+d*y+f) for x in (left, left+width) for y in (top, top+height)]
+    # Ignore sub-EMU floating-point noise at exact rotations and slide edges.
+    x = math.floor(min(p[0] for p in points) + 1e-6)
+    y = math.floor(min(p[1] for p in points) + 1e-6)
+    right = math.ceil(max(p[0] for p in points) - 1e-6)
+    bottom = math.ceil(max(p[1] for p in points) - 1e-6)
+    return x, y, right-x, bottom-y
+
+
 def extract_shapes(root: ET.Element) -> list[ShapeInfo]:
     shapes: list[ShapeInfo] = []
-    for node in root.iter():
+
+    def visit(node, transform):
         name = local_name(node.tag)
-        if name not in {"sp", "pic", "graphicFrame"}:
-            continue
-        bounds = shape_bounds(node)
-        if bounds is None:
-            continue
-        left, top, width, height = bounds
-        text = text_from_node(node)
-        cropped, crops = crop_info(node)
-        kind = "image" if name == "pic" else "table" if name == "graphicFrame" else "text"
-        shapes.append(ShapeInfo(kind, left, top, width, height, text, cropped, crops))
+        if name == "grpSp":
+            transform = compose(transform, group_transform(node))
+        elif name in {"sp", "pic", "graphicFrame"}:
+            bounds = shape_bounds(node)
+            if bounds is None:
+                return
+            xfrm = node.find(".//a:xfrm", NS)
+            if xfrm is None:
+                xfrm = node.find(".//p:xfrm", NS)
+            bounds = transformed_bounds(bounds, compose(transform, orientation(xfrm, *bounds)))
+            cropped, crops = crop_info(node)
+            kind = "image" if name == "pic" else "table" if name == "graphicFrame" else "text"
+            shapes.append(ShapeInfo(kind, *bounds, text_from_node(node), cropped, crops))
+            return
+        for child in node:
+            visit(child, transform)
+
+    visit(root, IDENTITY)
     return shapes
 
 
