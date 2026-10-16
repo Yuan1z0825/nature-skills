@@ -26,7 +26,7 @@ function providerRequest(article, provider, credentials) {
     return { url: `https://api.elsevier.com/content/article/doi/${doi}?httpAccept=application/pdf`, options: { headers } };
   }
   if (provider === "springer_nature") {
-    const url = new URL("https://spdi.public.springernature.app/xmldata/jats");
+    const url = new URL("https://api.springernature.com/xmldata/jats");
     url.searchParams.set("q", `doi:${article.doi}`);
     url.searchParams.set("api_key", credentials.api_key);
     return { url, options: { headers: { Accept: "application/xml" } } };

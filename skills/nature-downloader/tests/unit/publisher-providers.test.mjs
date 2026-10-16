@@ -46,7 +46,15 @@ describe("publisher API providers", () => {
       provider: "springer_nature",
       credentials: { api_key: secret },
       outDir,
-      fetchImpl: async () => response(`<?xml version="1.0"?><article article-type="research-article"><body>Text</body></article>`, { contentType: "application/xml" }),
+      fetchImpl: async (input, options) => {
+        const url = new URL(input);
+        assert.equal(url.origin, "https://api.springernature.com");
+        assert.equal(url.pathname, "/xmldata/jats");
+        assert.equal(url.searchParams.get("q"), "doi:10.1007/example");
+        assert.equal(url.searchParams.get("api_key"), secret);
+        assert.equal(options.headers.Accept, "application/xml");
+        return response(`<?xml version="1.0"?><article article-type="research-article"><body>Text</body></article>`, { contentType: "application/xml" });
+      },
     });
     assert.equal(result.status, "native_fulltext_downloaded");
     assert.equal(result.format, "jats_xml");
