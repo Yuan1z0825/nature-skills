@@ -32,9 +32,9 @@ Deliver only one Chinese PDF: image-based, in source-page order. By default, pre
 
 ## Workflow
 
-**Split the source PDF → generate each translated page once → merge in source order.**
+**Split the source PDF → generate each translated page once → compare and record review → merge in source order.**
 
-All pages use one prompt. The image model reads, translates, and adapts the layout. Each page gets one generation attempt per user task, with no automatic retry after failure or an unknown outcome. The skill does not run post-generation review or create a review sidecar; the user visually checks the PDF and explicitly requests selected page updates when needed.
+All pages use one prompt. The image model reads, translates, and adapts the layout. Each page gets one generation attempt per user task, with no automatic retry after failure or an unknown outcome. Compare each generated page with its source for body coverage, figures, equations, numbers and units, and record actual observations in the task ledger before assembly. Review does not grant another generation attempt or trigger automatic repair. No review Markdown is delivered. Disclose source page numbers with recorded issues or uncertainty beside the PDF link; the user may explicitly request selected page updates.
 
 Up to 10 requests may be outstanding; actual parallel execution and timing depend on the host tool and service. Interrupted tasks can resume using saved pages. A later, explicit user page selection starts a new update task.
 
@@ -44,7 +44,7 @@ Requires Codex with the built-in `image_gen` tool, Python 3.9+, PyMuPDF, and Pil
 
 In Windows PowerShell, replace `$PYTHON` in examples with `python` or `py -3`, and quote Windows paths. The workflow and file formats stay the same; native Windows needs no extra POSIX file-lock package.
 
-The Python helper handles source-page rendering, attempt tracking, image storage, and PDF assembly. It does not call an image-generation service itself or create a review sidecar. This skill runs independently of other Nature Skills skills.
+The Python helper handles source-page rendering, attempt/review records, image storage, and PDF assembly. It does not call an image-generation service or judge translation accuracy. `--pdf-only` omits the review sidecar while still requiring review records for newly generated images. This skill runs independently of other Nature Skills skills.
 
 ## Boundaries
 

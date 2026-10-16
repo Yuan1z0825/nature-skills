@@ -812,7 +812,7 @@ def publish_pdf(work, task, target, metadata):
 def assemble(args, work):
     with composition(args, work) as (task, overlays):
         pdf_only = getattr(args, "pdf_only", False)
-        rows = compose_pages(work, task, overlays, for_pdf=True, require_review=not pdf_only)
+        rows = compose_pages(work, task, overlays, for_pdf=True)
         included = [r for r in rows if r.get("attempt_id")]
         missing = [r["source_page"] for r in rows if not r.get("attempt_id")]
         require(not missing or args.allow_partial, "Missing pages: " + ",".join(map(str, missing)))
@@ -828,6 +828,9 @@ def assemble(args, work):
         if pdf_only:
             recovered = publish_pdf(work, task, target, metadata)
             return {"output": str(target), "pages": len(included),
+                    "review_summary": {status: [r["source_page"] for r in included
+                                                if (r.get("review") or {}).get("status", "unknown") == status]
+                                       for status in ("pass", "issue", "unknown")},
                     "mapping": metadata["mapping"], "missing_pages": missing, "recovered": recovered}
         report_target = target.with_name(target.stem + "_逐页检查说明.md")
         check_export_target(work, task, report_target, ".md")
