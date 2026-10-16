@@ -76,6 +76,9 @@ def esearch(query, max_results=5):
 def efetch_medline(pmid, retries=1):
     params = {"db": "pubmed", "id": pmid, "rettype": "medline", "retmode": "text"}
     url = f"{EUTILS_BASE}/efetch.fcgi?{urlencode(params)}"
+    if not _is_allowed_url(url):
+        print(f"  EFetch error for PMID {pmid}: URL host not in allowlist")
+        return None
     attempts = max(1, retries)  # --retry 0 must still try once
     for attempt in range(attempts):
         try:
@@ -103,7 +106,8 @@ def download_pubmed(pmid, output_dir, fmt, retries=1):
 
     content = convert_from_medline(nbib_text, fmt)
     ext = get_extension(fmt)
-    filename = f"pubmed-{pmid}{ext}"
+    safe_pmid = pmid.replace("/", "_")[:60]
+    filename = f"pubmed-{safe_pmid}{ext}"
     filepath = os.path.join(output_dir, filename)
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(content)
@@ -140,6 +144,8 @@ def download_crossref(doi, output_dir, fmt, retries=1):
     print(f"  Downloading DOI: {doi}")
     time.sleep(DELAY)
     url = f"{CROSSREF_BASE}/{doi}"
+    if not _is_allowed_url(url):
+        return False, f"CrossRef URL host not in allowlist: {url}"
     attempts = max(1, retries)  # --retry 0 must still try once
     for attempt in range(attempts):
         try:
@@ -180,6 +186,8 @@ def download_arxiv(arxiv_id, output_dir, fmt, retries=1):
     time.sleep(DELAY)
     params = {"id_list": arxiv_id, "max_results": 1}
     url = f"{ARXIV_BASE}?{urlencode(params)}"
+    if not _is_allowed_url(url):
+        return False, f"arXiv URL host not in allowlist: {url}"
     attempts = max(1, retries)  # --retry 0 must still try once
     for attempt in range(attempts):
         try:
