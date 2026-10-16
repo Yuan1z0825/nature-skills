@@ -704,7 +704,7 @@ def create_pdf(temporary, rows):
         pdf.save(temporary, deflate=True)
     verify_pdf(temporary, [{"dimensions": row["dimensions"], "page_size": row.get("page_size")}
                           for row in rows if row.get("attempt_id")])
-    with open(temporary, "rb") as stream:
+    with open(temporary, "r+b") as stream:
         os.fsync(stream.fileno())
 
 

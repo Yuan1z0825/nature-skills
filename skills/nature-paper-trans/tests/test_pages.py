@@ -404,12 +404,12 @@ class PagesTests(unittest.TestCase):
         module = self.page_module()
         target = self.root / "partial-pair.pdf"
         report = target.with_name(target.stem + "_逐页检查说明.md")
-        real_link = module.os.link
+        real_publish = module._publish_without_replace
         def fail_report_publication(source, destination):
             if Path(destination) == report:
                 raise OSError("Interrupted before publishing the report")
-            return real_link(source, destination)
-        with mock.patch.object(module.os, "link", side_effect=fail_report_publication):
+            return real_publish(source, destination)
+        with mock.patch.object(module, "_publish_without_replace", side_effect=fail_report_publication):
             with self.assertRaises(OSError):
                 module.assemble(self.assembly_args(target), self.job)
         self.assertTrue(target.exists())
@@ -431,7 +431,7 @@ class PagesTests(unittest.TestCase):
                 report = target.with_name(target.stem + "_逐页检查说明.md")
                 def fail_publication(source, destination):
                     raise OSError("Interrupted before publication")
-                with mock.patch.object(module.os, "link", side_effect=fail_publication):
+                with mock.patch.object(module, "_publish_without_replace", side_effect=fail_publication):
                     with self.assertRaises(OSError):
                         module.assemble(self.assembly_args(target), self.job)
                 self.assertFalse(target.exists())
