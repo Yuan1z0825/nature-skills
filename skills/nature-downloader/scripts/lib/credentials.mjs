@@ -41,9 +41,12 @@ export function saveProviderCredentials(provider, secrets, env = process.env) {
   const clean = Object.fromEntries(
     Object.entries(secrets || {}).filter(([, value]) => typeof value === "string" && value.trim()).map(([key, value]) => [key, value.trim()])
   );
-  if (!clean.api_key) throw new Error("api_key is required");
+  if (!clean.api_key && !(provider === "springer_nature" &&
+    ["metadata_api_key", "openaccess_api_key", "fulltext_api_key"].some((field) => clean[field]))) {
+    throw new Error("api_key or a Springer service API key is required");
+  }
   const all = loadCredentials(env);
-  all[provider] = clean;
+  all[provider] = provider === "springer_nature" ? { ...all[provider], ...clean } : clean;
   writeCredentials(all, env);
   return clean;
 }

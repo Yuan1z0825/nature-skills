@@ -17,6 +17,9 @@ export function classifyPublisher({ doi = "", publisher = "", sourceUrl = "" } =
 }
 
 export function hasUsablePublisherCredentials(provider, credentials) {
+  if (provider === "springer_nature") {
+    return Boolean(credentials?.fulltext_api_key || credentials?.openaccess_api_key || credentials?.api_key);
+  }
   if (!credentials?.api_key) return false;
   return provider !== "ieee" || Boolean(credentials.fulltext_endpoint);
 }

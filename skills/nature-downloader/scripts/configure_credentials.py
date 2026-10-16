@@ -20,6 +20,24 @@ PROVIDERS = tuple(PROVIDER_REGISTRY)
 CONFIG_DIR = Path(os.environ.get("LIT_DL_CONFIG_DIR", Path.home() / ".config" / "lit-dl"))
 CREDENTIALS_FILE = CONFIG_DIR / "credentials.json"
 SETTINGS_FILE = CONFIG_DIR / "settings.json"
+SPRINGER_SERVICES = {
+    "metadata": ("metadata_api_key", "/meta/v2/json", "application/json"),
+    "openaccess": ("openaccess_api_key", "/openaccess/jats", "application/xml"),
+    "fulltext": ("fulltext_api_key", "/xmldata/jats", "application/xml"),
+}
+
+
+def _credential_field(args: argparse.Namespace) -> str:
+    service = getattr(args, "service", None)
+    if service and args.provider != "springer_nature":
+        raise SystemExit("--service is only supported for springer_nature")
+    return SPRINGER_SERVICES[service][0] if service else "api_key"
+
+
+def _service_values(values: dict, service: str) -> dict:
+    field = SPRINGER_SERVICES[service][0]
+    # The original api_key was sent to Full Text; never infer Meta or OA grants.
+    return {"api_key": values.get(field) or (values.get("api_key") if service == "fulltext" else None)}
 
 
 def _load(path: Path) -> dict:
@@ -51,23 +69,25 @@ def _mask(value: str) -> str:
 
 
 def cmd_set(args: argparse.Namespace) -> int:
+    field = _credential_field(args)
     if args.stdin:
         api_key = sys.stdin.readline().strip()
     else:
         api_key = args.api_key or os.environ.get("LIT_DL_API_KEY") or getpass.getpass("API key: ")
     if not api_key:
         raise SystemExit("API key 不能为空")
-    values = {"api_key": api_key.strip()}
+    all_credentials = _load(CREDENTIALS_FILE)
+    values = dict(all_credentials.get(args.provider, {})) if args.provider == "springer_nature" else {}
+    values[field] = api_key.strip()
     if args.insttoken:
         values["insttoken"] = args.insttoken.strip()
     if args.authtoken:
         values["authtoken"] = args.authtoken.strip()
     if args.fulltext_endpoint:
         values["fulltext_endpoint"] = args.fulltext_endpoint.strip()
-    all_credentials = _load(CREDENTIALS_FILE)
     all_credentials[args.provider] = values
     _save(CREDENTIALS_FILE, all_credentials)
-    print(json.dumps({"ok": True, "provider": args.provider, "path": str(CREDENTIALS_FILE), "api_key": _mask(values["api_key"])}, ensure_ascii=False))
+    print(json.dumps({"ok": True, "provider": args.provider, "path": str(CREDENTIALS_FILE), field: _mask(values[field])}, ensure_ascii=False))
     return 0
 
 
@@ -86,7 +106,7 @@ def cmd_delete(args: argparse.Namespace) -> int:
     return 0
 
 
-def _validation_request(provider: str, values: dict) -> urllib.request.Request:
+def _validation_request(provider: str, values: dict, service: str = "fulltext") -> urllib.request.Request:
     key = values["api_key"]
     if provider == "elsevier":
         url = "https://api.elsevier.com/content/article/doi/10.1016/S0140-6736(20)30183-5?view=META"
@@ -95,19 +115,24 @@ def _validation_request(provider: str, values: dict) -> urllib.request.Request:
             headers["X-ELS-Insttoken"] = values["insttoken"]
         return urllib.request.Request(url, headers=headers)
     if provider == "springer_nature":
-        url = "https://api.springernature.com/meta/v2/json?" + urllib.parse.urlencode({"q": "keyword:test", "api_key": key, "p": 1})
-        return urllib.request.Request(url, headers={"Accept": "application/json"})
+        _, endpoint, accept = SPRINGER_SERVICES[service]
+        url = "https://api.springernature.com" + endpoint + "?" + urllib.parse.urlencode({"q": "keyword:test", "api_key": key, "p": 1})
+        return urllib.request.Request(url, headers={"Accept": accept})
     url = "https://ieeexploreapi.ieee.org/api/v1/search/articles?" + urllib.parse.urlencode({"apikey": key, "querytext": "test", "max_records": 1})
     return urllib.request.Request(url, headers={"Accept": "application/json"})
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
+    _credential_field(args)
     values = _load(CREDENTIALS_FILE).get(args.provider)
+    service = getattr(args, "service", None) or "fulltext"
+    if values and args.provider == "springer_nature":
+        values = _service_values(values, service)
     if not values or not values.get("api_key"):
         print(json.dumps({"ok": False, "provider": args.provider, "status": "credentials_missing"}, ensure_ascii=False))
         return 2
     try:
-        with urllib.request.urlopen(_validation_request(args.provider, values), timeout=30) as response:
+        with urllib.request.urlopen(_validation_request(args.provider, values, service), timeout=30) as response:
             status = response.status
     except urllib.error.HTTPError as error:
         status = error.code
@@ -132,6 +157,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
     set_cmd = sub.add_parser("set")
     set_cmd.add_argument("provider", choices=PROVIDERS)
+    set_cmd.add_argument("--service", choices=SPRINGER_SERVICES, help="Springer service grant. Without this flag, preserve the legacy Full Text api_key field.")
     set_cmd.add_argument("--api-key", help="Prefer the hidden prompt or LIT_DL_API_KEY over command-line secrets.")
     set_cmd.add_argument("--stdin", action="store_true", help="Read the API key from stdin without placing it in process arguments or output.")
     set_cmd.add_argument("--insttoken", help="Elsevier institutional token, if issued.")
@@ -145,6 +171,7 @@ def build_parser() -> argparse.ArgumentParser:
     delete.set_defaults(func=cmd_delete)
     validate = sub.add_parser("validate")
     validate.add_argument("provider", choices=PROVIDERS)
+    validate.add_argument("--service", choices=SPRINGER_SERVICES, help="Springer service to validate (default: fulltext). Success does not prove article entitlement.")
     validate.set_defaults(func=cmd_validate)
     email = sub.add_parser("contact-email")
     email.add_argument("email")

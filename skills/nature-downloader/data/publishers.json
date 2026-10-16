@@ -11,7 +11,7 @@
     "config_url": "https://dev.springernature.com/docs/quick-start/api-access/",
     "doi_pattern": "^10\\.(?:1007|1023|1038|1057|1134|1186|1365)/",
     "marker_pattern": "springer|nature portfolio|biomed central|bmc\\b",
-    "credential_fields": ["api_key"]
+    "credential_fields": ["api_key", "metadata_api_key", "openaccess_api_key", "fulltext_api_key"]
   },
   "ieee": {
     "name": "IEEE Xplore",

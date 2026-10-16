@@ -107,16 +107,25 @@ Configure credentials lazily, only when the route first needs them:
 
 ```bash
 python3 scripts/configure_credentials.py set elsevier
-python3 scripts/configure_credentials.py set springer_nature
+python3 scripts/configure_credentials.py set springer_nature --service openaccess
+python3 scripts/configure_credentials.py set springer_nature --service fulltext
+python3 scripts/configure_credentials.py set springer_nature --service metadata
 python3 scripts/configure_credentials.py set ieee --fulltext-endpoint 'https://issued-endpoint.example/articles/{doi}'
 python3 scripts/configure_credentials.py set elsevier --stdin
 python3 scripts/configure_credentials.py show
 python3 scripts/configure_credentials.py validate <provider>
+python3 scripts/configure_credentials.py validate springer_nature --service openaccess
+python3 scripts/configure_credentials.py validate springer_nature --service fulltext
+python3 scripts/configure_credentials.py validate springer_nature --service metadata
 python3 scripts/configure_credentials.py delete <provider>
 python3 scripts/configure_credentials.py contact-email researcher@example.org
 ```
 
 Give the user the official registration link: Elsevier `https://dev.elsevier.com/`, Springer Nature `https://dev.springernature.com/docs/quick-start/api-access/`, or IEEE `https://developer.ieee.org/member/register`.
+
+Springer credentials are scoped by service: `metadata_api_key` validates against `/meta/v2/json` and cannot enable a download; `openaccess_api_key` uses `/openaccess/jats`; `fulltext_api_key` uses `/xmldata/jats` under a Full Text agreement. Configure only the services the user has activated. A key may be reused explicitly for multiple services if the account grants each service; do not assume either shared or distinct keys. For Full Text, enter the complete issued `KEY/METRIC` value in the hidden prompt or via `--stdin` when required by the account. Setting one Springer service preserves the others. The legacy `api_key` (including `set springer_nature` without `--service`) remains a Full Text credential for compatibility, never an inferred Meta or OA credential.
+
+Springer downloads try the configured Full Text service first, then the configured OA service on failure. OA-only credentials go directly to the OA service. Meta-only credentials do not qualify for API-first downloading. Both full-text services retain content validation and secret-free source URLs. The existing general OA and confirmed Web Access fallbacks follow if these services fail. Validation defaults to the Full Text service; `--service metadata` and `--service openaccess` probe only the selected service and credential. Validation checks an HTTP response, leaving article entitlement unverified. Meta validation cannot prove OA or Full Text access, and even a successful full-text service probe cannot guarantee a particular article. Official service references: [Meta](https://dev.springernature.com/docs/api-endpoints/meta-api/), [OA](https://dev.springernature.com/docs/api-endpoints/open-access/), [Full Text](https://dev.springernature.com/docs/api-endpoints/fulltext-api/).
 
 Do not proactively ask the user to paste an API key into chat. If the user voluntarily sends a publisher API key, treat that as authorization to save that exact key: do not reject it, ask them to regenerate it, or repeat it back. Pass it to `configure_credentials.py set <provider> --stdin`, keep it out of command-line arguments, logs, replies, and manifests, then report only the masked confirmation and validation status. The local hidden prompt remains the preferred path when the key has not already been provided. IEEE Metadata API access is not paid full-text access; require the issued Full-Text Access endpoint/template before treating IEEE as downloadable through the API. Secrets are stored in `~/.config/lit-dl/credentials.json` with mode `0600`.
 

@@ -17,7 +17,7 @@ function safeSourceUrl(value) {
   return String(url);
 }
 
-function providerRequest(article, provider, credentials) {
+function providerRequest(article, provider, credentials, springerService) {
   const doi = encodeURIComponent(article.doi || "");
   if (provider === "elsevier") {
     const headers = { Accept: "application/pdf", "X-ELS-APIKey": credentials.api_key };
@@ -29,6 +29,10 @@ function providerRequest(article, provider, credentials) {
     const url = new URL("https://spdi.public.springernature.app/xmldata/jats");
     url.searchParams.set("q", `doi:${article.doi}`);
     url.searchParams.set("api_key", credentials.api_key);
+    if (springerService === "openaccess") {
+      url.hostname = "api.springernature.com";
+      url.pathname = "/openaccess/jats";
+    }
     return { url, options: { headers: { Accept: "application/xml" } } };
   }
   if (provider === "ieee") {
@@ -52,17 +56,18 @@ function failureResult(provider, status, extra = {}) {
   };
 }
 
-export async function downloadPublisherArticle(article, {
+async function downloadPublisherRequest(article, {
   provider,
   credentials,
   outDir,
   fetchImpl = fetch,
   sleepImpl = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  springerService,
 } = {}) {
   if (!credentials?.api_key) {
     return failureResult(provider, STATUS.CREDENTIALS_MISSING, { configureUrl: PROVIDER_CONFIG_URLS[provider] });
   }
-  const request = providerRequest(article, provider, credentials);
+  const request = providerRequest(article, provider, credentials, springerService);
   if (request.unavailable) return failureResult(provider, STATUS.API_FULLTEXT_UNAVAILABLE, { detail: request.unavailable });
   let response;
   const maxAttempts = provider === "elsevier" ? 3 : 1;
@@ -73,7 +78,8 @@ export async function downloadPublisherArticle(article, {
       if (!(provider === "elsevier" && (response.status === 429 || response.status >= 500) && attempt < maxAttempts)) break;
       lastError = `HTTP ${response.status}`;
     } catch (error) {
-      lastError = String(error?.message || error).slice(0, 200);
+      // Fetch errors can contain the request URL, including a Springer service key.
+      lastError = provider === "springer_nature" ? "request failed" : String(error?.message || error).slice(0, 200);
       if (attempt === maxAttempts) break;
     }
     await sleepImpl(250 * attempt);
@@ -106,4 +112,27 @@ export async function downloadPublisherArticle(article, {
     accessMode: "publisher_api",
     ...saved,
   };
+}
+
+export async function downloadPublisherArticle(article, options = {}) {
+  if (options.provider !== "springer_nature") return downloadPublisherRequest(article, options);
+  const credentials = options.credentials;
+  if (!credentials) return failureResult(options.provider, STATUS.CREDENTIALS_MISSING, { configureUrl: PROVIDER_CONFIG_URLS[options.provider] });
+  const services = [
+    ["fulltext", credentials.fulltext_api_key || credentials.api_key],
+    ["openaccess", credentials.openaccess_api_key],
+  ].filter(([, key]) => key);
+  if (!services.length) {
+    return failureResult(options.provider, STATUS.API_FULLTEXT_UNAVAILABLE, {
+      detail: "Springer Meta credentials do not grant full text; configure an Open Access or Full Text service key",
+    });
+  }
+  const serviceAttempts = [];
+  for (const [service, api_key] of services) {
+    const result = await downloadPublisherRequest(article, {
+      ...options, credentials: { api_key }, springerService: service,
+    });
+    serviceAttempts.push({ service, status: result.status, ...(result.httpStatus ? { httpStatus: result.httpStatus } : {}) });
+    if (result.ok || serviceAttempts.length === services.length) return { ...result, service, serviceAttempts };
+  }
 }
