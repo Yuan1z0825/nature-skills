@@ -45,6 +45,35 @@ IDEA_FAILURE_TERMS = [
 
 LOCATOR_MODES = ("page-grounded", "structure-grounded", "source-limited")
 SOURCE_LIMITED_LOCATORS = ("abstract", "metadata", "user-provided excerpt")
+PDF_PAGE_MARKER_RE = re.compile(r"\bPDF\s+pp?\.", re.I)
+PDF_PAGE_VALUE_RE = re.compile(r"\s*(\d+(?:\s*[-–—]\s*\d+)?(?:\s*[,;]\s*\d+(?:\s*[-–—]\s*\d+)?)*)")
+
+
+def invalid_page_pointers(pointers: list[str], bundle: dict[str, Any]) -> list[str]:
+    # Source-map bundles may contain sparse verified indices: page_count is the
+    # number of available records, not the maximum PDF page index.
+    available = {
+        page.get("pdf_page") for page in bundle.get("pages", [])
+        if isinstance(page, dict) and type(page.get("pdf_page")) is int and page["pdf_page"] > 0
+    }
+    invalid = []
+    for pointer in pointers:
+        for marker in PDF_PAGE_MARKER_RE.finditer(pointer):
+            tail = pointer[marker.end():]
+            value = PDF_PAGE_VALUE_RE.match(tail)
+            if value is None or re.match(r"\s*(?:[\w.\-–—]|[,;]\s*[-+]?\d)", tail[value.end():]):
+                invalid.append(pointer)
+                break
+            ranges = re.split(r"\s*[,;]\s*", value.group(1))
+            for item in ranges:
+                endpoints = re.split(r"\s*[-–—]\s*", item)
+                start, end = int(endpoints[0]), int(endpoints[-1])
+                if start < 1 or end < start or sum(start <= n <= end for n in available) != end - start + 1:
+                    invalid.append(pointer)
+                    break
+            if pointer in invalid:
+                break
+    return invalid
 
 
 def finding(level: str, code: str, message: str, **details: Any) -> dict[str, Any]:
@@ -172,17 +201,24 @@ def audit(
     page_pointers = [
         pointer
         for pointer in pointers
-        if "PDF p." in pointer or "PDF pp." in pointer
+        if PDF_PAGE_MARKER_RE.search(pointer)
     ]
     ambiguous = [
         pointer
         for pointer in pointers
         if re.search(r"\bpp?\.", pointer)
-        and "PDF p." not in pointer
-        and "PDF pp." not in pointer
+        and not PDF_PAGE_MARKER_RE.search(pointer)
     ]
 
     if locator_mode == "page-grounded":
+        if bundle is not None and page_pointers:
+            invalid = invalid_page_pointers(page_pointers, bundle)
+            findings.append(finding(
+                "error" if invalid else "pass", "page_pointer_range",
+                "PDF page pointers must refer to available source pages." if invalid
+                else "Every PDF page pointer refers to available source pages.",
+                pointers=invalid,
+            ))
         if bundle is None:
             findings.append(
                 finding(
