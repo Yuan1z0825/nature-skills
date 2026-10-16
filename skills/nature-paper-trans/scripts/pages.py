@@ -22,7 +22,7 @@ else:
     import fcntl
 
 try:
-    import fitz
+    import pymupdf as fitz
     from PIL import Image
 except ImportError as exc:
     print(json.dumps({"error": "dependency_missing", "message": str(exc)}), file=sys.stderr)

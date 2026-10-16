@@ -16,7 +16,7 @@ import unittest
 from unittest import mock
 import uuid
 
-import fitz
+import pymupdf as fitz
 from PIL import Image
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "pages.py"
