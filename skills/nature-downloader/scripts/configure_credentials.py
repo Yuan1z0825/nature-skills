@@ -112,10 +112,19 @@ def cmd_validate(args: argparse.Namespace) -> int:
     except urllib.error.HTTPError as error:
         status = error.code
     except OSError as error:
-        print(json.dumps({"ok": False, "provider": args.provider, "status": "validation_failed", "error": str(error)}, ensure_ascii=False))
+        # Network exception messages may include the request URL and its API key.
+        print(json.dumps({"ok": False, "provider": args.provider, "status": "validation_failed", "error": type(error).__name__}, ensure_ascii=False))
         return 1
-    valid = status not in (401, 403)
-    print(json.dumps({"ok": valid, "provider": args.provider, "http_status": status, "status": "configured" if valid else "credentials_invalid"}, ensure_ascii=False))
+    valid = 200 <= status < 300
+    if valid:
+        validation_status = "configured"
+    elif status in (401, 403):
+        validation_status = "credentials_invalid"
+    elif status == 429:
+        validation_status = "rate_limited"
+    else:
+        validation_status = "validation_failed"
+    print(json.dumps({"ok": valid, "provider": args.provider, "http_status": status, "status": validation_status}, ensure_ascii=False))
     return 0 if valid else 1
 
 
