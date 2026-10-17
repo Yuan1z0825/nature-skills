@@ -41,7 +41,7 @@ DEST="${SKILLS_DEST:-$HOME/.claude/skills}"
 THROTTLE="${SKILLS_THROTTLE:-3600}"
 FORCE=0
 
-usage() { sed -n '2,32p' "$0"; }
+usage() { sed -n '2,33p' "$0"; }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
