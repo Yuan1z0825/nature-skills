@@ -50,6 +50,13 @@ The brief states:
 Keep component labels identical to the manuscript's own terms. Never add a box
 or arrow that the brief does not contain.
 
+Check the brief against the implementation, not only the manuscript draft: for
+every component and edge, find the code, configuration or methods text that
+does it, and note under which condition it runs (for example which ablation
+arm has the tool). A label such as "used for every design" or an arrow from one
+tool to another is a claim; drop it or rephrase it when the source does not
+support it, and tell the user.
+
 ## 2. Fix the canvas from the journal
 
 Read the target journal's figure rules first. For the flagship Nature journal
@@ -71,6 +78,7 @@ Choose by the structure of the content, not by taste:
 | Tiers or planes (control, execution, resources) | stacked layers, one container per tier |
 | A hub and its workers | central node with fan-out |
 | Cycle or feedback | loop with one dashed return edge |
+| An agent that calls tools | the agent's own loop at the hub; tool modules as callees around it ([style rules](vector-schematic-style-rules.md#agent-and-tool-diagrams)) |
 | Alternatives or before/after | side-by-side panels with identical structure |
 
 Budget: about 13 labelled boxes for a single column, about 20 for a double
@@ -101,7 +109,10 @@ journal floor to fit more.
    order, the new component is the visual accent, and the numbered steps match
    the caption.
 4. Fix, then repeat from step 1 until the audit passes and every remaining
-   warning is deliberate.
+   warning is deliberate. Do this after every revision, not only before
+   delivery: render the changed figure at final size, crop the region you
+   edited, and look for overlaps, clipped text, loose lines and arrows that
+   end on the wrong box before reporting the revision as done.
 
 ## 6. Deliver
 

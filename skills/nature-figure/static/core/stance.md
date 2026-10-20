@@ -13,6 +13,7 @@ Prefer **unified method families across all panels** over maximal hue separation
 - If the user asks for a single chart, still identify its role in the manuscript claim: discovery, mechanism, validation, comparison, robustness, or clinical/biological relevance.
 - Keep the background white for plots and diagrams; switch to black only for microscopy / volume-rendering image plates.
 - Prefer direct labels over legends when categories are spatially fixed or the legend would force unnecessary eye travel.
+- Do not print a value on every bar, box, point or cell. Let the axis carry the values and print only the numbers the panel argues (for example the one count the claim rests on); move the rest to the legend, the caption or the text. Fewer, larger labels beat many small ones.
 - Keep one restrained palette per figure: usually one neutral family, one signal family, and one accent family.
 - Treat perceptual separation as necessary but not sufficient: verify that the intended hero series is more salient than baselines after rendering, and do not reuse a sequential light-to-dark scale as unrelated categorical colors.
 - Treat statistics, `n`, error-bar definitions, source-data traceability, and image-integrity notes as part of the figure, not as optional caption cleanup.
