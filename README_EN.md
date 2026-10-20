@@ -41,7 +41,8 @@
   - [5.5 Other Agent Scenarios](#55-other-agent-scenarios)
 - [6. Skill Index](#6-skill-index)
 - [7. Contribution and Development](#7-contribution-and-development)
-- [8. Star History](#8-star-history)
+- [8. Ecosystem & Related Tools](#8-ecosystem--related-tools)
+- [9. Star History](#9-star-history)
 
 ## 1. Project Founder and Operations
 
@@ -753,6 +754,14 @@ After adding a skill, update the [Skill Index](#6-skill-index) table:
 
 ---
 
-## 8. Star History
+## 8. Ecosystem & Related Tools
+
+`nature-skills` focuses on distilling AI agent skills across the research pipeline. For final manuscript delivery, we recommend the following companion open-source tool:
+
+* **[md-to-word](https://github.com/ls-open/md-to-word)**: A compliant Word (`.docx`) typesetting skill designed for AI agents and Markdown. Seamlessly compiles Markdown drafts and `.bib` citations into publication-ready Word manuscripts for journals and dissertations.
+
+---
+
+## 9. Star History
 
 [![Star History Chart](assets/star-history-20261019T023923Z.svg)](https://star-history.com/#Yuan1z0825/nature-skills&Date)
