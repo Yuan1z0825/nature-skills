@@ -49,7 +49,8 @@
   - [5.5 其他 Agent 场景](#55-其他-agent-场景)
 - [6. 技能索引](#6-技能索引)
 - [7. 贡献与开发](#7-贡献与开发)
-- [8. Star 历史](#8-star-历史)
+- [8. 生态与协同工具](#8-生态与协同工具)
+- [9. Star 历史](#9-star-历史)
 
 ## 1. 项目发起人与运营信息
 
@@ -665,6 +666,14 @@ description: >-
 
 ---
 
-## 8. Star 历史
+## 8. 生态与协同工具
+
+`nature-skills` 专注于科研流程各环节的 Agent 技能提炼。在论文最终成稿交付阶段，推荐配合以下开源学术生态工具联动使用：
+
+* **[md-to-word](https://github.com/ls-open/md-to-word)**：专为 AI Agent 与 Markdown 打造的规范 Word (`.docx`) 排版技能，支持从学术 Markdown 草稿与 `.bib` 参考文献直出符合期刊/学位论文版式规范的 Word 文档，解决从草稿到最终格式交付的闭环。
+
+---
+
+## 9. Star 历史
 
 [![Star History Chart](assets/star-history-20261019T023923Z.svg)](https://star-history.com/#Yuan1z0825/nature-skills&Date)
