@@ -309,7 +309,10 @@ The size that matters is the size a reader sees on the typeset page, not the
   figure a few points too wide is an overfull box or an unwanted rescale.
 - Keep the shape consistent across a paper's figures when the author asks for it
   (for example every figure 4:3 or 1:1 at the text width), and rearrange panels to
-  fit rather than letting each figure take its own height.
+  fit rather than letting each figure take its own height. Let the content set the
+  height within that rule: a row of two bar charts reads too tall at 4:3 and is
+  better wider than high (for example 5:3); a schematic with stacked rows may need
+  1:1. Ask before breaking a ratio the author set.
 
 ## Multi-line labels
 
@@ -337,6 +340,9 @@ The size that matters is the size a reader sees on the typeset page, not the
 - If a curve crosses a label, reposition the label beyond the local data envelope. Avoid opaque white `bbox` masks that cut a conspicuous hole in a line.
 - Equal pixel y-coordinates can still look uneven when bar heights create unequal whitespace. Diagnose the perceived gap before moving already aligned labels.
 - Remove a panel title when the caption and the legend already say what the panel shows; it costs height and repeats the caption.
+- Keep the gaps between panels to what their tick labels, axis titles and panel letters need. Give any space left over to the plot areas, not to the gutters.
+- Use tick values in the data's own steps: whole numbers for counts, and round steps (0, 5, 10) for lengths, never 2.5 or 17.5 that an automatic locator chooses after a resize. Set the ticks explicitly and check them after every change of size.
+- Follow the target journal's convention for labelling panels, (a) in the artwork or sub-captions under each panel. Verify it in the journal's guide for authors before changing it; if the guide is silent, keep the paper's existing convention and say that it could not be confirmed.
 - Place a legend where it reads with its panel, usually directly below or above it and close to the axis; a legend far from the plot area, or one panel's legend floating over another panel, costs eye travel. Prefer one row when it fits; break into two rows rather than shrinking the type.
 - When two panels need colour encodings, keep their colours distinct across panels but at the same saturation and lightness, so the figure reads as one palette.
 

@@ -125,4 +125,5 @@ the figure's own story needs it; say so in the brief when a rule is bent.
 | A gap at a line crossing that reads as a break | Let the lines cross plainly |
 | A connector that winds around boxes | Move the boxes so it runs straight, with at most one bend |
 | Constraints that cannot all hold (a regular shape, straight connectors, alignment) | Say which conflict and ask which to keep |
+| A layout the author describes in words but you read differently | Ask for a sketch or offer two arrangements before redrawing |
 | Grey labels, or boxes of one width in one row and another in the next | One dark ink; shared widths and edges |
