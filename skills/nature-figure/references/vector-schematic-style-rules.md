@@ -21,6 +21,9 @@ the figure's own story needs it; say so in the brief when a rule is bent.
   asks for a sans-serif face; for another journal follow its own list (some,
   such as Elsevier's, also accept Times). Whatever the family, use it for every
   label, including mathematics and code names (a matching monospace).
+- Bold only the top-level group or layer names; set box titles and labels in the
+  regular weight. Set code and function names in the text face unless the paper
+  distinguishes them typographically: a monospace face reads a size larger.
 - All text in one dark ink. Do not set labels or descriptions in grey; colour in
   text only where it carries a meaning the figure states (an error path, a
   highlighted component).
@@ -55,8 +58,15 @@ the figure's own story needs it; say so in the brief when a rule is bent.
   meaning per figure (for example feedback, or a logical group boundary), never
   two. If groups are dashed, make feedback dotted, or the reverse.
 - Use orthogonal routes for structure and curves only for feedback.
-- Where two unconnected lines must cross, break one of them for a short gap at
-  the crossing; mark a real branch point with a small dot.
+- Where two unconnected lines must cross, let them cross plainly: a gap at the
+  crossing reads as a broken line. Mark a real branch point with a small dot.
+- Attach a connector at the middle of the side it meets. Where that is taken or
+  impossible, use a third or a quarter of the side, so attachment points look
+  chosen. A connector into a circle aims at its centre.
+- Prefer straight connectors and allow at most one bend. Re-place the boxes so a
+  connector can run straight before adding bends to route around them.
+- Never run a connector along a box edge, a band edge or another line; keep a
+  visible gap, or the two read as one.
 - No line passes through a label, and arrows do not end on a container
   boundary unless the whole group is the endpoint.
 - Keep arrowheads and tails clear of tier dividers and container titles.
@@ -65,7 +75,8 @@ the figure's own story needs it; say so in the brief when a rule is bent.
 
 - Nest at most three levels. A container is never filled darker than its
   children; outline-only containers are the safe default.
-- Equal gaps in a row, and snap box edges to a common grid. Boxes that play the
+- Equal gaps in a row, and snap box edges to a common grid; repeated cards (an
+  output row, a row of tools) are equally spaced across the same span. Boxes that play the
   same role in different rows or containers share their width and their top and
   bottom edges.
 - Repeat a container's internal order in every container of its kind (for
@@ -111,4 +122,7 @@ the figure's own story needs it; say so in the brief when a rule is bent.
 | The figure implies behaviour the system lacks | Check each component, edge and label against the code or methods |
 | An agent drawn as one stage of a pipeline | Draw its loop; draw the tools as callees |
 | Wide gaps in justified box text | Re-word, or set the box ragged |
+| A gap at a line crossing that reads as a break | Let the lines cross plainly |
+| A connector that winds around boxes | Move the boxes so it runs straight, with at most one bend |
+| Constraints that cannot all hold (a regular shape, straight connectors, alignment) | Say which conflict and ask which to keep |
 | Grey labels, or boxes of one width in one row and another in the next | One dark ink; shared widths and edges |

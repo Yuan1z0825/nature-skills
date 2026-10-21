@@ -11,6 +11,8 @@
 - [Automatic rendered collision audit](#automatic-rendered-collision-audit)
 - [Rendered panel-by-panel audit](#rendered-panel-by-panel-audit)
 - [Typography and PDF glyph floor](#typography-and-pdf-glyph-floor)
+- [Printed size in the manuscript](#printed-size-in-the-manuscript)
+- [Multi-line labels](#multi-line-labels)
 - [Uncertainty consistency](#uncertainty-consistency)
 - [Geometry and annotation placement](#geometry-and-annotation-placement)
 - [Color separation and salience](#color-separation-and-salience)
@@ -278,6 +280,47 @@ Cover each panel mentally. If the figure's argument remains complete, merge or r
 - Measure long labels against their allocated group width at final size. Compare rendered text bounding-box width in millimetres with the available slot; do not rely on the source font number alone.
 - Keep canonical capitalization such as `XGBoost`, `DeepSeek`, `GPT-5.2`, and `RF`. Legend labels start with display-style capitalization, while prose follows normal sentence grammar. Do not use blind string title-casing.
 
+## Printed size in the manuscript
+
+The size that matters is the size a reader sees on the typeset page, not the
+`fontsize` in the source. Measure it there.
+
+- Read the caption and body sizes from the compiled manuscript (for example the
+  document class's `\f@size` inside a caption) rather than assuming them. Elsevier's
+  `elsarticle` preprint at 12 pt sets captions at 10 pt.
+- Set figure text relative to the caption, a little smaller (for example 0.8 to 0.9
+  of the caption) unless the journal states a size. Text larger than the caption
+  reads as larger than the paper.
+- Three things change the printed size without changing the source number:
+  1. **Rescaling on placement.** A tight bounding box crops the drawing narrower than
+     it was drawn; `\includegraphics[width=\textwidth]` then enlarges it, and every
+     glyph with it. Draw at the text width, save with zero padding, and place the
+     figure at its natural size (`\includegraphics{...}` without a width).
+  2. **Units.** TeX's point is 1/72.27 in; PDF and Matplotlib use 1/72 in. A 390 pt
+     text width is 388.5 PDF points. Convert before drawing at the text width.
+  3. **Typeface.** Fonts of one family differ in x-height: Times New Roman at 10 pt
+     is visibly larger than the `newtx` Times of the text at 10 pt. A monospace face
+     reads a size larger than the text face at the same nominal size.
+- Verify by measurement: render the compiled page at 300 to 600 dpi, take words of
+  x-height letters only (a, c, e, m, n, o, r, s, u, v, w, x, z), and compare their
+  ink height inside the figure with the caption's and the body's. Adjust the
+  source size by the measured ratio, regenerate every figure, and measure again.
+- Check every figure's PDF width against the text width after a style change; one
+  figure a few points too wide is an overfull box or an unwanted rescale.
+- Keep the shape consistent across a paper's figures when the author asks for it
+  (for example every figure 4:3 or 1:1 at the text width), and rearrange panels to
+  fit rather than letting each figure take its own height.
+
+## Multi-line labels
+
+- Matplotlib's `linespacing` does not give one leading for every alignment: the same
+  value printed 1.19 times the font size for top-aligned labels and 1.09 times for
+  centre-aligned ones in one figure. Where labels of several lines sit side by side,
+  set each line separately on its own baseline with one leading (for example 1.2
+  times the font size), and measure the baseline distances in the PDF.
+- Break two-line labels where the words break naturally, and give every label of a
+  kind the same number of lines when they sit in one row.
+
 ## Uncertainty consistency
 
 - If a line or bar is a mean/median across random seeds, folds, splits, subjects, or repeated experiments, encode the requested spread in every comparable panel.
@@ -293,6 +336,9 @@ Cover each panel mentally. If the figure's argument remains complete, merge or r
 - For rotated Matplotlib text, use `rotation_mode="anchor"` and verify the final bounding box.
 - If a curve crosses a label, reposition the label beyond the local data envelope. Avoid opaque white `bbox` masks that cut a conspicuous hole in a line.
 - Equal pixel y-coordinates can still look uneven when bar heights create unequal whitespace. Diagnose the perceived gap before moving already aligned labels.
+- Remove a panel title when the caption and the legend already say what the panel shows; it costs height and repeats the caption.
+- Place a legend where it reads with its panel, usually directly below or above it and close to the axis; a legend far from the plot area, or one panel's legend floating over another panel, costs eye travel. Prefer one row when it fits; break into two rows rather than shrinking the type.
+- When two panels need colour encodings, keep their colours distinct across panels but at the same saturation and lightness, so the figure reads as one palette.
 
 ## Color separation and salience
 
