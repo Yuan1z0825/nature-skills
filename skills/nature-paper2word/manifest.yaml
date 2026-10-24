@@ -1,0 +1,9 @@
+name: nature-paper2word
+description: >
+  Router manifest for compiling academic Markdown manuscripts into
+  submission-ready Word documents. This skill is documentation only: the engine
+  is installed from PyPI as md-to-word-docx, and its complete manual ships
+  inside that package — `md-to-word --contract` prints the path.
+
+always_load:
+  - ../nature-shared/core/terminology-ledger.md
