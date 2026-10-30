@@ -1,4 +1,4 @@
 interface:
   display_name: "Nature Paper to Word"
-  short_description: "Compile Markdown papers into compliant Word files"
-  default_prompt: "Use $nature-paper2word to compile this Markdown manuscript into a submission-ready Word document."
+  short_description: "Export papers to Word or match a reference paper's layout"
+  default_prompt: "Use $nature-paper2word to prepare this manuscript as a Word document, following the reference paper's layout when one is provided."

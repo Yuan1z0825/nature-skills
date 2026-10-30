@@ -1,6 +1,6 @@
 ---
 name: nature-paper2word
-description: "Compile an academic Markdown manuscript into a journal- or school-compliant Word (.docx): declared typography, native OMML equations, three-line tables, cross-references, per-section page numbers, CSL bibliographies (GB/T 7714, APA, Nature, IEEE), and pre/post-export quality gates. 把学术论文的 Markdown 稿件导出为符合期刊或学位论文规范的 Word：摘要、公式编号、三线表、题注、交叉引用、目录域、参考文献。Use when the user wants a submission-ready .docx — 论文转 Word、学位论文排版、期刊投稿排版、prepare submission docx — or a readable copy of a manuscript. Not for PDF, HTML or LaTeX output, and not for slide decks or grant forms."
+description: "Compile academic manuscripts into Word (.docx), including reformatting a manuscript against a reference paper: declared typography, native OMML equations, three-line tables, cross-references, page numbers, CSL bibliographies, and export checks. 论文转 Word、参考论文样式提取、按参考文档重排版、学位论文排版、期刊投稿排版。Use for submission-ready or readable Word manuscripts. Not for PDF, HTML or LaTeX output, slide decks or grant forms."
 license: MIT
 ---
 
@@ -11,7 +11,7 @@ requirements always produce a byte-identical `.docx`. Do not substitute a hand-w
 python-docx script; run the installed pipeline.
 
 **Before the first export in a session, confirm the engine is available**: `md-to-word --version`
-must print a version. This skill ships documentation only; if the command is missing, install it
+must print a version. The export engine is installed separately; if the command is missing, install it
 with `pip install md-to-word-docx`, then run the check again.
 
 **The full vocabulary lives in the manual inside the package**, not here. `md-to-word --contract`
@@ -23,6 +23,7 @@ of work; every spelling is looked up in the manual.
 | Scenario | What the user says | What to do |
 |---|---|---|
 | Journal or school compliance | "format it for Nature / my university" | Get a target `.docx` template or a written spec, then build a requirements file. |
+| Reference-paper reformatting | "format manuscript A like paper B" | Read [reference-layout](references/reference-layout.md); inspect actual reference paragraphs, map their roles, then extract and verify the requirements. |
 | Existing requirements | "use our lab's spec file" | Pass it with `-r`. |
 | Baseline export (no explicit spec) | "turn this into a Word file" | Normalize the manuscript to the contract, then export with the built-in preset. The preset is a complete, valid format, not a provisional default. |
 
@@ -39,7 +40,9 @@ number rather than emitting a document that looks acceptable while its formattin
 ## 2. Bring the manuscript to the input contract
 
 The source may be pasted text, `.txt`, `.md`, an old `.docx`, or a PDF. Normalize it to Markdown
-first; never edit the user's original file in place.
+first; never edit the user's original file in place. For a reference-paper request, identify source
+and reference roles separately using the linked workflow before normalization. Existing DOCX
+objects are reconstructed by export; check their content rather than assuming native preservation.
 
 - **Headings**: `#`, `##`, `###`, consecutive and unskipped; a heading that carries its own number
   (`1.`, `2.1`) needs as many `#` as its number has levels.
@@ -83,7 +86,9 @@ first; never edit the user's original file in place.
    font, size, bold, italic, alignment, line spacing, space before, space after, indent. Every style
    line must be complete; missing fields are errors.
 3. **Reverse-engineer a target `.docx`** — `md-to-word-template target.docx -o format.txt`, then
-   review the "to confirm" list at the end of the draft.
+   review the "to confirm" list at the end of the draft. This reads known style definitions;
+   reference papers using custom styles or direct formatting need the paragraph-sample workflow
+   in [reference-layout](references/reference-layout.md).
 
 Each property has exactly one accepted spelling (two in total: the canonical Chinese and English
 forms); anything else is a hard error with a line number. Full table: manual §3.1. Style names:
@@ -133,6 +138,9 @@ not seem to take effect.
 
 ## 6. Verify before delivery
 
+- For reference-paper requests, first verify role and property coverage against the reference
+  samples as described in [reference-layout](references/reference-layout.md). A successful export
+  checks the supplied requirements, not whether they fully describe the reference paper.
 - Confirm the `.docx` exists and the command exited `0`.
 - Report the applied preset or requirements file, the citation style, and anything the run warned
   about.
