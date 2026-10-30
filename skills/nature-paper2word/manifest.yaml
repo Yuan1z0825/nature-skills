@@ -11,6 +11,8 @@ always_load:
 
 references:
   on_demand:
+    - condition: reading formatting requirements from PDF, Word, images, scanned pages or pasted text
+      path: references/format-requirements.md
     - condition: reformatting a manuscript against a reference DOCX paper or template
       path: references/reference-layout.md
 

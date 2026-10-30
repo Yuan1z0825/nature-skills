@@ -4,6 +4,10 @@ Use this workflow for an unformatted manuscript A and a formatted DOCX paper B.
 The host identifies semantic roles; the helper reads actual paragraph formatting;
 the existing `md-to-word` engine exports the normalized manuscript.
 Resolve the helper relative to this skill directory, not the manuscript directory.
+If B instead contains written formatting instructions, read
+[format-requirements](format-requirements.md). Its own text appearance does not
+define the requested manuscript style. For a PDF or image reference, read or
+recognize the pages first; the DOCX-only helper cannot inspect those files.
 
 ## 1. Inspect both documents
 

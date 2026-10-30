@@ -19,12 +19,14 @@ Compile an academic manuscript or research report from Markdown into journal- or
 - "Give me a general version first, then the school version of the same paper."
 - "Equations and tables must stay editable in Word, not images."
 - "Format A.docx like B.docx and check headings, body text, captions and equations."
+- "Format this manuscript using the journal's PDF, Word file, screenshots or pasted instructions; automatically recognize image-based requirements and check each rule."
 
 ## What You Need To Provide
 
 - **The manuscript**: a Markdown file. If it is plain text, a PDF or an old `.docx`, this skill normalizes it to Markdown first and leaves the original untouched.
-- **Format requirements** (optional): a text file, one style per line. Without it, a built-in preset is chosen by the manuscript's language.
+- **Format requirements** (optional): journal or school instructions as PDF, Word, images, screenshots, scans, text files or pasted text. The host reads the text, automatically recognizes image/scanned instructions, checks values and units, and prepares the engine settings without requiring a hand-written configuration. Without specific requirements, a built-in preset follows the manuscript's language. See [reading formatting requirements](references/format-requirements.md).
 - **Reference paper** (for reference-based formatting): a formatted `.docx`. The host identifies paragraph roles; the helper extracts direct and inherited formatting from selected paragraphs and runs.
+- **Material purpose**: distinguish written instructions from an example paper's appearance; combine text, table and image reading within mixed documents. Read or recognize PDF/image examples first; the paragraph-sample helper accepts DOCX only.
 - **References** (optional): `.bib` entries. Without them no bibliography is generated; citations can be inserted with a reference manager after export.
 - **Context**: Chinese or English, thesis or journal submission, the target journal or school.
 

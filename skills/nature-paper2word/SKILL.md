@@ -1,6 +1,6 @@
 ---
 name: nature-paper2word
-description: "Compile academic manuscripts into Word (.docx), including reformatting a manuscript against a reference paper: declared typography, native OMML equations, three-line tables, cross-references, page numbers, CSL bibliographies, and export checks. 论文转 Word、参考论文样式提取、按参考文档重排版、学位论文排版、期刊投稿排版。Use for submission-ready or readable Word manuscripts. Not for PDF, HTML or LaTeX output, slide decks or grant forms."
+description: "Compile an academic Markdown manuscript into a journal- or school-compliant Word (.docx): declared typography, native OMML equations, three-line tables, cross-references, per-section page numbers, CSL bibliographies (GB/T 7714, APA, Nature, IEEE), and pre/post-export quality gates. 把学术论文的 Markdown 稿件导出为符合期刊或学位论文规范的 Word：摘要、公式编号、三线表、题注、交叉引用、目录域、参考文献。Use when the user wants a submission-ready .docx — 论文转 Word、学位论文排版、期刊投稿排版、prepare submission docx — or a readable copy of a manuscript. Not for PDF, HTML or LaTeX output, and not for slide decks or grant forms. Also use for reference-paper reformatting and format requirements supplied as PDF, Word, images or pasted text, with automatic image-text recognition. 参考论文样式提取、按参考文档重排版、期刊排版要求、图片与扫描件识别。"
 license: MIT
 ---
 
@@ -22,10 +22,16 @@ of work; every spelling is looked up in the manual.
 
 | Scenario | What the user says | What to do |
 |---|---|---|
-| Journal or school compliance | "format it for Nature / my university" | Get a target `.docx` template or a written spec, then build a requirements file. |
+| Journal or school compliance | "format it using these journal instructions" | Read [format-requirements](references/format-requirements.md); extract requirements from PDF, Word, images or pasted text, then build the engine requirements file. |
 | Reference-paper reformatting | "format manuscript A like paper B" | Read [reference-layout](references/reference-layout.md); inspect actual reference paragraphs, map their roles, then extract and verify the requirements. |
 | Existing requirements | "use our lab's spec file" | Pass it with `-r`. |
 | Baseline export (no explicit spec) | "turn this into a Word file" | Normalize the manuscript to the contract, then export with the built-in preset. The preset is a complete, valid format, not a provisional default. |
+
+Input format and purpose are separate: a Word or PDF may contain written submission rules,
+a template or an example paper. Read explicit requirements as text; inspect example layout
+when needed. Automatically read images and scanned pages with available image-reading or OCR
+tools, checking the recognized rules against the image. Handle mixed documents page by page.
+The host performs this intake; the paragraph-sample helper accepts DOCX only.
 
 State the chosen preset or requirements path in one line, then proceed. Without `-r` the only file
 picked up is one named exactly **`format.txt`** beside the manuscript; no other `.txt` is guessed at
@@ -89,6 +95,9 @@ objects are reconstructed by export; check their content rather than assuming na
    review the "to confirm" list at the end of the draft. This reads known style definitions;
    reference papers using custom styles or direct formatting need the paragraph-sample workflow
    in [reference-layout](references/reference-layout.md).
+4. **Written journal requirements** — extract the rules using
+   [format-requirements](references/format-requirements.md), then translate supported properties
+   into the engine vocabulary. Keep stated requirements separate from inferred sample layout.
 
 Each property has exactly one accepted spelling (two in total: the canonical Chinese and English
 forms); anything else is a hard error with a line number. Full table: manual §3.1. Style names:
@@ -141,6 +150,9 @@ not seem to take effect.
 - For reference-paper requests, first verify role and property coverage against the reference
   samples as described in [reference-layout](references/reference-layout.md). A successful export
   checks the supplied requirements, not whether they fully describe the reference paper.
+- For supplied instructions, compare the output against the original clauses and their page,
+  paragraph or image locations, including recognized numbers and units. Report requirements
+  the engine cannot apply separately from those verified by its export checks.
 - Confirm the `.docx` exists and the command exited `0`.
 - Report the applied preset or requirements file, the citation style, and anything the run warned
   about.
