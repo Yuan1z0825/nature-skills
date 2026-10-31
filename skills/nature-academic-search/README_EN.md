@@ -38,6 +38,7 @@
 - PubMed search needs `PUBMED_EMAIL` or `mcp-server/config.toml`.
 - Scopus / ScienceDirect depend on local `pybliometrics` configuration, normally read from `~/.config/pybliometrics.cfg`.
 - Do not write Elsevier API keys into repository files; keep them in local secure configuration.
+- Optional: with `FIRECRAWL_API_KEY` set, [Firecrawl](https://www.firecrawl.dev/?utm_source=nature-skills&utm_medium=integration) can read publisher pages that need JavaScript and open-access PDFs as Markdown when the built-in fetch tools return no article text.
 
 ## Boundaries
 
