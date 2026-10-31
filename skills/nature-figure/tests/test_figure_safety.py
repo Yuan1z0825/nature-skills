@@ -190,6 +190,27 @@ require_matplotlib_panel_alignment(fig, strict=True)
         self.assertEqual(finding.level, "WARN")
         self.assertIn("delimiter check passed", finding.message)
 
+    def test_r_ggsave_cairo_pdf_counts_as_editable_text(self):
+        source = (
+            'svglite::svglite("figure.svg", width = 3.5, height = 2.5)\n'
+            'ggsave("figure.pdf", p, width = 3.5, height = 2.5, device = cairo_pdf)\n'
+        )
+        self.assertEqual(VALIDATOR.check_editable_text(source, "r").level, "PASS")
+
+    def test_r_ggsave_cairo_pdf_string_form_counts_as_editable_text(self):
+        source = (
+            'svglite::svglite("figure.svg")\n'
+            'ggsave("figure.pdf", p, device = "cairo_pdf")\n'
+        )
+        self.assertEqual(VALIDATOR.check_editable_text(source, "r").level, "PASS")
+
+    def test_r_ggsave_without_cairo_pdf_still_fails_editable_text(self):
+        source = (
+            'svglite::svglite("figure.svg")\n'
+            'ggsave("figure.pdf", p, width = 3.5, height = 2.5)\n'
+        )
+        self.assertEqual(VALIDATOR.check_editable_text(source, "r").level, "FAIL")
+
 
 class NumericalSafetyTests(unittest.TestCase):
     def test_interp_monotone_handles_decreasing_grid(self):
