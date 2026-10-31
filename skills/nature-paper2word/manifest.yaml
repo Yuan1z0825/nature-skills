@@ -1,9 +1,21 @@
 name: nature-paper2word
 description: >
   Router manifest for compiling academic Markdown manuscripts into
-  submission-ready Word documents. This skill is documentation only: the engine
-  is installed from PyPI as md-to-word-docx, and its complete manual ships
+  submission-ready Word documents and reformatting against reference papers.
+  The export engine is installed from PyPI as md-to-word-docx; a local helper
+  extracts actual paragraph samples. The engine's complete manual ships
   inside that package — `md-to-word --contract` prints the path.
 
 always_load:
   - ../nature-shared/core/terminology-ledger.md
+
+references:
+  on_demand:
+    - condition: reading formatting requirements from PDF, Word, images, scanned pages or pasted text
+      path: references/format-requirements.md
+    - condition: reformatting a manuscript against a reference DOCX paper or template
+      path: references/reference-layout.md
+
+quality_tools:
+  reference_layout:
+    script: scripts/reference_layout.py
