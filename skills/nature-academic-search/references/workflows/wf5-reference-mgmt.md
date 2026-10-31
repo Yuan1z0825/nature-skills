@@ -34,5 +34,6 @@
 ## 5e. Full-Text Access
 
 1. `pubmed_fetch_fulltext` for articles with PMC copies (structured JATS).
-2. Fall back to `download_paper` for paywalled articles.
-3. Report: structured text / PDF-as-text / metadata-only.
+2. If an open-access article has no PMC copy and built-in fetch returns no usable text, see [Publisher pages and PDF text](../../static/core/routing-and-ops.md#publisher-pages-and-pdf-text-optional).
+3. Fall back to `download_paper` for paywalled articles.
+4. Report: structured text / PDF-as-text / metadata-only.
