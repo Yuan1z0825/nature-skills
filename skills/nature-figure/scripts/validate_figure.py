@@ -414,7 +414,10 @@ def check_editable_text(source: str, backend: str) -> Finding:
         return finding("EDITABLE-TEXT", "FAIL", "Missing editable-text settings", missing)
 
     has_svg = bool(re.search(r"(?:svglite::)?svglite\s*\(", source))
-    has_pdf = bool(re.search(r"(?:grDevices::)?cairo_pdf\s*\(", source))
+    has_pdf = bool(
+        re.search(r"(?:grDevices::)?cairo_pdf\s*\(", source)
+        or re.search(r"\bdevice\s*=\s*['\"]?(?:grDevices::)?cairo_pdf\b", source)
+    )
     if has_svg and has_pdf:
         return finding("EDITABLE-TEXT", "PASS", "svglite and cairo_pdf editable-text devices are configured")
     missing = []
