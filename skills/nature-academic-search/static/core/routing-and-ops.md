@@ -24,6 +24,7 @@ Quick guide:
 | Semantic Scholar | `SEMANTIC_SCHOLAR_API_KEY` | [api.semanticscholar.org](https://api.semanticscholar.org/) | 100 req/s with key (1/s without) |
 | NCBI E-utilities | `NCBI_API_KEY` | [ncbi.nlm.nih.gov/account](https://www.ncbi.nlm.nih.gov/account/) | 10 req/s with key (3/s without) |
 | Elsevier / Scopus / ScienceDirect | pybliometrics config | [dev.elsevier.com](https://dev.elsevier.com/) | Depends on API entitlement |
+| Firecrawl (publisher pages, PDF text) | `FIRECRAWL_API_KEY` | [firecrawl.dev](https://www.firecrawl.dev/?utm_source=nature-skills&utm_medium=integration) | 1,000 credits/month on the free plan |
 
 Set Semantic Scholar / NCBI keys via `export` or `.env` file. Elsevier keys are read from the local pybliometrics config, normally `~/.config/pybliometrics.cfg`; do not copy API keys into this plugin.
 
@@ -70,6 +71,16 @@ uv run --no-project --directory <mcp-server> --with "mcp>=1.0.0,<2.0.0" --with "
 ```
 
 `search_papers` defaults to CrossRef, PubMed, and arXiv. Scopus / ScienceDirect are opt-in providers: include `scopus` / `sciencedirect` in `sources`, or call their dedicated tools. These calls use the local pybliometrics config at `~/.config/pybliometrics.cfg` and may consume Elsevier API quota.
+
+### Publisher pages and PDF text (optional)
+
+Use the built-in fetch or browser tools first. If a publisher page returns no article text because it needs JavaScript, or the text is in an open-access PDF, the Firecrawl MCP tool `firecrawl_scrape` or the Firecrawl CLI (`npm install -g firecrawl-cli`, with `FIRECRAWL_API_KEY` set) can read it as Markdown:
+
+```bash
+firecrawl scrape https://ieeexplore.ieee.org/document/7780459 --only-main-content -o page.md
+```
+
+The page URL is sent to the Firecrawl API, and a PDF costs 1 Firecrawl credit per parsed page (limit it with `--max-pages`). Check that the output holds the abstract or article body; if Firecrawl fails or returns only page chrome, continue with the other tools and report the gap. Read only pages the user can already open.
 
 ## Error handling
 

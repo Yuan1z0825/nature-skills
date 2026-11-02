@@ -38,6 +38,7 @@
 - PubMed 检索需要配置 `PUBMED_EMAIL` 或 `mcp-server/config.toml`。
 - Scopus / ScienceDirect 依赖本机 `pybliometrics` 配置，默认读取 `~/.config/pybliometrics.cfg`。
 - 不要把 Elsevier API key 写入仓库文件；只在本机安全配置中保存。
+- 可选：设置 `FIRECRAWL_API_KEY` 后，当内置抓取工具拿不到正文时，可用 [Firecrawl](https://www.firecrawl.dev/?utm_source=nature-skills&utm_medium=integration) 把需要 JavaScript 渲染的出版社页面和开放获取 PDF 读成 Markdown。
 
 ## 边界
 

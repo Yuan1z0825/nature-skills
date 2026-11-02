@@ -28,6 +28,8 @@ Use sources in this order:
 
 Prefer structured APIs for metadata and publisher pages for claim verification. If metadata and publisher page disagree, preserve the DOI and journal-page facts and flag the discrepancy.
 
+If a publisher page returns no article text to the built-in fetch tools because it needs JavaScript, Firecrawl can read it when available: the `firecrawl_scrape` MCP tool, or `firecrawl scrape <url> --only-main-content` from the Firecrawl CLI with `FIRECRAWL_API_KEY` set. Check that the result holds the abstract or article body; if it does not, use the browser tools and record the gap.
+
 ## Search quality rules
 
 - Prefer precision over volume. A useful answer is usually 3-8 candidates, not 50 loosely related papers.

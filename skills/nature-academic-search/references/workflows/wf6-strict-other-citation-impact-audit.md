@@ -72,6 +72,8 @@ definition, state the changed rule explicitly.
 4. **Extract citation context.**
    - Prefer full text: PubMed Central JATS, ScienceDirect metadata/full text,
      publisher HTML, or legally available PDF text.
+   - If publisher HTML needs JavaScript or the text is in a PDF, see
+     [Publisher pages and PDF text](../../static/core/routing-and-ops.md#publisher-pages-and-pdf-text-optional).
    - Locate the target reference in the bibliography, map it to in-text citation
      markers (numeric or author-year), then extract the citing sentence plus one
      adjacent sentence before/after when available.
