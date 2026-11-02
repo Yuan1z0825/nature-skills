@@ -69,8 +69,8 @@ def inspect_reference(source):
             "roles": sorted(STYLE_MAP), "paragraphs": samples}
 
 
-def merge_properties(target, source):
-    """Overlay individual OOXML attributes, retaining inherited sibling values."""
+def merge_properties(target, source, *, style_toggles=False):
+    """Merge properties; style b/i toggle, while defaults/direct values assign."""
     if source is None:
         return
     # An explicit font name supersedes a theme reference for that slot.
@@ -86,15 +86,22 @@ def merge_properties(target, source):
     target.attrib.update(source.attrib)
     for item in source:
         existing = target.find(item.tag)
+        if target.tag == q("rPr") and item.tag in {q("b"), q("i")}:
+            enabled = item.get(q("val"), "1") not in {"0", "false", "off"}
+            if style_toggles:
+                inherited = existing is not None and existing.get(q("val"), "1") not in {"0", "false", "off"}
+                enabled = inherited != enabled
+            if existing is None:
+                existing = etree.SubElement(target, item.tag)
+            existing.attrib.clear()
+            existing.set(q("val"), "1" if enabled else "0")
+            continue
         if existing is None:
             target.append(deepcopy(item))
         elif item.tag == q("tabs"):
             target.replace(existing, deepcopy(item))
         else:
-            # Toggle properties may use an empty element to mean enabled.
-            if item.tag in {q("b"), q("i")}:
-                existing.attrib.clear()
-            merge_properties(existing, item)
+            merge_properties(existing, item, style_toggles=style_toggles)
 
 
 def sample_style(ref, paragraph, run):
@@ -108,11 +115,11 @@ def sample_style(ref, paragraph, run):
     sid = style_id(direct_p, "pStyle") or default_style(ref)
     for node in reversed(style_chain(ref, sid)):
         merge_properties(ppr, node.find(q("pPr")))
-        merge_properties(rpr, node.find(q("rPr")))
+        merge_properties(rpr, node.find(q("rPr")), style_toggles=True)
     merge_properties(ppr, direct_p)
     direct_r = run.find(q("rPr"))
     for node in reversed(style_chain(ref, style_id(direct_r, "rStyle"))):
-        merge_properties(rpr, node.find(q("rPr")))
+        merge_properties(rpr, node.find(q("rPr")), style_toggles=True)
     merge_properties(rpr, direct_r)
     return synthetic
 

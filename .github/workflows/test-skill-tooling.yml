@@ -81,6 +81,7 @@ jobs:
             -c .github/requirements-ci.txt \
             pytest \
             python-docx \
+            md-to-word-docx==3.2.0 \
             -r skills/nature-academic-search/mcp-server/requirements.txt \
             -r skills/nature-downloader/requirements.txt \
             -r skills/nature-image2ppt/requirements.txt
@@ -108,6 +109,10 @@ jobs:
       - name: Test nature-paper-card
         working-directory: skills/nature-paper-card
         run: python -m pytest -q tests
+
+      - name: Test nature-paper2word reference formatting
+        working-directory: skills/nature-paper2word
+        run: python -m unittest discover -s tests -v
 
       - name: Test nature-proposal-writer
         working-directory: skills/nature-proposal-writer
