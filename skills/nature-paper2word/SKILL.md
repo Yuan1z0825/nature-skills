@@ -14,19 +14,35 @@ python-docx script; run the installed pipeline.
 must print a version. This skill ships documentation only; if the command is missing, install it
 with `pip install md-to-word-docx`, then run the check again.
 
+Check the engine's **capabilities, not its version number** — a version written here would be one
+more thing to keep in sync, and it would still be wrong for whoever installed an older build:
+
+```bash
+md-to-word --contract | grep -c manual        # 2 = both manuals (general + thesis) ship
+md-to-word --help | grep -- --base-template   # present = the school template can be kept
+```
+
+If either comes back short, upgrade (`pip install -U md-to-word-docx`) before following the
+sections below; everything under §2–§4 assumes both.
+
 **The full vocabulary lives in the manual inside the package**, not here. `md-to-word --contract`
 prints its absolute path (Chinese or English, following the manuscript). Everything below is order
 of work; every spelling is looked up in the manual.
+
+The package ships **two volumes**: volume 1 is general (journal papers, reports), volume 2 covers
+theses only — covers, front matter, section/page numbering, chapter and appendix numbering. For a
+degree thesis read both; `--contract` prints both paths.
 
 ## 1. Decide the scenario first
 
 | Scenario | What the user says | What to do |
 |---|---|---|
-| Journal or school compliance | "format it for Nature / my university" | Get a target `.docx` template or a written spec, then build a requirements file. |
-| Existing requirements | "use our lab's spec file" | Pass it with `-r`. |
+| Journal or school compliance | "format it for Nature / my university" | Check for an existing format first (`--contract` says where). Otherwise get a target `.docx` template or a written spec and build a requirements file. |
+| Existing requirements | "use our lab's spec file" | Pass it with `-f`. |
+| Thesis with the school's own `.docx` | "use our school's template" | Read the thesis volume §2: the school file becomes the base, so its cover and originality statement survive (`--base-template`). Experimental — it either verifies or writes nothing. |
 | Baseline export (no explicit spec) | "turn this into a Word file" | Normalize the manuscript to the contract, then export with the built-in preset. The preset is a complete, valid format, not a provisional default. |
 
-State the chosen preset or requirements path in one line, then proceed. Without `-r` the only file
+State the chosen preset or requirements path in one line, then proceed. Without `-f` the only file
 picked up is one named exactly **`format.txt`** beside the manuscript; no other `.txt` is guessed at
 (if one is there, the run names it in a reminder). With no `format.txt`, the preset follows the
 **manuscript's language**: `zh-academic` for Chinese, `en-nature` for everything else. The run reports
@@ -76,6 +92,11 @@ first; never edit the user's original file in place.
 
 ## 3. Choose or build the format requirements
 
+**Check for an existing format file before writing one.** `md-to-word --contract` lists what is
+available locally and points at the community library of school and journal formats. That library
+carries its own selection and usage rules — read them there, not here: they change more often than
+this file should, and a copy of this skill sitting in a user's skills folder never updates itself.
+
 0. **Starting from nothing** — `md-to-word init` writes a complete preset copy plus a one-page
    manuscript that exports as-is.
 1. **Built-in preset** — `zh-academic` or `en-nature`. Use as-is when the user gave no detailed spec.
@@ -84,12 +105,17 @@ first; never edit the user's original file in place.
    line must be complete; missing fields are errors.
 3. **Reverse-engineer a target `.docx`** — `md-to-word-template target.docx -o format.txt`, then
    review the "to confirm" list at the end of the draft.
+4. **Keep the school's own `.docx` as the base** (theses) — `--base-template school.docx --keep-until "copyright statement"`
+   (recommended, say where front matter ends by text) or `--cover-sections N` (by section count)
+   keeps the front matter (cover, declarations) and pours our body in after them. The style file
+   still governs the body. See the thesis volume §2: it explains how to select the anchor, and why a
+   run either verifies or writes nothing.
 
 Each property has exactly one accepted spelling (two in total: the canonical Chinese and English
 forms); anything else is a hard error with a line number. Full table: manual §3.1. Style names:
 §3.4. Presets are the reference examples — `md-to-word --contract` prints their paths.
 
-Throughout this file, `format.txt` means *the format requirements file* — any path works, `-r` takes
+Throughout this file, `format.txt` means *the format requirements file* — any path works, `-f` takes
 it.
 
 Citation style comes from `csl:` with a bundled file name (manual §7) or a path to the user's own
@@ -102,8 +128,9 @@ Run the installed command from the manuscript's directory:
 
 ```bash
 md-to-word manuscript.md -o manuscript.docx
-md-to-word manuscript.md -r format.txt -o manuscript.docx
-md-to-word --contract          # contract + paths to the manual and presets
+md-to-word manuscript.md -f format.txt -o manuscript.docx
+md-to-word manuscript.md -f format.txt --base-template school.docx --keep-until "版权使用授权书" -o manuscript.docx
+md-to-word --contract          # contract + paths to both manuals and the presets
 ```
 
 The pipeline runs: pre-flight validation → style template generation → manuscript model → OOXML
@@ -135,18 +162,23 @@ not seem to take effect.
 
 - Confirm the `.docx` exists and the command exited `0`.
 - Report the applied preset or requirements file, the citation style, and anything the run warned
-  about.
+  about. If that file came from someone else, say where from, so the user can check it against their
+  school's own notice.
 - Say plainly that the layout still needs a manual check in Word. The engine verifies text and
   structure; row heights, column widths and where equations and captions settle are only visible in
   a real renderer.
 - When the document has a TOC, `{style-title}` headers or per-section page numbers, run once with
   `--pdf` (macOS with Word) — that is the only way fields are expanded — and spot-check the first
   page, the widest table, an equation-heavy page and the references.
+- With `--base-template`, the front matter is verified for you: structure on every platform, and page-by-page
+  layout when Word is available. If a run refuses, it wrote nothing — relay the reason instead of
+  retrying with different numbers.
 
 ## 7. Boundaries
 
-- No custom cover pages, merged cells, multi-column text, inline text colour, or text-wrapped
-  figures. Export the body, then complete those in Word.
+- No *generated* cover pages, merged cells, multi-column text, inline text colour, or text-wrapped
+  figures. A cover can still be **kept**: pass the school's own `.docx` with `--base-template` (thesis volume
+  §2). Anything else, export the body and finish it in Word.
 - Only equation cross-references are supported (`{#eq-x}` + `@eq-x`); figure and table numbers are
   typed into the caption.
 - Sum and integral limits stay on the right of the symbol in numbered equations (Word stacks limits

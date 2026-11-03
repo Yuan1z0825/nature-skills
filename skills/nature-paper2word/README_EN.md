@@ -33,7 +33,7 @@ Compile an academic manuscript or research report from Markdown into journal- or
 
 ## Boundaries
 
-- No custom cover pages, merged cells, multi-column text or text-wrapped figures; complete those in Word after export.
+- No generated cover pages (though a thesis can keep the school base template's front matter via `--base-template`), merged cells, multi-column text or text-wrapped figures; complete those in Word after export.
 - Only equation cross-references are supported; figure and table numbers are typed into the caption.
 - TOC page numbers and chapter headers are Word fields; Word asks once whether to update them.
 - No PDF, HTML or LaTeX output; no slide decks or grant application forms.
@@ -46,7 +46,7 @@ This skill is documentation only. The engine is the PyPI package `md-to-word-doc
 md-to-word --version
 ```
 
-If nothing is printed, run `pip install md-to-word-docx` and check again. The full vocabulary, contract details and limits are in the manual shipped inside the package; `md-to-word --contract` prints its absolute path.
+If nothing is printed, run `pip install md-to-word-docx` and check again. The full vocabulary, contract details and limits are in the manual shipped inside the package; `md-to-word --contract` prints its absolute path, and a thesis gets a second volume (covers, front matter, section numbering).
 
 ## Related Skills
 
