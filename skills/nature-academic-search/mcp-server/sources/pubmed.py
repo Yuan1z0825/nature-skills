@@ -136,8 +136,6 @@ def _parse_article(article: Element) -> dict[str, Any]:
                     medline_date = pub_date.find("MedlineDate")
                     if medline_date is not None and medline_date.text:
                         # Extract first 4-digit year from string like "2024 Jan-Feb"
-                        import re
-
                         m = re.search(r"\d{4}", medline_date.text)
                         if m:
                             year = int(m.group())
@@ -149,6 +147,17 @@ def _parse_article(article: Element) -> dict[str, Any]:
             doi = eloi.text.strip()
             break
 
+    # Preserve the explicit PMC route for this article, without guessing identity.
+    pmc_ids = set()
+    for article_id in article.findall(
+        "PubmedData/ArticleIdList/ArticleId[@IdType='pmc']"
+    ):
+        value = (article_id.text or "").strip().upper()
+        if re.fullmatch(r"PMC[1-9][0-9]*", value):
+            pmc_ids.add(value)
+    # Conflicting identifiers must not create an arbitrary full-text link.
+    pmcid = next(iter(pmc_ids)) if len(pmc_ids) == 1 else ""
+
     return {
         "title": title,
         "authors": authors,
@@ -158,6 +167,8 @@ def _parse_article(article: Element) -> dict[str, Any]:
         "journal": journal,
         "abstract": abstract,
         "source": SOURCE_NAME,
+        "pmcid": pmcid,
+        "pmc_url": f"https://pmc.ncbi.nlm.nih.gov/articles/{pmcid}/" if pmcid else "",
     }
 
 
