@@ -15,6 +15,11 @@ import argparse
 import json
 import re
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 import zlib
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -182,7 +187,7 @@ def render_text(path: Path, result: dict[str, object]) -> str:
         f"minimum required: {result['minimum_required_pt']:g} pt",
     ]
     if not result["auditable"]:
-        lines.append("verdict: NOT AUDITABLE — no supported text-showing operators were found")
+        lines.append("verdict: NOT AUDITABLE - no supported text-showing operators were found")
     else:
         lines.extend(
             [
