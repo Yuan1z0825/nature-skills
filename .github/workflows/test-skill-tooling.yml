@@ -52,6 +52,10 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: utf-8
+
 jobs:
   python-tests:
     runs-on: ubuntu-latest
