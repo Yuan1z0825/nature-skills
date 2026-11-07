@@ -60,6 +60,8 @@ class TextRun:
     stream: int
     font: str
     size_pt: float
+    char_spacing: float = 0.0
+    word_spacing: float = 0.0
 
 
 def scan_text_runs(stream: bytes, stream_index: int) -> list[TextRun]:
@@ -75,6 +77,8 @@ def scan_text_runs(stream: bytes, stream_index: int) -> list[TextRun]:
     text_matrix = IDENTITY
     font = ""
     font_size = 0.0
+    char_spacing = 0.0
+    word_spacing = 0.0
     last: tuple[str, float] | None = None
     for match in TOKEN.finditer(stream):
         token = match.group(0)
@@ -112,11 +116,29 @@ def scan_text_runs(stream: bytes, stream_index: int) -> list[TextRun]:
                 font_size = float(operands[-1])
             except ValueError:
                 pass
+        elif operator == b"Tc" and len(operands) >= 1:
+            try:
+                char_spacing = float(operands[-1])
+            except ValueError:
+                pass
+        elif operator == b"Tw" and len(operands) >= 1:
+            try:
+                word_spacing = float(operands[-1])
+            except ValueError:
+                pass
         elif operator in SHOW_OPERATORS:
             size = abs(font_size) * matrix_scale(multiply(text_matrix, ctm))
-            if size > 0 and last != (font, size):
-                runs.append(TextRun(stream=stream_index, font=font, size_pt=size))
-                last = (font, size)
+            if size > 0 and last != (font, size, char_spacing, word_spacing):
+                runs.append(
+                    TextRun(
+                        stream=stream_index,
+                        font=font,
+                        size_pt=size,
+                        char_spacing=char_spacing,
+                        word_spacing=word_spacing,
+                    )
+                )
+                last = (font, size, char_spacing, word_spacing)
         operands.clear()
     return runs
 
@@ -164,6 +186,7 @@ def audit_pdf(data: bytes, minimum_pt: float = 5.0) -> dict[str, object]:
     for stream_index, stream in enumerate(streams, 1):
         runs.extend(scan_text_runs(stream, stream_index))
     below = [run for run in runs if run.size_pt < minimum_pt]
+    spacing_issues = [run for run in runs if run.char_spacing != 0 or run.word_spacing != 0]
     return {
         "auditable": bool(runs),
         "minimum_required_pt": minimum_pt,
@@ -171,6 +194,8 @@ def audit_pdf(data: bytes, minimum_pt: float = 5.0) -> dict[str, object]:
         "text_run_count": len(runs),
         "below_minimum_count": len(below),
         "below_minimum": [asdict(run) for run in below],
+        "spacing_issue_count": len(spacing_issues),
+        "spacing_issues": [asdict(run) for run in spacing_issues],
         "warnings": warnings,
     }
 
@@ -189,11 +214,16 @@ def render_text(path: Path, result: dict[str, object]) -> str:
                 f"minimum found: {result['minimum_found_pt']:g} pt",
                 f"text runs: {result['text_run_count']}",
                 f"below minimum: {result['below_minimum_count']}",
+                f"spacing issues: {result['spacing_issue_count']}",
                 f"verdict: {'FAIL' if result['below_minimum_count'] else 'PASS'}",
             ]
         )
     for run in result["below_minimum"]:
         lines.append(f"  - stream {run['stream']}: /{run['font']} {run['size_pt']:g} pt")
+    for run in result["spacing_issues"]:
+        lines.append(
+            f"  - stream {run['stream']}: /{run['font']} Tc={run['char_spacing']:g} Tw={run['word_spacing']:g}"
+        )
     for warning in result["warnings"]:
         lines.append(f"warning: {warning}")
     lines.append("note: content-stream scanning does not replace final-size visual inspection or account for every PDF transform (e.g. Form XObject matrices)")
