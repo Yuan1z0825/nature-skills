@@ -253,10 +253,14 @@ def search(query: str | None = None, limit: int = 10, year_from: int | None = No
 
     results = []
     for work in data.get("results", []):
-        authors = [
-            a.get("author", {}).get("display_name", "")
-            for a in work.get("authorships", [])
-        ]
+        authors = []
+        for authorship in work.get("authorships", []):
+            # Bibliographies use the name on this work, not the resolved person.
+            raw_name = authorship.get("raw_author_name")
+            if isinstance(raw_name, str) and raw_name.strip():
+                authors.append(raw_name.strip())
+            else:
+                authors.append((authorship.get("author") or {}).get("display_name", ""))
         doi = work.get("doi", "")
         if doi and doi.startswith("https://doi.org/"):
             doi = doi[len("https://doi.org/"):]
