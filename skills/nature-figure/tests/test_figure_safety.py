@@ -211,6 +211,20 @@ require_matplotlib_panel_alignment(fig, strict=True)
         )
         self.assertEqual(VALIDATOR.check_editable_text(source, "r").level, "FAIL")
 
+    def test_r_ggsave_svglite_device_counts_as_editable_text(self):
+        source = (
+            'ggsave("figure.svg", plot = p, width = 3.5, height = 2.5, device = svglite::svglite)\n'
+            'ggsave("figure.pdf", plot = p, width = 3.5, height = 2.5, device = grDevices::cairo_pdf)\n'
+        )
+        self.assertEqual(VALIDATOR.check_editable_text(source, "r").level, "PASS")
+
+    def test_r_ggsave_svglite_string_device_counts_as_editable_text(self):
+        source = (
+            'ggsave("figure.svg", plot = p, device = "svglite")\n'
+            'ggsave("figure.pdf", plot = p, device = "cairo_pdf")\n'
+        )
+        self.assertEqual(VALIDATOR.check_editable_text(source, "r").level, "PASS")
+
 
 class NumericalSafetyTests(unittest.TestCase):
     def test_interp_monotone_handles_decreasing_grid(self):
