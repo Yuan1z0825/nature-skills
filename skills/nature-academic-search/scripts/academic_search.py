@@ -215,8 +215,25 @@ def resolve_by_orcid(orcid: str) -> dict | None:
     }
 
 
+def _normalise_date(value: str) -> str:
+    """Coerce a date argument to the YYYY-MM-DD OpenAlex expects.
+
+    Accepts YYYY-MM-DD, YYYY/MM/DD, or a bare YYYY (which OpenAlex treats as
+    YYYY-01-01). Raises ValueError on anything else so a malformed argument
+    fails loudly instead of silently widening the window.
+    """
+    text = value.strip().replace("/", "-")
+    parts = text.split("-")
+    if len(parts) == 1 and len(parts[0]) == 4 and parts[0].isdigit():
+        return f"{parts[0]}-01-01"
+    if len(parts) == 3 and all(p.isdigit() for p in parts):
+        return f"{int(parts[0]):04d}-{int(parts[1]):02d}-{int(parts[2]):02d}"
+    raise ValueError(f"Invalid date {value!r}; expected YYYY-MM-DD")
+
+
 def search(query: str | None = None, limit: int = 10, year_from: int | None = None,
-           sort: str = "relevance_score", author_id: str | None = None) -> list[dict]:
+           sort: str = "relevance_score", author_id: str | None = None,
+           date_from: str | None = None, date_to: str | None = None) -> list[dict]:
     # A text query is ranked by relevance. Asking OpenAlex to sort that query by
     # cited_by_count / publication_date *server-side* discards relevance entirely
     # and surfaces off-topic mega-cited (or merely newest) papers that only loosely
@@ -242,6 +259,15 @@ def search(query: str | None = None, limit: int = 10, year_from: int | None = No
     filters = []
     if year_from:
         filters.append(f"from_publication_date:{year_from}-01-01")
+    # Explicit date window (YYYY-MM-DD). OpenAlex filters natively, so a caller
+    # that needs "papers published since <date>" gets a correct window instead of
+    # a relevance pool that merely happens to contain recent work. An explicit
+    # from-date supersedes the coarser year_from.
+    if date_from:
+        filters = [f for f in filters if not f.startswith("from_publication_date:")]
+        filters.append(f"from_publication_date:{_normalise_date(date_from)}")
+    if date_to:
+        filters.append(f"to_publication_date:{_normalise_date(date_to)}")
     if author_id:
         # Accept a bare ID, a full URL, or an OR-list; normalise each segment.
         ids = "|".join(p.rsplit("/", 1)[-1] for p in author_id.split("|"))
@@ -322,6 +348,12 @@ def main():
                         help="Filter by exact OpenAlex author ID(s), e.g. A5055881494 (OR-join with '|')")
     parser.add_argument("--limit", type=int, default=10, help="Number of results (max 50)")
     parser.add_argument("--year-from", type=int, default=None, help="Filter papers from this year")
+    parser.add_argument("--date-from", default=None, metavar="YYYY-MM-DD",
+                        help="Only papers published on/after this date (OpenAlex "
+                             "from_publication_date). Supersedes --year-from when both are given")
+    parser.add_argument("--date-to", default=None, metavar="YYYY-MM-DD",
+                        help="Only papers published on/before this date "
+                             "(OpenAlex to_publication_date)")
     parser.add_argument("--sort", default="relevance_score",
                         choices=["relevance_score", "cited_by_count", "publication_date"],
                         help="Sort order. With a query, cited_by_count/publication_date "
@@ -408,7 +440,8 @@ def main():
               file=sys.stderr)
 
     try:
-        results = search(args.query, args.limit, args.year_from, args.sort, author_id)
+        results = search(args.query, args.limit, args.year_from, args.sort, author_id,
+                         date_from=args.date_from, date_to=args.date_to)
     except urllib.error.HTTPError as e:
         if e.code in (401, 403):
             hint = " (API key missing or invalid: set OPENALEX_API_KEY or pass --api-key)"
