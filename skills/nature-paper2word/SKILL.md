@@ -14,6 +14,12 @@ python-docx script; run the installed pipeline.
 must print a version. The export engine is installed separately; if the command is missing, install it
 with `pip install md-to-word-docx`, then run the check again.
 
+Check the capability rather than the version, since the version here would go stale:
+
+```bash
+md-to-word --help | grep -- --base-template   # present = a school template can be kept as the base
+```
+
 **The full vocabulary lives in the manual inside the package**, not here. `md-to-word --contract`
 prints its absolute path (Chinese or English, following the manuscript). Everything below is order
 of work; every spelling is looked up in the manual.
@@ -24,7 +30,8 @@ of work; every spelling is looked up in the manual.
 |---|---|---|
 | Journal or school compliance | "format it using these journal instructions" | Read [format-requirements](references/format-requirements.md); extract requirements from PDF, Word, images or pasted text, then build the engine requirements file. |
 | Reference-paper reformatting | "format manuscript A like paper B" | Read [reference-layout](references/reference-layout.md); inspect actual reference paragraphs, map their roles, then extract and verify the requirements. |
-| Existing requirements | "use our lab's spec file" | Pass it with `-r`. |
+| Existing requirements | "use our lab's spec file" | Pass it with `-f`. |
+| Thesis with the school's own `.docx` | "use our school's template" | `--base-template` pours the body into the school file: its cover, originality statement and front matter stay byte for byte, only the body is replaced. Pick the cut point with `--keep-until <text>` (never past its contents page). The export either verifies — front matter node-for-node, and page-by-page where Word is installed — or writes nothing. See the manual's §9. |
 | Baseline export (no explicit spec) | "turn this into a Word file" | Normalize the manuscript to the contract, then export with the built-in preset. The preset is a complete, valid format, not a provisional default. |
 
 Input format and purpose are separate: a Word or PDF may contain written submission rules,
@@ -33,7 +40,7 @@ when needed. Automatically read images and scanned pages with available image-re
 tools, checking the recognized rules against the image. Handle mixed documents page by page.
 The host performs this intake; the paragraph-sample helper accepts DOCX only.
 
-State the chosen preset or requirements path in one line, then proceed. Without `-r` the only file
+State the chosen preset or requirements path in one line, then proceed. Without `-f` the only file
 picked up is one named exactly **`format.txt`** beside the manuscript; no other `.txt` is guessed at
 (if one is there, the run names it in a reminder). With no `format.txt`, the preset follows the
 **manuscript's language**: `zh-academic` for Chinese, `en-nature` for everything else. The run reports
@@ -103,7 +110,7 @@ Each property has exactly one accepted spelling (two in total: the canonical Chi
 forms); anything else is a hard error with a line number. Full table: manual §3.1. Style names:
 §3.4. Presets are the reference examples — `md-to-word --contract` prints their paths.
 
-Throughout this file, `format.txt` means *the format requirements file* — any path works, `-r` takes
+Throughout this file, `format.txt` means *the format requirements file* — any path works, `-f` takes
 it.
 
 Citation style comes from `csl:` with a bundled file name (manual §7) or a path to the user's own
@@ -116,7 +123,7 @@ Run the installed command from the manuscript's directory:
 
 ```bash
 md-to-word manuscript.md -o manuscript.docx
-md-to-word manuscript.md -r format.txt -o manuscript.docx
+md-to-word manuscript.md -f format.txt -o manuscript.docx
 md-to-word --contract          # contract + paths to the manual and presets
 ```
 
