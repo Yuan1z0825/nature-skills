@@ -34,7 +34,8 @@ class ConfigureCredentialsTest(unittest.TestCase):
         self.assertNotIn(secret, result.stdout)
         self.assertNotIn(secret, result.stderr)
         self.assertEqual(saved["elsevier"]["api_key"], secret)
-        self.assertEqual(mode, 0o600)
+        if os.name != "nt":
+            self.assertEqual(mode, 0o600)
 
 
 if __name__ == "__main__":

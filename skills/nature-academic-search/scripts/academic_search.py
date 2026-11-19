@@ -49,6 +49,11 @@ import argparse
 import json
 import os
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 import urllib.request
 import urllib.parse
 import urllib.error

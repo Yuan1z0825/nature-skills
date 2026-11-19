@@ -3,6 +3,11 @@ import argparse
 import json
 import subprocess
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 from pathlib import Path
 
 from deck_run_state import load_deck, load_jobs, now_iso, resolve_inside, run_dir_from_target, save_deck, save_jobs, set_run_status, write_json

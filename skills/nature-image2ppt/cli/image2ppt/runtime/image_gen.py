@@ -20,6 +20,11 @@ import random
 import re
 import socket
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 import time
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib import error, request

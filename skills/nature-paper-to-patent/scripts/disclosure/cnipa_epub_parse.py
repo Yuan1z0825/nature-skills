@@ -9,6 +9,11 @@ from __future__ import annotations
 import json
 import re
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
