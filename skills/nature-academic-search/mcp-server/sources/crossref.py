@@ -1,5 +1,6 @@
 """CrossRef data source for academic search."""
 
+import re
 from urllib.parse import quote
 
 import requests
@@ -168,6 +169,29 @@ class CrossRefSource:
                 return year
         return None
 
+    @staticmethod
+    def _extract_preprint_of_dois(item: dict) -> list[str]:
+        """Retain explicit Crossref version relations, not inferred identities.
+
+        Targets may be accepted manuscripts or versions of record. They still
+        require resolution before use; this field does not replace a citation.
+        """
+        relation = item.get("relation")
+        entries = relation.get("is-preprint-of", []) if isinstance(relation, dict) else []
+        result: list[str] = []
+        seen: set[str] = set()
+        for entry in entries if isinstance(entries, list) else []:
+            if not isinstance(entry, dict) or entry.get("id-type") != "doi":
+                continue
+            value = entry.get("id")
+            if not isinstance(value, str):
+                continue
+            doi = value.strip()
+            if re.fullmatch(r"10\.\d{4,9}/[^\s<>\x00-\x1f\x7f]+", doi) and doi.casefold() not in seen:
+                result.append(doi)
+                seen.add(doi.casefold())
+        return result
+
     def _normalize_search_item(self, item: dict) -> dict:
         """Map a CrossRef work item to the unified search result format."""
         return {
@@ -178,6 +202,7 @@ class CrossRefSource:
             "journal": (item.get("container-title") or [""])[0],
             "source": self.SOURCE_NAME,
             "citation_count": item.get("is-referenced-by-count", 0),
+            "preprint_of_dois": self._extract_preprint_of_dois(item),
         }
 
     def _normalize_detail_item(self, item: dict) -> dict:
