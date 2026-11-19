@@ -413,7 +413,10 @@ def check_editable_text(source: str, backend: str) -> Finding:
             missing.append("pdf.fonttype=42")
         return finding("EDITABLE-TEXT", "FAIL", "Missing editable-text settings", missing)
 
-    has_svg = bool(re.search(r"(?:svglite::)?svglite\s*\(", source))
+    has_svg = bool(
+        re.search(r"(?:svglite::)?svglite\s*\(", source)
+        or re.search(r"\bdevice\s*=\s*['\"]?(?:svglite::)?svglite\b", source)
+    )
     has_pdf = bool(
         re.search(r"(?:grDevices::)?cairo_pdf\s*\(", source)
         or re.search(r"\bdevice\s*=\s*['\"]?(?:grDevices::)?cairo_pdf\b", source)

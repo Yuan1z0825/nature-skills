@@ -92,17 +92,9 @@ save_pub_r <- function(plot, filename, width_mm = 183, height_mm = 120, dpi = 60
     )
   }
 
-  svglite::svglite(paste0(filename, ".svg"), width = w, height = h)
-  print(plot)
-  dev.off()
-
-  grDevices::cairo_pdf(paste0(filename, ".pdf"), width = w, height = h, family = "Arial")
-  print(plot)
-  dev.off()
-
-  ragg::agg_tiff(paste0(filename, ".tiff"), width = w, height = h, units = "in", res = dpi)
-  print(plot)
-  dev.off()
+  ggplot2::ggsave(paste0(filename, ".svg"), plot = plot, width = w, height = h, device = svglite::svglite)
+  ggplot2::ggsave(paste0(filename, ".pdf"), plot = plot, width = w, height = h, device = grDevices::cairo_pdf, family = "Arial")
+  ggplot2::ggsave(paste0(filename, ".tiff"), plot = plot, width = w, height = h, units = "in", dpi = dpi, device = ragg::agg_tiff)
 }
 ```
 
