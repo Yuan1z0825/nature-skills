@@ -57,6 +57,12 @@ class PdfTextAuditTests(unittest.TestCase):
         result = PDF_AUDIT.audit_pdf(fake_pdf(b"0 0 m 10 10 l S"))
         self.assertFalse(result["auditable"])
 
+    def test_plain_pdf_reports_nonzero_character_spacing(self):
+        result = PDF_AUDIT.audit_pdf(fake_pdf(b"BT /F1 7 Tf 0.5 Tc (Label) Tj ET"))
+        self.assertTrue(result["auditable"])
+        self.assertEqual(result["spacing_issue_count"], 1)
+        self.assertEqual(result["spacing_issues"][0]["char_spacing"], 0.5)
+
 
 class SourceSafetyTests(unittest.TestCase):
     def findings(self, source: str):
