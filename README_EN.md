@@ -47,7 +47,7 @@
 
 ### 1.1 Founder Introduction
 
-Hello, I am Yizhe Yuan, the founder of `nature-skills`. Thank you for following this project. We have published many video tutorials on Douyin; search by topic name to find them, and I sincerely hope they help with real research work.
+Hello, I am Yizhe Yuan, the founder of `nature-skills`. Thank you for following this project. We have published many video tutorials on Douyin; search by topic name to find them, and I sincerely hope they help with real research work. I am currently looking for a job. You are welcome to scan the QR code below to get in touch with me.
 
 ### 1.2 Knowledge Planet
 
