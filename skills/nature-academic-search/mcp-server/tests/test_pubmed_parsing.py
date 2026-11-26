@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from xml.etree.ElementTree import SubElement
+
 import defusedxml.ElementTree as ET
 
 from sources.pubmed import _parse_article
@@ -27,9 +29,9 @@ def test_plain_title_is_unchanged():
 
 def _with_article_ids(*entries):
     article = _article("A <i>complete</i> title")
-    ids = ET.SubElement(ET.SubElement(article, "PubmedData"), "ArticleIdList")
+    ids = SubElement(SubElement(article, "PubmedData"), "ArticleIdList")
     for kind, value in entries:
-        element = ET.SubElement(ids, "ArticleId")
+        element = SubElement(ids, "ArticleId")
         if kind is not None:
             element.set("IdType", kind)
         element.text = value
@@ -71,9 +73,9 @@ def test_only_this_articles_typed_pmc_identifier_is_used():
         ("pubmed", "PMC111"), ("doi", "PMC222"), (None, "PMC333"),
         ("PMC", "PMC444"),
     )
-    references = ET.SubElement(article.find("PubmedData"), "ReferenceList")
-    ref_ids = ET.SubElement(ET.SubElement(references, "Reference"), "ArticleIdList")
-    ET.SubElement(ref_ids, "ArticleId", IdType="pmc").text = "PMC555"
+    references = SubElement(article.find("PubmedData"), "ReferenceList")
+    ref_ids = SubElement(SubElement(references, "Reference"), "ArticleIdList")
+    SubElement(ref_ids, "ArticleId", IdType="pmc").text = "PMC555"
     parsed = _parse_article(article)
     assert parsed["pmcid"] == ""
     assert parsed["pmc_url"] == ""
@@ -104,7 +106,7 @@ def test_malformed_id_does_not_hide_one_valid_pmcid():
 def test_existing_doi_behavior_is_unchanged():
     article = _with_article_ids(("doi", "10.9999/other"), ("pmc", "PMC123"))
     art = article.find("MedlineCitation/Article")
-    ET.SubElement(art, "ELocationID", EIdType="doi").text = "10.9999/original"
+    SubElement(art, "ELocationID", EIdType="doi").text = "10.9999/original"
     assert _parse_article(article)["doi"] == "10.9999/original"
     only_article_id_doi = _with_article_ids(("doi", "10.9999/other"))
     assert _parse_article(only_article_id_doi)["doi"] == ""
