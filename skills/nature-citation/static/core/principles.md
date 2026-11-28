@@ -30,6 +30,8 @@ Prefer structured APIs for metadata and publisher pages for claim verification. 
 
 If a publisher page returns no article text to the built-in fetch tools because it needs JavaScript, Firecrawl can read it when available: the `firecrawl_scrape` MCP tool, or `firecrawl scrape <url> --only-main-content` from the Firecrawl CLI with `FIRECRAWL_API_KEY` set. Check that the result holds the abstract or article body; if it does not, use the browser tools and record the gap.
 
+With `SPECSTREAM_API_KEY` set, SpecStream Extract can read the same pages and open-access PDFs: `POST https://api.specstream.ai/v1/extract` with `{"urls": ["<url>"]}`, text in `data.results[].text`. Use the text only when `status` is `ok`, and run the same abstract or body check. If `read_from` is `archive`, the text is a stored copy dated by `captured_at`: cite that date or confirm the claim on the live page.
+
 ## Search quality rules
 
 - Prefer precision over volume. A useful answer is usually 3-8 candidates, not 50 loosely related papers.

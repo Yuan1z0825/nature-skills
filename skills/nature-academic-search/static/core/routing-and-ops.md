@@ -25,6 +25,7 @@ Quick guide:
 | NCBI E-utilities | `NCBI_API_KEY` | [ncbi.nlm.nih.gov/account](https://www.ncbi.nlm.nih.gov/account/) | 10 req/s with key (3/s without) |
 | Elsevier / Scopus / ScienceDirect | pybliometrics config | [dev.elsevier.com](https://dev.elsevier.com/) | Depends on API entitlement |
 | Firecrawl (publisher pages, PDF text) | `FIRECRAWL_API_KEY` | [firecrawl.dev](https://www.firecrawl.dev/?utm_source=nature-skills&utm_medium=integration) | 1,000 credits/month on the free plan |
+| SpecStream Extract (publisher pages, PDF, Word and Excel text) | `SPECSTREAM_API_KEY` | [specstream.ai](https://specstream.ai/extract-api?utm_source=nature-skills&utm_medium=integration) | $10 of credit at sign-up, no card |
 
 Set Semantic Scholar / NCBI keys via `export` or `.env` file. Elsevier keys are read from the local pybliometrics config, normally `~/.config/pybliometrics.cfg`; do not copy API keys into this plugin.
 
@@ -81,6 +82,18 @@ firecrawl scrape https://ieeexplore.ieee.org/document/7780459 --only-main-conten
 ```
 
 The page URL is sent to the Firecrawl API, and a PDF costs 1 Firecrawl credit per parsed page (limit it with `--max-pages`). Check that the output holds the abstract or article body; if Firecrawl fails or returns only page chrome, continue with the other tools and report the gap. Read only pages the user can already open.
+
+With `SPECSTREAM_API_KEY` set, SpecStream Extract is another reader for publisher pages, open-access PDFs and supplementary files. One call takes 1 to 20 URLs and returns the main text of each as Markdown, Word and Excel files included:
+
+```bash
+curl -s https://api.specstream.ai/v1/extract \
+  -H "Authorization: Bearer $SPECSTREAM_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"urls": ["https://www.nature.com/articles/s41586-021-03819-2.pdf"]}' \
+  | jq -r '.data.results[0].text' > page.md
+```
+
+The URLs are sent to the SpecStream API. A page read costs $0.0008 ($0.80 per 1,000), a PDF counts as one page whatever its length, and a page that gives no text is not charged. Each item of `data.results` has a `status`; use the text only when it is `ok`. `read_from` is `live` for the page as it is now, or `archive` when the text comes from SpecStream's stored copy, dated by `captured_at`; report that date with anything taken from it. Run the same check on the output: it must hold the abstract or article body, otherwise continue with the other tools and report the gap.
 
 ## Error handling
 
