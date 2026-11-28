@@ -29,16 +29,17 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --output assets/star-history.svg \
             --cache-bust-readme README.md \
-            --cache-bust-readme README_EN.md
+            --cache-bust-readme README_EN.md \
+            --cache-bust-readme README_JA.md
 
       - name: Commit updated chart
         run: |
-          if git diff --quiet -- assets/star-history-data.json assets/star-history.svg 'assets/star-history-*.svg' README.md README_EN.md; then
+          if git diff --quiet -- assets/star-history-data.json assets/star-history.svg 'assets/star-history-*.svg' README.md README_EN.md README_JA.md; then
             echo "Star history is already up to date."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A -- assets/star-history-data.json assets/star-history.svg 'assets/star-history-*.svg' README.md README_EN.md
+          git add -A -- assets/star-history-data.json assets/star-history.svg 'assets/star-history-*.svg' README.md README_EN.md README_JA.md
           git commit -m "chore: update star history"
           git push

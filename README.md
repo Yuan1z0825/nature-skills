@@ -16,6 +16,7 @@
     · <a href="docs/open-source-agent-frameworks.md">其他安装</a>
     · <a href="#7-贡献与开发">贡献方式</a>
     · <a href="README_EN.md">English</a>
+    · <a href="README_JA.md">日本語</a>
   </p>
   <p>
     <b>Nature Skills 网页版：内置 Nature Polishing（论文润色）与 Nature Figure（科研绘图）核心功能，访问地址 <a href="https://natureskills.cn">https://natureskills.cn</a></b>

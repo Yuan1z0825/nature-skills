@@ -16,6 +16,7 @@
     · <a href="docs/open-source-agent-frameworks_EN.md">Other Install</a>
     · <a href="#7-contribution-and-development">Contributing</a>
     · <a href="README.md">中文</a>
+    · <a href="README_JA.md">日本語</a>
   </p>
 </div>
 
